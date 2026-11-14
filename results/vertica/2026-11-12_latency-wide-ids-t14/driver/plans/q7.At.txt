@@ -1,0 +1,117 @@
+------------------------------ 
+QUERY PLAN DESCRIPTION: 
+------------------------------
+
+EXPLAIN SELECT 'topic_' || t.topic AS predicate, t.inter AS intersection, t.size + s.n - t.inter AS union_size,
+       ROUND(t.inter / (t.size + s.n - t.inter)::FLOAT, 4) AS jaccard
+FROM (
+  SELECT u.topic, COUNT(*) AS size, SUM(CASE WHEN a.entity_id IS NULL THEN 0 ELSE 1 END) AS inter
+  FROM (SELECT DISTINCT topic, entity_id FROM bitmap_demo.user_interest
+        WHERE tenant_id = 14 AND snapshot_id = 1 AND topic <> 'sports') u
+  LEFT JOIN (SELECT DISTINCT entity_id FROM bitmap_demo.user_interest
+             WHERE tenant_id = 14 AND snapshot_id = 1 AND topic = 'sports') a
+    ON a.entity_id = u.entity_id
+  GROUP BY u.topic
+) t
+CROSS JOIN (SELECT COUNT(DISTINCT entity_id) AS n FROM bitmap_demo.user_interest
+            WHERE tenant_id = 14 AND snapshot_id = 1 AND topic = 'sports') s;
+
+Access Path:
++-JOIN  (CROSS JOIN) [Cost: 2M, Rows: 20B] (PATH ID: 1) Outer (LOCAL ROUND ROBIN)
+| +-- Outer -> SELECT [Cost: 554K, Rows: 2M] (PATH ID: 2)
+| | +---> GROUPBY NOTHING [Cost: 554K, Rows: 2M] (PATH ID: 3)
+| | |      Aggregates: count(DISTINCT user_interest.entity_id)
+| | | +---> GROUPBY PIPELINED (LOCAL RESEGMENT GROUPS) [Cost: 552K, Rows: 2M] (PATH ID: 4)
+| | | |      Group By: user_interest.entity_id
+| | | | +---> STORAGE ACCESS for user_interest [Cost: 551K, Rows: 2M] (PATH ID: 5)
+| | | | |      Projection: bitmap_demo.user_interest_super
+| | | | |      Materialize: user_interest.entity_id
+| | | | |      Filter: (user_interest.tenant_id = 14)
+| | | | |      Filter: (user_interest.snapshot_id = 1)
+| | | | |      Filter: (user_interest.topic = 'sports')
+| +-- Inner -> SELECT [Cost: 2M, Rows: 10K] (PATH ID: 6)
+| | +---> GROUPBY PIPELINED [Cost: 2M, Rows: 10K] (PATH ID: 7)
+| | |      Aggregates: count(*), sum(CASE WHEN (a.entity_id IS NULL) THEN 0 ELSE 1 END)
+| | |      Group By: u.topic
+| | | +---> JOIN HASH [LeftOuter] [Cost: 2M, Rows: 15M] (PATH ID: 8) Outer (LOCAL ROUND ROBIN)
+| | | |      Join Cond: (a.entity_id = u.entity_id)
+| | | | +-- Outer -> SELECT [Cost: 1M, Rows: 15M] (PATH ID: 9)
+| | | | | +---> GROUPBY PIPELINED [Cost: 1M, Rows: 15M] (PATH ID: 10)
+| | | | | |      Group By: user_interest.topic, user_interest.entity_id
+| | | | | | +---> STORAGE ACCESS for user_interest [Cost: 1M, Rows: 198M] (PATH ID: 11)
+| | | | | | |      Projection: bitmap_demo.user_interest_super
+| | | | | | |      Materialize: user_interest.topic, user_interest.entity_id
+| | | | | | |      Filter: (user_interest.tenant_id = 14)
+| | | | | | |      Filter: (user_interest.snapshot_id = 1)
+| | | | | | |      Filter: (user_interest.topic <> 'sports')
+| | | | +-- Inner -> SELECT [Cost: 552K, Rows: 2M] (PATH ID: 12)
+| | | | | +---> GROUPBY PIPELINED [Cost: 552K, Rows: 2M] (PATH ID: 13)
+| | | | | |      Group By: user_interest.entity_id
+| | | | | | +---> STORAGE ACCESS for user_interest [Cost: 551K, Rows: 2M] (PATH ID: 14)
+| | | | | | |      Projection: bitmap_demo.user_interest_super
+| | | | | | |      Materialize: user_interest.entity_id
+| | | | | | |      Filter: (user_interest.tenant_id = 14)
+| | | | | | |      Filter: (user_interest.snapshot_id = 1)
+| | | | | | |      Filter: (user_interest.topic = 'sports')
+
+
+------------------------------
+----------------------------------------------- 
+PLAN: BASE QUERY PLAN (GraphViz Format)
+----------------------------------------------- 
+digraph G {
+graph [rankdir=BT, label = "BASE QUERY PLAN\nQuery: EXPLAIN SELECT \'topic_\' || t.topic AS predicate, t.inter AS intersection, t.size + s.n - t.inter AS union_size,\n       ROUND(t.inter / (t.size + s.n - t.inter)::FLOAT, 4) AS jaccard\nFROM (\n  SELECT u.topic, COUNT(*) AS size, SUM(CASE WHEN a.entity_id IS NULL THEN 0 ELSE 1 END) AS inter\n  FROM (SELECT DISTINCT topic, entity_id FROM bitmap_demo.user_interest\n        WHERE tenant_id = 14 AND snapshot_id = 1 AND topic \<\> \'sports\') u\n  LEFT JOIN (SELECT DISTINCT entity_id FROM bitmap_demo.user_interest\n             WHERE tenant_id = 14 AND snapshot_id = 1 AND topic = \'sports\') a\n    ON a.entity_id = u.entity_id\n  GROUP BY u.topic\n) t\nCROSS JOIN (SELECT COUNT(DISTINCT entity_id) AS n FROM bitmap_demo.user_interest\n            WHERE tenant_id = 14 AND snapshot_id = 1 AND topic = \'sports\') s;\n\nAll Nodes Vector: \n\n  node[0]=v_vdb_node0001 (initiator) Up\n", labelloc=t, labeljust=l ordering=out]
+0[label = "Root \nOutBlk=[UncTuple(4)]", color = "green", shape = "house"];
+1[label = "NewEENode \nOutBlk=[UncTuple(4)]", color = "green", shape = "box"];
+2[label = "ParallelUnionStep: \nCombine\nUnc: Varchar(46)\nUnc: Integer(8)\nUnc: Integer(8)\nUnc: Float(8)", color = "green", shape = "box"];
+3[label = "ExprEval: \n  (\'topic_\' || t.topic)\n  t.inter\n  (SE[0] - t.inter)\n  round((t.inter / ((SE[0] - t.inter))::float), 4)\n  SE[0] = (t.size + s.n): 2 uses\nUnc: Varchar(46)\nUnc: Integer(8)\nUnc: Integer(8)\nUnc: Float(8)", color = "green", shape = "box"];
+4[label = "Join: Hash-Join: \n(UNKNOWN x bitmap_demo.user_interest) using subquery and subquery (PATH ID: 1)\n[CROSS JOIN]\n\nUnc: Varchar(40)\nUnc: Integer(8)\nUnc: Integer(8)\nUnc: Integer(8)", color = "green", shape = "box"];
+5[label = "ParallelUnionStep: \nRound Robin\nUnc: Integer(8)", color = "green", shape = "box"];
+6[label = "GroupByPipe: 0 keys\nAggs:\n  count(DISTINCT user_interest.entity_id)\nUnc: Integer(8)", color = "green", shape = "box"];
+7[label = "ParallelUnionStep: \nCombine\nUnc: Integer(8)", color = "green", shape = "box"];
+8[label = "GroupByPipe: 0 keys\nAggs:\n  count(DISTINCT user_interest.entity_id)\nUnc: Integer(8)", color = "green", shape = "box"];
+9[label = "GroupByPipe: 1 keys\nAggs:\nUnc: Integer(8)", color = "green", shape = "box"];
+10[label = "StorageMergeStep[ee5]: user_interest_super; 1 sorted\nLocally Resegment\nUnc: Integer(8)", color = "purple", shape = "box"];
+11[label = "GroupByPipe: 1 keys\nAggs:\nUnc: Integer(8)", color = "brown", shape = "box"];
+12[label = "ScanStep: user_interest_super\n(user_interest.tenant_id = 14)\n(user_interest.snapshot_id = 1)\n(user_interest.topic = \'sports\')\ntenant_id (not emitted)\nsnapshot_id (not emitted)\ntopic (not emitted)\nentity_id\nUnc: Integer(8)", color = "brown", shape = "box"];
+13[label = "GroupByPipe: 1 keys\nAggs:\n  count(*)\n  sum(CASE WHEN (a.entity_id IS NULL) THEN 0 ELSE 1 END)\nUnc: Varchar(40)\nUnc: Integer(8)\nUnc: Integer(8)", color = "green", shape = "box"];
+14[label = "ParallelMergeStep: 1 sorted\nCombine\nUnc: Varchar(40)\nUnc: Integer(8)\nUnc: Integer(8)", color = "green", shape = "box"];
+15[label = "GroupByPipe: 1 keys\nAggs:\n  count(*)\n  sum(CASE WHEN (a.entity_id IS NULL) THEN 0 ELSE 1 END)\nUnc: Varchar(40)\nUnc: Integer(8)\nUnc: Integer(8)", color = "green", shape = "box"];
+16[label = "ExprEval: \n  u.topic\n  1\n  CASE WHEN (a.entity_id IS NULL) THEN 0 ELSE 1 END\nUnc: Varchar(40)\nUnc: Integer(8)\nUnc: Integer(8)", color = "green", shape = "box"];
+17[label = "Join: Hash-Join: \n(bitmap_demo.user_interest x bitmap_demo.user_interest) using subquery and subquery (PATH ID: 8)\n[LeftOuter]\n (a.entity_id = u.entity_id)\n\nUnc: Varchar(40)\nUnc: Integer(8)", color = "green", shape = "box"];
+18[label = "ParallelUnionStep: \nRound Robin\nUnc: Varchar(40)\nUnc: Integer(8)", color = "green", shape = "box"];
+19[label = "GroupByPipe: 2 keys\nAggs:\nUnc: Varchar(40)\nUnc: Integer(8)", color = "green", shape = "box"];
+20[label = "StorageMergeStep[ee5]: user_interest_super; 2 sorted\nUnc: Varchar(40)\nUnc: Integer(8)", color = "purple", shape = "box"];
+21[label = "GroupByPipe: 2 keys\nAggs:\nUnc: Varchar(40)\nUnc: Integer(8)", color = "brown", shape = "box"];
+22[label = "ScanStep: user_interest_super\n(user_interest.tenant_id = 14)\n(user_interest.snapshot_id = 1)\n(user_interest.topic \<\> \'sports\')\ntenant_id (not emitted)\nsnapshot_id (not emitted)\ntopic\nentity_id\nUnc: Varchar(40)\nUnc: Integer(8)", color = "brown", shape = "box"];
+23[label = "GroupByPipe: 1 keys\nAggs:\nUnc: Integer(8)", color = "green", shape = "box"];
+24[label = "StorageMergeStep[ee5]: user_interest_super; 1 sorted\nUnc: Integer(8)", color = "purple", shape = "box"];
+25[label = "GroupByPipe: 1 keys\nAggs:\nUnc: Integer(8)", color = "brown", shape = "box"];
+26[label = "ScanStep: user_interest_super\n(user_interest.tenant_id = 14)\n(user_interest.snapshot_id = 1)\n(user_interest.topic = \'sports\')\ntenant_id (not emitted)\nsnapshot_id (not emitted)\ntopic (not emitted)\nentity_id\nUnc: Integer(8)", color = "brown", shape = "box"];
+1->0 [label = "V[0] C=4",color = "black",style="bold", arrowtail="inv"];
+2->1 [label = "0",color = "blue"];
+3->2 [label = "0",color = "blue"];
+4->3 [label = "0",color = "blue"];
+5->4 [label = "0",color = "blue"];
+6->5 [label = "0",color = "blue"];
+7->6 [label = "0",color = "blue"];
+8->7 [label = "0",color = "blue"];
+9->8 [label = "0",color = "blue"];
+10->9 [label = "0",color = "blue"];
+11->10 [label = "0",color = "blue"];
+12->11 [label = "0",color = "blue"];
+13->4 [label = "1",color = "blue"];
+14->13 [label = "0",color = "blue"];
+15->14 [label = "0",color = "blue"];
+16->15 [label = "0",color = "blue"];
+17->16 [label = "0",color = "blue"];
+18->17 [label = "0",color = "blue"];
+19->18 [label = "0",color = "blue"];
+20->19 [label = "0",color = "blue"];
+21->20 [label = "0",color = "blue"];
+22->21 [label = "0",color = "blue"];
+23->17 [label = "1",color = "blue"];
+24->23 [label = "0",color = "blue"];
+25->24 [label = "0",color = "blue"];
+26->25 [label = "0",color = "blue"];
+}

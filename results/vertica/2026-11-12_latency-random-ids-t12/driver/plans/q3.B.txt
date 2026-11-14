@@ -1,0 +1,183 @@
+------------------------------ 
+QUERY PLAN DESCRIPTION: 
+------------------------------
+
+EXPLAIN WITH k AS (
+  SELECT predicate, chunk_id, payload FROM bitmap_demo.bitmap_index
+  WHERE tenant_id = 12 AND snapshot_id = 1 AND domain = 'person'
+), cohort AS (
+  SELECT a.chunk_id,
+         vbitmap.bm_and(vbitmap.bm_and(a.payload, b.payload),
+           vbitmap.bm_and(vbitmap.bm_and(c.payload, d.payload),
+             vbitmap.bm_or(COALESCE(s.payload, vbitmap.bm_empty()),
+                           COALESCE(f.payload, vbitmap.bm_empty())))) AS payload
+  FROM k a
+  JOIN k b ON b.chunk_id = a.chunk_id AND b.predicate = 'age_25_54'
+  JOIN k c ON c.chunk_id = a.chunk_id AND c.predicate = 'consent_true'
+  JOIN k d ON d.chunk_id = a.chunk_id AND d.predicate = 'suspended_false'
+  LEFT JOIN k s ON s.chunk_id = a.chunk_id AND s.predicate = 'topic_sports'
+  LEFT JOIN k f ON f.chunk_id = a.chunk_id AND f.predicate = 'topic_finance'
+  WHERE a.predicate = 'country_IL'
+)
+SELECT t.predicate, SUM(vbitmap.bm_and_cardinality(c.payload, t.payload)) AS users
+FROM cohort c
+JOIN k t ON t.chunk_id = c.chunk_id AND t.predicate LIKE 'topic\_%'
+GROUP BY t.predicate
+HAVING SUM(vbitmap.bm_and_cardinality(c.payload, t.payload)) > 0;
+
+Access Path:
++-GROUPBY PIPELINED [Cost: 16M, Rows: 2] (PATH ID: 1)
+|  Aggregates: sum(vbitmap.bm_and_cardinality(c.payload, t.payload))
+|  Group By: t.predicate
+|  Filter: (<SVAR> > 0)
+| +---> JOIN HASH [Cost: 16M, Rows: 79K] (PATH ID: 2) Outer (LOCAL ROUND ROBIN)
+| |      Join Cond: (t.chunk_id = c.chunk_id)
+| | +-- Outer -> TEMP RELATION ACCESS for TREL15 [Cost: 172K, Rows: 79K] (PATH ID: 3)
+| | |      Filter: (t.predicate ~~ E'topic\\_%')
+| | |      Filter: (t.chunk_id IS NOT NULL)
+| | |      Runtime Filter: (SIP4(HashJoin): t.chunk_id)
+| | |      Path to compute TREL15 (printed once):
+| | | +---> SELECT (TREL15) [Cost: 172K, Rows: 79K] (PATH ID: 4)
+| | | | +---> STORAGE ACCESS for bitmap_index [Cost: 172K, Rows: 79K] (PATH ID: 5)
+| | | | |      Projection: bitmap_demo.bitmap_index_super
+| | | | |      Materialize: bitmap_index.predicate, bitmap_index.chunk_id, bitmap_index.payload
+| | | | |      Filter: (bitmap_index.tenant_id = 12)
+| | | | |      Filter: (bitmap_index.snapshot_id = 1)
+| | | | |      Filter: (bitmap_index.domain = 'person')
+| | +-- Inner -> SELECT [Cost: 15M, Rows: 79K] (PATH ID: 6)
+| | | +---> JOIN HASH [LeftOuter] [Cost: 15M, Rows: 79K] (PATH ID: 7) Outer (LOCAL ROUND ROBIN)
+| | | |      Join Cond: (f.chunk_id = a.chunk_id)
+| | | | +-- Outer -> JOIN HASH [LeftOuter] [Cost: 10M, Rows: 79K] (PATH ID: 8)
+| | | | |      Join Cond: (s.chunk_id = a.chunk_id)
+| | | | | +-- Outer -> JOIN HASH [Cost: 7M, Rows: 79K] (PATH ID: 9) Outer (LOCAL ROUND ROBIN)
+| | | | | |      Join Cond: (d.chunk_id = a.chunk_id)
+| | | | | | +-- Outer -> JOIN HASH [Cost: 4M, Rows: 79K] (PATH ID: 10)
+| | | | | | |      Join Cond: (c.chunk_id = a.chunk_id)
+| | | | | | | +-- Outer -> JOIN HASH [Cost: 2M, Rows: 79K] (PATH ID: 11) Outer (LOCAL ROUND ROBIN)
+| | | | | | | |      Join Cond: (b.chunk_id = a.chunk_id)
+| | | | | | | | +-- Outer -> TEMP RELATION ACCESS for TREL15 [Cost: 172K, Rows: 79K] (PATH ID: 12)
+| | | | | | | | |      Filter: (b.predicate = 'age_25_54')
+| | | | | | | | |      Filter: (b.chunk_id IS NOT NULL)
+| | | | | | | | |      Runtime Filter: (SIP3(HashJoin): b.chunk_id)
+| | | | | | | | +-- Inner -> TEMP RELATION ACCESS for TREL15 [Cost: 172K, Rows: 79K] (PATH ID: 13)
+| | | | | | | | |      Filter: (a.predicate = 'country_IL')
+| | | | | | | | |      Filter: (a.chunk_id IS NOT NULL)
+| | | | | | | | |      Runtime Filters: (SIP2(HashJoin): a.chunk_id), (SIP1(HashJoin): a.chunk_id)
+| | | | | | | +-- Inner -> TEMP RELATION ACCESS for TREL15 [Cost: 172K, Rows: 79K] (PATH ID: 14)
+| | | | | | | |      Filter: (c.predicate = 'consent_true')
+| | | | | | | |      Filter: (c.chunk_id IS NOT NULL)
+| | | | | | +-- Inner -> TEMP RELATION ACCESS for TREL15 [Cost: 172K, Rows: 79K] (PATH ID: 15)
+| | | | | | |      Filter: (d.predicate = 'suspended_false')
+| | | | | | |      Filter: (d.chunk_id IS NOT NULL)
+| | | | | +-- Inner -> TEMP RELATION ACCESS for TREL15 [Cost: 172K, Rows: 79K] (PATH ID: 16)
+| | | | | |      Filter: (s.predicate = 'topic_sports')
+| | | | | |      Filter: (s.chunk_id IS NOT NULL)
+| | | | +-- Inner -> TEMP RELATION ACCESS for TREL15 [Cost: 172K, Rows: 79K] (PATH ID: 17)
+| | | | |      Filter: (f.predicate = 'topic_finance')
+| | | | |      Filter: (f.chunk_id IS NOT NULL)
+
+
+------------------------------
+----------------------------------------------- 
+PLAN: BASE QUERY PLAN (GraphViz Format)
+----------------------------------------------- 
+digraph G {
+graph [rankdir=BT, label = "Plan Sections", labelloc=t, labeljust=l ordering=out]
+0[label = "Section 0: Inputs[1]", color = "black", shape = "box"];
+1[label = "Section 1", color = "black", shape = "box"];
+1->0 [label = "Req",color = "black"];
+}
+digraph G {
+graph [rankdir=BT, label = "BASE QUERY PLAN\nQuery: EXPLAIN WITH k AS (\n  SELECT predicate, chunk_id, payload FROM bitmap_demo.bitmap_index\n  WHERE tenant_id = 12 AND snapshot_id = 1 AND domain = \'person\'\n), cohort AS (\n  SELECT a.chunk_id,\n         vbitmap.bm_and(vbitmap.bm_and(a.payload, b.payload),\n           vbitmap.bm_and(vbitmap.bm_and(c.payload, d.payload),\n             vbitmap.bm_or(COALESCE(s.payload, vbitmap.bm_empty()),\n                           COALESCE(f.payload, vbitmap.bm_empty())))) AS payload\n  FROM k a\n  JOIN k b ON b.chunk_id = a.chunk_id AND b.predicate = \'age_25_54\'\n  JOIN k c ON c.chunk_id = a.chunk_id AND c.predicate = \'consent_true\'\n  JOIN k d ON d.chunk_id = a.chunk_id AND d.predicate = \'suspended_false\'\n  LEFT JOIN k s ON s.chunk_id = a.chunk_id AND s.predicate = \'topic_sports\'\n  LEFT JOIN k f ON f.chunk_id = a.chunk_id AND f.predicate = \'topic_finance\'\n  WHERE a.predicate = \'country_IL\'\n)\nSELECT t.predicate, SUM(vbitmap.bm_and_cardinality(c.payload, t.payload)) AS users\nFROM cohort c\nJOIN k t ON t.chunk_id = c.chunk_id AND t.predicate LIKE \'topic\_%\'\nGROUP BY t.predicate\nHAVING SUM(vbitmap.bm_and_cardinality(c.payload, t.payload)) \> 0;\n\nAll Nodes Vector: \n\n  node[0]=v_vdb_node0001 (initiator) Up\n\nSection 0: Inputs[1]", labelloc=t, labeljust=l ordering=out]
+0[label = "Root \nOutBlk=[UncTuple(2)]", color = "green", shape = "house"];
+1[label = "NewEENode \nOutBlk=[UncTuple(2)]", color = "green", shape = "box"];
+2[label = "FilterStep: \n(\<SVAR\> \> 0)\nUnc: Varchar(80)\nUnc: Integer(8)", color = "green", shape = "box"];
+3[label = "GroupByPipe: 1 keys\nAggs:\n  sum(vbitmap.bm_and_cardinality(c.payload, t.payload))\nUnc: Varchar(80)\nUnc: Integer(8)", color = "green", shape = "box"];
+4[label = "ParallelMergeStep: 1 sorted\nCombine\nUnc: Varchar(80)\nUnc: Integer(8)", color = "green", shape = "box"];
+5[label = "GroupByPipe: 1 keys\nAggs:\n  sum(vbitmap.bm_and_cardinality(c.payload, t.payload))\nUnc: Varchar(80)\nUnc: Integer(8)", color = "green", shape = "box"];
+6[label = "ExprEval: \n  t.predicate\n  vbitmap.bm_and_cardinality(c.payload, t.payload)\nUnc: Varchar(80)\nUnc: Integer(8)", color = "green", shape = "box"];
+7[label = "Join: Hash-Join: \n(Temp Relation 15 x bitmap_demo.bitmap_index) using TempRel access and subquery (PATH ID: 2)\n (t.chunk_id = c.chunk_id)\n\nUnc: Varchar(80)\nUnc: Varbinary(16384)\nUnc: Varbinary(16384)", color = "green", shape = "box"];
+8[label = "ParallelUnionStep: \nRound Robin\nUnc: Varchar(80)\nUnc: Integer(8)\nUnc: Varbinary(16384)", color = "green", shape = "box"];
+9[label = "FilterStep: \n(t.predicate ~~ E\'topic\\_%\')\n(t.chunk_id IS NOT NULL)\nUnc: Varchar(80)\nUnc: Integer(8)\nUnc: Varbinary(16384)", color = "green", shape = "box"];
+10[label = "TempRelAccess 15; 2 sorted\n\nUnc: Varchar(80)\nUnc: Integer(8)\nUnc: Varbinary(16384)", color = "green", shape = "box"];
+11[label = "ParallelUnionStep: \nCombine\nUnc: Integer(8)\nUnc: Varbinary(16384)", color = "green", shape = "box"];
+12[label = "ExprEval: \n  a.chunk_id\n  vbitmap.bm_and(vbitmap.bm_and(a.payload, b.payload), vbitmap.bm_and(vbitmap.bm_and(c.payload, d.payload), vbitmap.bm_or(coalesce(s.payload, E\'VBM1\\001\\000\\020\\000\\000\\000\\000\\000\\012\\220\\227\\330\'::varbinary(16)), coalesce(f.payload, E\'VBM1\\001\\000\\020\\000\\000\\000\\000\\000\\012\\220\\227\\330\'::varbinary(16)))))\nUnc: Integer(8)\nUnc: Varbinary(16384)", color = "green", shape = "box"];
+13[label = "Join: Hash-Join: \n(Temp Relation 15 x Temp Relation 15) using previous join and TempRel access (PATH ID: 7)\n[LeftOuter]\n (f.chunk_id = a.chunk_id)\n\nUnc: Integer(8)\nUnc: Varbinary(16384)\nUnc: Varbinary(16384)\nUnc: Varbinary(16384)\nUnc: Varbinary(16384)\nUnc: Varbinary(16384)\nUnc: Varbinary(16384)", color = "green", shape = "box"];
+14[label = "ParallelUnionStep: \nRound Robin\nUnc: Integer(8)\nUnc: Varbinary(16384)\nUnc: Varbinary(16384)\nUnc: Varbinary(16384)\nUnc: Varbinary(16384)\nUnc: Varbinary(16384)", color = "green", shape = "box"];
+15[label = "Join: Hash-Join: \n(Temp Relation 15 x Temp Relation 15) using previous join and TempRel access (PATH ID: 8)\n[LeftOuter]\n (s.chunk_id = a.chunk_id)\n\nUnc: Integer(8)\nUnc: Varbinary(16384)\nUnc: Varbinary(16384)\nUnc: Varbinary(16384)\nUnc: Varbinary(16384)\nUnc: Varbinary(16384)", color = "green", shape = "box"];
+16[label = "ParallelUnionStep: \nCombine\nUnc: Integer(8)\nUnc: Varbinary(16384)\nUnc: Varbinary(16384)\nUnc: Varbinary(16384)\nUnc: Varbinary(16384)", color = "green", shape = "box"];
+17[label = "Join: Hash-Join: \n(Temp Relation 15 x Temp Relation 15) using previous join and TempRel access (PATH ID: 9)\n (d.chunk_id = a.chunk_id)\n\nUnc: Integer(8)\nUnc: Varbinary(16384)\nUnc: Varbinary(16384)\nUnc: Varbinary(16384)\nUnc: Varbinary(16384)", color = "green", shape = "box"];
+18[label = "ParallelUnionStep: \nRound Robin\nUnc: Integer(8)\nUnc: Varbinary(16384)\nUnc: Varbinary(16384)\nUnc: Varbinary(16384)", color = "green", shape = "box"];
+19[label = "Join: Hash-Join: \n(Temp Relation 15 x Temp Relation 15) using previous join and TempRel access (PATH ID: 10)\n (c.chunk_id = a.chunk_id)\n\nUnc: Integer(8)\nUnc: Varbinary(16384)\nUnc: Varbinary(16384)\nUnc: Varbinary(16384)", color = "green", shape = "box"];
+20[label = "ParallelUnionStep: \nCombine\nUnc: Integer(8)\nUnc: Varbinary(16384)\nUnc: Varbinary(16384)", color = "green", shape = "box"];
+21[label = "Join: Hash-Join: \n(Temp Relation 15 x Temp Relation 15) using TempRel access and TempRel access (PATH ID: 11)\n (b.chunk_id = a.chunk_id)\n\nUnc: Integer(8)\nUnc: Varbinary(16384)\nUnc: Varbinary(16384)", color = "green", shape = "box"];
+22[label = "ParallelUnionStep: \nRound Robin\nUnc: Integer(8)\nUnc: Varbinary(16384)", color = "green", shape = "box"];
+23[label = "ExprEval: \n  bitmap_index.chunk_id\n  bitmap_index.payload\nUnc: Integer(8)\nUnc: Varbinary(16384)", color = "green", shape = "box"];
+24[label = "FilterStep: \n(b.predicate = \'age_25_54\')\n(b.chunk_id IS NOT NULL)\nUnc: Varchar(80)\nUnc: Integer(8)\nUnc: Varbinary(16384)", color = "green", shape = "box"];
+25[label = "TempRelAccess 15; 2 sorted\n\nUnc: Varchar(80)\nUnc: Integer(8)\nUnc: Varbinary(16384)", color = "green", shape = "box"];
+26[label = "ExprEval: \n  bitmap_index.chunk_id\n  bitmap_index.payload\nUnc: Integer(8)\nUnc: Varbinary(16384)", color = "green", shape = "box"];
+27[label = "FilterStep: \n(a.predicate = \'country_IL\')\n(a.chunk_id IS NOT NULL)\nUnc: Varchar(80)\nUnc: Integer(8)\nUnc: Varbinary(16384)", color = "green", shape = "box"];
+28[label = "TempRelAccess 15; 2 sorted\n\nUnc: Varchar(80)\nUnc: Integer(8)\nUnc: Varbinary(16384)", color = "green", shape = "box"];
+29[label = "ExprEval: \n  bitmap_index.chunk_id\n  bitmap_index.payload\nUnc: Integer(8)\nUnc: Varbinary(16384)", color = "green", shape = "box"];
+30[label = "FilterStep: \n(c.predicate = \'consent_true\')\n(c.chunk_id IS NOT NULL)\nUnc: Varchar(80)\nUnc: Integer(8)\nUnc: Varbinary(16384)", color = "green", shape = "box"];
+31[label = "TempRelAccess 15; 2 sorted\n\nUnc: Varchar(80)\nUnc: Integer(8)\nUnc: Varbinary(16384)", color = "green", shape = "box"];
+32[label = "ExprEval: \n  bitmap_index.chunk_id\n  bitmap_index.payload\nUnc: Integer(8)\nUnc: Varbinary(16384)", color = "green", shape = "box"];
+33[label = "FilterStep: \n(d.predicate = \'suspended_false\')\n(d.chunk_id IS NOT NULL)\nUnc: Varchar(80)\nUnc: Integer(8)\nUnc: Varbinary(16384)", color = "green", shape = "box"];
+34[label = "TempRelAccess 15; 2 sorted\n\nUnc: Varchar(80)\nUnc: Integer(8)\nUnc: Varbinary(16384)", color = "green", shape = "box"];
+35[label = "ExprEval: \n  bitmap_index.chunk_id\n  bitmap_index.payload\nUnc: Integer(8)\nUnc: Varbinary(16384)", color = "green", shape = "box"];
+36[label = "FilterStep: \n(s.predicate = \'topic_sports\')\n(s.chunk_id IS NOT NULL)\nUnc: Varchar(80)\nUnc: Integer(8)\nUnc: Varbinary(16384)", color = "green", shape = "box"];
+37[label = "TempRelAccess 15; 2 sorted\n\nUnc: Varchar(80)\nUnc: Integer(8)\nUnc: Varbinary(16384)", color = "green", shape = "box"];
+38[label = "ExprEval: \n  bitmap_index.chunk_id\n  bitmap_index.payload\nUnc: Integer(8)\nUnc: Varbinary(16384)", color = "green", shape = "box"];
+39[label = "FilterStep: \n(f.predicate = \'topic_finance\')\n(f.chunk_id IS NOT NULL)\nUnc: Varchar(80)\nUnc: Integer(8)\nUnc: Varbinary(16384)", color = "green", shape = "box"];
+40[label = "TempRelAccess 15; 2 sorted\n\nUnc: Varchar(80)\nUnc: Integer(8)\nUnc: Varbinary(16384)", color = "green", shape = "box"];
+1->0 [label = "V[0] C=2",color = "black",style="bold", arrowtail="inv"];
+2->1 [label = "0",color = "blue"];
+3->2 [label = "0",color = "blue"];
+4->3 [label = "0",color = "blue"];
+5->4 [label = "0",color = "blue"];
+6->5 [label = "0",color = "blue"];
+7->6 [label = "0",color = "blue"];
+8->7 [label = "0",color = "blue"];
+9->8 [label = "0",color = "blue"];
+10->9 [label = "0",color = "blue"];
+11->7 [label = "1",color = "blue"];
+12->11 [label = "0",color = "blue"];
+13->12 [label = "0",color = "blue"];
+14->13 [label = "0",color = "blue"];
+15->14 [label = "0",color = "blue"];
+16->15 [label = "0",color = "blue"];
+17->16 [label = "0",color = "blue"];
+18->17 [label = "0",color = "blue"];
+19->18 [label = "0",color = "blue"];
+20->19 [label = "0",color = "blue"];
+21->20 [label = "0",color = "blue"];
+22->21 [label = "0",color = "blue"];
+23->22 [label = "0",color = "blue"];
+24->23 [label = "0",color = "blue"];
+25->24 [label = "0",color = "blue"];
+26->21 [label = "1",color = "blue"];
+27->26 [label = "0",color = "blue"];
+28->27 [label = "0",color = "blue"];
+29->19 [label = "1",color = "blue"];
+30->29 [label = "0",color = "blue"];
+31->30 [label = "0",color = "blue"];
+32->17 [label = "1",color = "blue"];
+33->32 [label = "0",color = "blue"];
+34->33 [label = "0",color = "blue"];
+35->15 [label = "1",color = "blue"];
+36->35 [label = "0",color = "blue"];
+37->36 [label = "0",color = "blue"];
+38->13 [label = "1",color = "blue"];
+39->38 [label = "0",color = "blue"];
+40->39 [label = "0",color = "blue"];
+}
+digraph G {
+graph [rankdir=BT, label = "BASE QUERY PLAN\nQuery: EXPLAIN WITH k AS (\n  SELECT predicate, chunk_id, payload FROM bitmap_demo.bitmap_index\n  WHERE tenant_id = 12 AND snapshot_id = 1 AND domain = \'person\'\n), cohort AS (\n  SELECT a.chunk_id,\n         vbitmap.bm_and(vbitmap.bm_and(a.payload, b.payload),\n           vbitmap.bm_and(vbitmap.bm_and(c.payload, d.payload),\n             vbitmap.bm_or(COALESCE(s.payload, vbitmap.bm_empty()),\n                           COALESCE(f.payload, vbitmap.bm_empty())))) AS payload\n  FROM k a\n  JOIN k b ON b.chunk_id = a.chunk_id AND b.predicate = \'age_25_54\'\n  JOIN k c ON c.chunk_id = a.chunk_id AND c.predicate = \'consent_true\'\n  JOIN k d ON d.chunk_id = a.chunk_id AND d.predicate = \'suspended_false\'\n  LEFT JOIN k s ON s.chunk_id = a.chunk_id AND s.predicate = \'topic_sports\'\n  LEFT JOIN k f ON f.chunk_id = a.chunk_id AND f.predicate = \'topic_finance\'\n  WHERE a.predicate = \'country_IL\'\n)\nSELECT t.predicate, SUM(vbitmap.bm_and_cardinality(c.payload, t.payload)) AS users\nFROM cohort c\nJOIN k t ON t.chunk_id = c.chunk_id AND t.predicate LIKE \'topic\_%\'\nGROUP BY t.predicate\nHAVING SUM(vbitmap.bm_and_cardinality(c.payload, t.payload)) \> 0;\n\nAll Nodes Vector: \n\n  node[0]=v_vdb_node0001 (initiator) Up\n\nSection 1", labelloc=t, labeljust=l ordering=out]
+0[label = "NewEENode \nOutBlk=[UncTuple(3)]", color = "green", shape = "box"];
+1[label = "TempRelWrite 15; 2 sorted\n\nUnc: Varchar(80)\nUnc: Integer(8)\nUnc: Varbinary(16384)", color = "green", shape = "box"];
+2[label = "StorageUnionStep: bitmap_index_super\nUnc: Varchar(80)\nUnc: Integer(8)\nUnc: Varbinary(16384)", color = "purple", shape = "box"];
+3[label = "ScanStep: bitmap_index_super\n(bitmap_index.tenant_id = 12)\n(bitmap_index.snapshot_id = 1)\n(bitmap_index.domain = \'person\')\ntenant_id (not emitted)\nsnapshot_id (not emitted)\ndomain (not emitted)\npredicate\nchunk_id\npayload\nUnc: Varchar(80)\nUnc: Integer(8)\nUnc: Varbinary(16384)", color = "brown", shape = "box"];
+1->0 [label = "0",color = "blue"];
+2->1 [label = "0",color = "blue"];
+3->2 [label = "0",color = "blue"];
+}

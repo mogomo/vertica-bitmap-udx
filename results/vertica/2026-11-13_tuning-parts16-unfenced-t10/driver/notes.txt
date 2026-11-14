@@ -1,0 +1,3 @@
+driver run started 2026-11-13T13:28:59+0200 args ['run', '--client', 'socket', '--workload', 'bench/workloads/vertica.sql', '--var', 'tenant=10', '--var', 'index=bitmap_bench.bitmap_index_parts', '--out', '~/bitmap_record/vertica/2026-11-13_tuning-parts16-unfenced-t10/driver', '--clients', '1,32', '--iterations', '15', '--warmup', '1', '--statement-cap', '300', '--only', 'q1.count.Bplus,q3.Bplus,q3.Bpar', '--expect', '~/bitmap_record/vertica/2026-11-12_check-headline-t10/driver/check.csv', '--skip-oracles']
+check q1.count.Bplus: answer 251683
+driver ended 2026-11-13T13:29:34+0200 status 0

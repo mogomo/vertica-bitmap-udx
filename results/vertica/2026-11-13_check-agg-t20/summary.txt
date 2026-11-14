@@ -1,0 +1,6 @@
+check: query=q8.sum.A answer=q8.sum rows=1 hash=2c66ca1f1ace2ab6 matches=yes ms=38696.3
+check: query=q8.sum.Bplus answer=q8.sum rows=1 hash=2c66ca1f1ace2ab6 matches=yes ms=514.0
+check: query=q8.join.A answer=q8.join rows=1 hash=cb1834dc5649b3d3 matches=yes ms=38064.5
+check: query=q8.join.Bplus answer=q8.join rows=1 hash=cb1834dc5649b3d3 matches=yes ms=1376.2
+check: query=q8.agg.Bplus answer=q8.join rows=1 hash=cb1834dc5649b3d3 matches=yes ms=347.5
+summary: mode=check engine=vertica queries=5 levels=1,8,32 check_ok=yes errors=0 mismatches=0 valid=yes

@@ -1,0 +1,14 @@
+dbd-workload: native_queries=15 schema=bitmap_dbd workload=~/bitmap_record/vertica/2026-11-13_native-ids-socket-t10/dbd_workload.sql design_queries=~/bitmap_record/vertica/2026-11-13_native-ids-socket-t10/dbd_queries.sql
+check: query=q1.ids.D answer=q1.ids rows=251683 hash=8204799bdbdae904 matches=yes ms=659.7
+check: query=q4.A answer=q4 rows=19695 hash=418fbbab9d532966 matches=yes ms=61.5
+check: query=q4.D answer=q4 rows=19695 hash=418fbbab9d532966 matches=yes ms=6.4
+check: query=q8.D answer=q8 rows=530315 hash=384c2a5fd45796b7 matches=yes ms=921.7
+bench: query=q1.ids.D clients=1 n=15 p50_ms=668.87 p95_ms=700.75 p99_ms=704.97 mean_ms=672.14 engine_p50_ms=667.0 qps=1.39 errors=0 mismatches=0
+bench: query=q1.ids.D clients=32 n=64 p50_ms=4057.83 p95_ms=5843.10 p99_ms=6267.67 mean_ms=4244.51 engine_p50_ms=4054.5 qps=6.07 errors=0 mismatches=0
+bench: query=q4.A clients=1 n=15 p50_ms=22.49 p95_ms=29.79 p99_ms=30.50 mean_ms=23.60 engine_p50_ms=21.0 qps=39.54 errors=0 mismatches=0
+bench: query=q4.A clients=32 n=64 p50_ms=108.76 p95_ms=170.03 p99_ms=181.58 mean_ms=110.04 engine_p50_ms=104.5 qps=232.12 errors=0 mismatches=0
+bench: query=q4.D clients=1 n=15 p50_ms=5.92 p95_ms=6.07 p99_ms=6.23 mean_ms=5.69 engine_p50_ms=5.0 qps=163.88 errors=0 mismatches=0
+bench: query=q4.D clients=32 n=64 p50_ms=21.41 p95_ms=29.23 p99_ms=32.14 mean_ms=21.24 engine_p50_ms=17.0 qps=851.79 errors=0 mismatches=0
+bench: query=q8.D clients=1 n=15 p50_ms=923.51 p95_ms=976.08 p99_ms=976.09 mean_ms=935.89 engine_p50_ms=922.0 qps=1.00 errors=0 mismatches=0
+bench: query=q8.D clients=32 n=64 p50_ms=5622.02 p95_ms=7792.44 p99_ms=8187.53 mean_ms=5798.07 engine_p50_ms=5619.5 qps=3.53 errors=0 mismatches=0
+summary: mode=run engine=vertica queries=4 levels=1,32 check_ok=yes errors=0 mismatches=0 valid=yes

@@ -1,0 +1,3 @@
+query,answer,oracle,rows,hash,oracle_hash,matches,error,ms
+q3.Bpar,q3,,500,d80a5e04c545333e,/expect=d80a5e04c545333e,yes,,9257.07
+q7.Bpar,q7,,499,a2963265780c0ee9,/expect=a2963265780c0ee9,yes,,9726.93

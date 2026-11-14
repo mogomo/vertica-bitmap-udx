@@ -1,0 +1,71 @@
+------------------------------ 
+QUERY PLAN DESCRIPTION: 
+------------------------------
+
+EXPLAIN SELECT COUNT(*) AS people, COUNT(x.age) AS age_known, SUM(x.age) AS age_sum
+FROM bitmap_demo.user_profile x
+WHERE x.tenant_id = 10 AND x.snapshot_id = 1 AND x.entity_id IN (
+  SELECT entity_id FROM (
+  SELECT vbitmap.bm_ids(chunk_id, predicate, payload USING PARAMETERS expr =
+           'country_IL & topic_sports - topic_finance')
+         OVER (PARTITION BY chunk_id)
+  FROM bitmap_demo.bitmap_index
+  WHERE tenant_id = 10 AND snapshot_id = 1 AND domain = 'person'
+    AND predicate IN ('country_IL', 'topic_sports', 'topic_finance')
+  ) t)
+
+Access Path:
++-GROUPBY NOTHING [Cost: 40K, Rows: 1] (PATH ID: 1)
+|  Aggregates: count(*), count(x.age), sum(x.age)
+| +---> JOIN HASH [Semi] [Cost: 39K, Rows: 3M] (PATH ID: 2)
+| |      Join Cond: (x.entity_id = VAL(2))
+| |      Materialize at Output: x.age
+| | +-- Outer -> STORAGE ACCESS for x [Cost: 12K, Rows: 5M] (PATH ID: 3)
+| | |      Projection: bitmap_demo.user_profile_by_filter
+| | |      Materialize: x.entity_id
+| | |      Filter: (x.tenant_id = 10)
+| | |      Filter: (x.snapshot_id = 1)
+| | |      Runtime Filter: (SIP1(HashJoin): x.entity_id)
+| | +-- Inner -> SELECT [Cost: 23K, Rows: 1K] (PATH ID: 4)
+| | | +---> ANALYTICAL [Cost: 23K, Rows: 1K] (PATH ID: 6)
+| | | |      Analytic Group
+| | | |       Functions: bm_ids()
+| | | | +---> STORAGE ACCESS for bitmap_index [Cost: 23K, Rows: 1K] (PATH ID: 7)
+| | | | |      Projection: bitmap_demo.bitmap_index_by_chunk
+| | | | |      Materialize: bitmap_index.predicate, bitmap_index.chunk_id, bitmap_index.payload
+| | | | |      Filter: (bitmap_index.tenant_id = 10)
+| | | | |      Filter: (bitmap_index.snapshot_id = 1)
+| | | | |      Filter: (bitmap_index.domain = 'person')
+| | | | |      Filter: (bitmap_index.predicate = ANY (ARRAY['country_IL', 'topic_sports', 'topic_finance']))
+
+
+------------------------------
+----------------------------------------------- 
+PLAN: BASE QUERY PLAN (GraphViz Format)
+----------------------------------------------- 
+digraph G {
+graph [rankdir=BT, label = "BASE QUERY PLAN\nQuery: EXPLAIN SELECT COUNT(*) AS people, COUNT(x.age) AS age_known, SUM(x.age) AS age_sum\nFROM bitmap_demo.user_profile x\nWHERE x.tenant_id = 10 AND x.snapshot_id = 1 AND x.entity_id IN (\n  SELECT entity_id FROM (\n  SELECT vbitmap.bm_ids(chunk_id, predicate, payload USING PARAMETERS expr =\n           \'country_IL & topic_sports - topic_finance\')\n         OVER (PARTITION BY chunk_id)\n  FROM bitmap_demo.bitmap_index\n  WHERE tenant_id = 10 AND snapshot_id = 1 AND domain = \'person\'\n    AND predicate IN (\'country_IL\', \'topic_sports\', \'topic_finance\')\n  ) t)\n\nAll Nodes Vector: \n\n  node[0]=v_vdb_node0001 (initiator) Up\n", labelloc=t, labeljust=l ordering=out]
+0[label = "Root \nOutBlk=[UncTuple(3)]", color = "green", shape = "house"];
+1[label = "NewEENode \nOutBlk=[UncTuple(3)]", color = "green", shape = "box"];
+2[label = "GroupByPipe: 0 keys\nAggs:\n  count(*)\n  count(x.age)\n  sum(x.age)\nUnc: Integer(8)\nUnc: Integer(8)\nUnc: Integer(8)", color = "green", shape = "box"];
+3[label = "StorageUnionStep: user_profile_by_filter\nUnc: Integer(8)\nUnc: Integer(8)\nUnc: Integer(8)", color = "purple", shape = "box"];
+4[label = "GroupByPipe: 0 keys\nAggs:\n  count(*)\n  count(x.age)\n  sum(x.age)\nUnc: Integer(8)\nUnc: Integer(8)\nUnc: Integer(8)", color = "brown", shape = "box"];
+5[label = "ExprEval: \n  1\n  x.age\n  x.age\nUnc: Integer(8)\nUnc: Integer(8)\nUnc: Integer(8)", color = "brown", shape = "box"];
+6[label = "Join: Hash-Join: \n(bitmap_demo.user_profile x UNKNOWN) using user_profile_by_filter and subquery (PATH ID: 2)\n[Semi]\n\nUnc: Integer(8)", color = "brown", shape = "box"];
+7[label = "ScanStep: user_profile_by_filter\n(x.tenant_id = 10)\n(x.snapshot_id = 1)\nSIP1(HashJoin): x.entity_id\ntenant_id RLE (not emitted)\nsnapshot_id RLE (not emitted)\nentity_id\nUnc: Integer(8)", color = "brown", shape = "box"];
+8[label = "ExprEval: \n  \<SVAR\>\nUnc: Integer(8)", color = "green", shape = "box"];
+9[label = "UserDefined:\nPartitionBy: chunk_id\nOrderBy:<NONE>\nAnalytical Functions:\n  vbitmap.bm_ids(bitmap_index.chunk_id, bitmap_index.predicate, bitmap_index.payload USING PARAMETERS expr=\'country_IL & topic_sports - topic_finance\')\nUnc: Integer(8)\nUnc: Integer(8)", color = "green", shape = "box"];
+10[label = "StorageMergeStep[ee5]: bitmap_index_by_chunk; 2 sorted\nUnc: Integer(8)\nUnc: Varchar(80)\nUnc: Varbinary(16384)", color = "purple", shape = "box"];
+11[label = "ScanStep: bitmap_index_by_chunk\n(bitmap_index.tenant_id = 10)\n(bitmap_index.snapshot_id = 1)\n(bitmap_index.domain = \'person\')\n(bitmap_index.predicate = ANY (ARRAY[\'country_IL\', \'topic_sports\', \'topic_finance\']))\ntenant_id (not emitted)\nsnapshot_id (not emitted)\ndomain (not emitted)\nchunk_id\npredicate\npayload\nUnc: Integer(8)\nUnc: Varchar(80)\nUnc: Varbinary(16384)", color = "brown", shape = "box"];
+1->0 [label = "V[0] C=3",color = "black",style="bold", arrowtail="inv"];
+2->1 [label = "0",color = "blue"];
+3->2 [label = "0",color = "blue"];
+4->3 [label = "0",color = "blue"];
+5->4 [label = "0",color = "blue"];
+6->5 [label = "0",color = "blue"];
+7->6 [label = "0",color = "blue"];
+8->6 [label = "1",color = "blue"];
+9->8 [label = "0",color = "blue"];
+10->9 [label = "0",color = "blue"];
+11->10 [label = "0",color = "blue"];
+}

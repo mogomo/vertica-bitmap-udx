@@ -1,0 +1,5 @@
+command=vsql -X -q -A -t -v ON_ERROR_STOP=1 -v tenant=10 -v snapshot=1 -v per_partition=10 -f bench/vertica_index_partitioned.sql 
+cwd=~/vertica-bitmap-udx
+start_utc=2026-11-13T11:28:52Z
+end_utc=2026-11-13T11:28:55Z
+exit_status=0

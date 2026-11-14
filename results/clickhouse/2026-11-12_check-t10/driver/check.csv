@@ -1,0 +1,15 @@
+query,answer,oracle,rows,hash,oracle_hash,matches,error,ms
+q1.count.N,q1.count,yes,1,b4498cf506a5f79c,b4498cf506a5f79c/expect=b4498cf506a5f79c,yes,,187.07
+q1.count.C,q1.count,,1,b4498cf506a5f79c,b4498cf506a5f79c/expect=b4498cf506a5f79c,yes,,43.61
+q1.ids.N,q1.ids,yes,251683,8204799bdbdae904,8204799bdbdae904/expect=8204799bdbdae904,yes,,188.86
+q1.ids.C,q1.ids,,251683,8204799bdbdae904,8204799bdbdae904/expect=8204799bdbdae904,yes,,57.83
+q2.daily.N,q2.daily,yes,2,ce7279e17bf8b689,ce7279e17bf8b689/expect=ce7279e17bf8b689,yes,,33.44
+q2.daily.C,q2.daily,,2,ce7279e17bf8b689,ce7279e17bf8b689/expect=ce7279e17bf8b689,yes,,19.18
+q3.N,q3,yes,500,1a17b1531950cc32,1a17b1531950cc32/expect=1a17b1531950cc32,yes,,415.70
+q3.C,q3,,500,1a17b1531950cc32,1a17b1531950cc32/expect=1a17b1531950cc32,yes,,149.74
+q4.N,q4,yes,19695,418fbbab9d532966,418fbbab9d532966/expect=418fbbab9d532966,yes,,16.04
+q4.C,q4,,19695,418fbbab9d532966,418fbbab9d532966/expect=418fbbab9d532966,yes,,16.25
+q7.N,q7,yes,499,8d89f06ae62b8c25,8d89f06ae62b8c25/expect=8d89f06ae62b8c25,yes,,1418.41
+q7.C,q7,,499,8d89f06ae62b8c25,8d89f06ae62b8c25/expect=8d89f06ae62b8c25,yes,,118.17
+q8.N,q8,yes,530315,384c2a5fd45796b7,384c2a5fd45796b7/expect=384c2a5fd45796b7,yes,,203.68
+q8.C,q8,,530315,384c2a5fd45796b7,384c2a5fd45796b7/expect=384c2a5fd45796b7,yes,,41.40

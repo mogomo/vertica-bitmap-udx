@@ -1,0 +1,12 @@
+scope=vbitmap-engine.scope active=yes cgroup=/system.slice/vbitmap-engine.scope
+cpuset_cpus_effective=0-19 memory_max=60129542144 memory_swap_max=0
+memory_current=6745686016 memory_peak=19868053504 cpu_usage_usec=12186362422 cpu_user_usec=9247027531 cpu_system_usec=2939334891 cpu_nice_usec=7836580000 cpu_core_sched.force_idle_usec=0 cpu_nr_periods=0 cpu_nr_throttled=0 cpu_throttled_usec=0 cpu_nr_bursts=0 cpu_burst_usec=0 
+pid=1381083 comm=spread cgroup=/system.slice/vbitmap-engine.scope cpus_allowed=0-19 threads=1
+pid=1381085 comm=vertica cgroup=/system.slice/vbitmap-engine.scope cpus_allowed=0-19 threads=126
+pid=1381120 comm=vertica-udx-zyg cgroup=/system.slice/vbitmap-engine.scope cpus_allowed=0-19 threads=3
+other_engine=clickhouse state=down
+vertica_version=Vertica_Analytic_Database_v26.3.0-2
+pool_general_maxmemorysize=Special:_50G pool_general_plannedconcurrency=20 pool_general_executionparallelism=AUTO
+pool_general_max_memory_kb=47079835 pool_general_planned_concurrency=20 pool_general_query_budget_kb=2236292
+host_cores=22 host_memory_mb=62464
+limits_ok=yes

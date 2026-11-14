@@ -1,0 +1,10 @@
+kernel=7.0.0-34-generic machine=x86_64
+os=Ubuntu 26.04.1 LTS
+cpu=Intel(R) Core(TM) Ultra 7 165H logical_cpus=22
+memory_total_kb=63964068 swap_total_kb=8388604
+cpu0=powersave/4700000 cpu1=powersave/5000000 cpu10=powersave/4700000 cpu11=powersave/4700000 cpu12=powersave/3800000 cpu13=powersave/3800000 cpu14=powersave/3800000 cpu15=powersave/3800000 cpu16=powersave/3800000 cpu17=powersave/3800000 cpu18=powersave/3800000 cpu19=powersave/3800000 cpu2=powersave/5000000 cpu20=powersave/2500000 cpu21=powersave/2500000 cpu3=powersave/5000000 cpu4=powersave/5000000 cpu5=powersave/4700000 cpu6=powersave/4700000 cpu7=powersave/4700000 cpu8=powersave/4700000 cpu9=powersave/4700000 
+load_before=3.81 5.03 6.82
+python=3.14.4 bash=5.3.9(1)-release
+vertica=Vertica Analytic Database v26.3.0-2
+vbitmap=vbitmap 0.1.0; format 1; CRoaring 5.5.5; -O3 x86_64 g++-15.2.0
+vbitmap_functions=17 fenced=17

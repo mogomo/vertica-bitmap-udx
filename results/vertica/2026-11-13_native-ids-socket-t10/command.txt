@@ -1,0 +1,5 @@
+command=bash -c python3\ bench/make_dbd_workload.py\ --workload\ bench/workloads/vertica.sql\ --var\ tenant=10\ --out-workload\ \$BENCH_RUN_DIR/dbd_workload.sql\ --out-queries\ \$BENCH_RUN_DIR/dbd_queries.sql\ \&\&\ python3\ bench/driver.py\ run\ --client\ socket\ --workload\ \$BENCH_RUN_DIR/dbd_workload.sql\ --out\ \$BENCH_RUN_DIR/driver\ --clients\ 1\,32\ --iterations\ 15\ --warmup\ 1\ --statement-cap\ 300\ --only\ q1.ids.D\,q4.A\,q4.D\,q8.D\ --expect\ ~/bitmap_record/vertica/2026-11-12_check-headline-t10/driver/check.csv\ --skip-oracles 
+cwd=~/vertica-bitmap-udx
+start_utc=2026-11-13T12:25:25Z
+end_utc=2026-11-13T12:30:33Z
+exit_status=0

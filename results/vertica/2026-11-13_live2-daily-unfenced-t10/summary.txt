@@ -1,0 +1,5 @@
+check: query=q2.daily.A answer=q2.daily rows=2 hash=ce7279e17bf8b689 matches=yes ms=160.3
+check: query=q2.daily.L answer=q2.daily rows=2 hash=ce7279e17bf8b689 matches=yes ms=18.5
+bench: query=q2.daily.L clients=1 n=15 p50_ms=8.80 p95_ms=9.50 p99_ms=9.53 mean_ms=8.89 engine_p50_ms=7.0 qps=104.89 errors=0 mismatches=0
+bench: query=q2.daily.L clients=32 n=64 p50_ms=53.68 p95_ms=63.22 p99_ms=66.85 mean_ms=53.03 engine_p50_ms=36.0 qps=474.06 errors=0 mismatches=0
+summary: mode=run engine=vertica queries=2 levels=1,32 check_ok=yes errors=0 mismatches=0 valid=yes

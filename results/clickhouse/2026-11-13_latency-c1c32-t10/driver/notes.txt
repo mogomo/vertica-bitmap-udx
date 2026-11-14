@@ -1,0 +1,13 @@
+driver run started 2026-11-13T04:29:22+0200 args ['run', '--workload', 'bench/workloads/clickhouse.sql', '--var', 'tenant=10', '--out', '~/bitmap_record/clickhouse/2026-11-13_latency-c1c32-t10/driver', '--clients', '1,32', '--iterations', '15', '--warmup', '1', '--statement-cap', '300', '--only', 'q1.count.N,q1.count.C,q1.ids.N,q1.ids.C,q2.daily.N,q2.daily.C,q3.N,q3.C,q4.N,q4.C,q7.N,q7.C,q8.N,q8.C', '--expect', '~/bitmap_record/vertica/2026-11-12_check-headline-t10/driver/check.csv']
+check q1.count.N: answer 251683
+check q1.count.C: answer 251683
+check q2.daily.N: answer 2026-10-15|1551213 ; 2026-10-16|1553098
+check q2.daily.C: answer 2026-10-15|1551213 ; 2026-10-16|1553098
+block 21 client 0: 16 executions, 15 engine times: not matched
+block 22 client 8: 124 executions, 6 engine times: not matched
+block 22 client 9: 5 executions, 4 engine times: not matched
+block 22 client 19: 4 executions, 3 engine times: not matched
+block 22 client 25: 149 executions, 5 engine times: not matched
+block 22 client 27: 4 executions, 3 engine times: not matched
+block 22 client 28: 7 executions, 4 engine times: not matched
+driver ended 2026-11-13T04:35:08+0200 status 1

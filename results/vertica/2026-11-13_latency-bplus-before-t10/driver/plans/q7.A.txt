@@ -1,0 +1,131 @@
+------------------------------ 
+QUERY PLAN DESCRIPTION: 
+------------------------------
+
+EXPLAIN WITH t AS (
+  SELECT DISTINCT topic, entity_id FROM bitmap_demo.user_interest
+  WHERE tenant_id = 10 AND snapshot_id = 1
+), a AS (
+  SELECT entity_id FROM t WHERE topic = 'sports'
+), o AS (
+  SELECT t.topic, COUNT(*) AS size, SUM(CASE WHEN a.entity_id IS NULL THEN 0 ELSE 1 END) AS inter
+  FROM t LEFT JOIN a ON a.entity_id = t.entity_id
+  WHERE t.topic <> 'sports'
+  GROUP BY t.topic
+)
+SELECT 'topic_' || topic AS predicate, inter AS intersection, size + (SELECT COUNT(*) FROM a) - inter AS union_size,
+       ROUND(inter / (size + (SELECT COUNT(*) FROM a) - inter)::FLOAT, 4) AS jaccard
+FROM o;
+
+Access Path:
++-JOIN  (CROSS JOIN) [Cost: 5M, Rows: 2] (PATH ID: 1) Outer (LOCAL ROUND ROBIN)
+| +-- Outer -> SELECT [Cost: 5M, Rows: 2] (PATH ID: 2)
+| | +---> GROUPBY PIPELINED [Cost: 5M, Rows: 2] (PATH ID: 3)
+| | |      Aggregates: count(*), sum(CASE WHEN (a.entity_id IS NULL) THEN 0 ELSE 1 END)
+| | |      Group By: t.topic
+| | | +---> JOIN HASH [LeftOuter] [Cost: 4M, Rows: 76M] (PATH ID: 4) Outer (LOCAL ROUND ROBIN)
+| | | |      Join Cond: (a.entity_id = t.entity_id)
+| | | | +-- Outer -> TEMP RELATION ACCESS for TREL11 [Cost: 872K, Rows: 76M] (PATH ID: 5)
+| | | | |      Filter: (t.topic <> 'sports')
+| | | | |      Path to compute TREL11 (printed once):
+| | | | | +---> SELECT (TREL11) [Cost: 872K, Rows: 76M] (PATH ID: 6)
+| | | | | | +---> GROUPBY PIPELINED [Cost: 872K, Rows: 76M] (PATH ID: 7)
+| | | | | | |      Group By: user_interest.topic, user_interest.entity_id
+| | | | | | | +---> STORAGE ACCESS for user_interest [Cost: 524K, Rows: 103M] (PATH ID: 8)
+| | | | | | | |      Projection: bitmap_demo.user_interest_super
+| | | | | | | |      Materialize: user_interest.topic, user_interest.entity_id
+| | | | | | | |      Filter: (user_interest.tenant_id = 10)
+| | | | | | | |      Filter: (user_interest.snapshot_id = 1)
+| | | | +-- Inner -> TEMP RELATION ACCESS for TREL12 [Cost: 872K, Rows: 76M] (PATH ID: 9)
+| | | | |      Filter: (a.entity_id IS NOT NULL)
+| | | | |      Path to compute TREL12 (printed once):
+| | | | | +---> SELECT (TREL12) [Cost: 872K, Rows: 76M] (PATH ID: 10)
+| | | | | | +---> TEMP RELATION ACCESS for TREL11 [Cost: 872K, Rows: 76M] (PATH ID: 11)
+| | | | | | |      Filter: (t.topic = 'sports')
+| +-- Inner -> SELECT [Cost: 887K, Rows: 1] (PATH ID: 12)
+| | +---> GROUPBY NOTHING [Cost: 887K, Rows: 1] (PATH ID: 13)
+| | |      Aggregates: count(*)
+| | | +---> TEMP RELATION ACCESS for TREL12 [Cost: 872K, Rows: 76M] (PATH ID: 14)
+
+
+------------------------------
+----------------------------------------------- 
+PLAN: BASE QUERY PLAN (GraphViz Format)
+----------------------------------------------- 
+digraph G {
+graph [rankdir=BT, label = "Plan Sections", labelloc=t, labeljust=l ordering=out]
+0[label = "Section 0: Inputs[1, 2]", color = "black", shape = "box"];
+1[label = "Section 1", color = "black", shape = "box"];
+2[label = "Section 2: Inputs[1]", color = "black", shape = "box"];
+1->0 [label = "Req",color = "black"];
+1->2 [label = "Req",color = "black"];
+2->0 [label = "Req",color = "black"];
+}
+digraph G {
+graph [rankdir=BT, label = "BASE QUERY PLAN\nQuery: EXPLAIN WITH t AS (\n  SELECT DISTINCT topic, entity_id FROM bitmap_demo.user_interest\n  WHERE tenant_id = 10 AND snapshot_id = 1\n), a AS (\n  SELECT entity_id FROM t WHERE topic = \'sports\'\n), o AS (\n  SELECT t.topic, COUNT(*) AS size, SUM(CASE WHEN a.entity_id IS NULL THEN 0 ELSE 1 END) AS inter\n  FROM t LEFT JOIN a ON a.entity_id = t.entity_id\n  WHERE t.topic \<\> \'sports\'\n  GROUP BY t.topic\n)\nSELECT \'topic_\' || topic AS predicate, inter AS intersection, size + (SELECT COUNT(*) FROM a) - inter AS union_size,\n       ROUND(inter / (size + (SELECT COUNT(*) FROM a) - inter)::FLOAT, 4) AS jaccard\nFROM o;\n\nAll Nodes Vector: \n\n  node[0]=v_vdb_node0001 (initiator) Up\n\nSection 0: Inputs[1, 2]", labelloc=t, labeljust=l ordering=out]
+0[label = "Root \nOutBlk=[UncTuple(4)]", color = "green", shape = "house"];
+1[label = "NewEENode \nOutBlk=[UncTuple(4)]", color = "green", shape = "box"];
+2[label = "ParallelUnionStep: \nCombine\nUnc: Varchar(46)\nUnc: Integer(8)\nUnc: Integer(8)\nUnc: Float(8)", color = "green", shape = "box"];
+3[label = "ExprEval: \n  (\'topic_\' || o.topic)\n  o.inter\n  ((o.size + VAL(2)) - o.inter)\n  round((o.inter / (((o.size + VAL(2)) - o.inter))::float), 4)\nUnc: Varchar(46)\nUnc: Integer(8)\nUnc: Integer(8)\nUnc: Float(8)", color = "green", shape = "box"];
+4[label = "Join: Hash-Join: \n(bitmap_demo.user_interest x UNKNOWN) using subquery and subquery (PATH ID: 1)\n[CROSS JOIN]\n\nUnc: Varchar(40)\nUnc: Integer(8)\nUnc: Integer(8)\nUnc: Integer(8)\nUnc: Integer(8)", color = "green", shape = "box"];
+5[label = "ParallelUnionStep: \nRound Robin\nUnc: Varchar(40)\nUnc: Integer(8)\nUnc: Integer(8)", color = "green", shape = "box"];
+6[label = "GroupByPipe: 1 keys\nAggs:\n  count(*)\n  sum(CASE WHEN (a.entity_id IS NULL) THEN 0 ELSE 1 END)\nUnc: Varchar(40)\nUnc: Integer(8)\nUnc: Integer(8)", color = "green", shape = "box"];
+7[label = "ParallelMergeStep: 1 sorted\nCombine\nUnc: Varchar(40)\nUnc: Integer(8)\nUnc: Integer(8)", color = "green", shape = "box"];
+8[label = "GroupByPipe: 1 keys\nAggs:\n  count(*)\n  sum(CASE WHEN (a.entity_id IS NULL) THEN 0 ELSE 1 END)\nUnc: Varchar(40)\nUnc: Integer(8)\nUnc: Integer(8)", color = "green", shape = "box"];
+9[label = "ExprEval: \n  t.topic\n  1\n  CASE WHEN (a.entity_id IS NULL) THEN 0 ELSE 1 END\nUnc: Varchar(40)\nUnc: Integer(8)\nUnc: Integer(8)", color = "green", shape = "box"];
+10[label = "Join: Hash-Join: \n(Temp Relation 11 x Temp Relation 12) using TempRel access and TempRel access (PATH ID: 4)\n[LeftOuter]\n (a.entity_id = t.entity_id)\n\nUnc: Varchar(40)\nUnc: Integer(8)", color = "green", shape = "box"];
+11[label = "ParallelUnionStep: \nRound Robin\nUnc: Varchar(40)\nUnc: Integer(8)", color = "green", shape = "box"];
+12[label = "FilterStep: \n(t.topic \<\> \'sports\')\nUnc: Varchar(40)\nUnc: Integer(8)", color = "green", shape = "box"];
+13[label = "TempRelAccess 11; 2 sorted\n\nUnc: Varchar(40)\nUnc: Integer(8)", color = "green", shape = "box"];
+14[label = "FilterStep: \n(a.entity_id IS NOT NULL)\nUnc: Integer(8)", color = "green", shape = "box"];
+15[label = "TempRelAccess 12\n\nUnc: Integer(8)", color = "green", shape = "box"];
+16[label = "ExprEval: \n  \<SVAR\>\n  \<SVAR\>\nUnc: Integer(8)\nUnc: Integer(8)", color = "green", shape = "box"];
+17[label = "GroupByPipe: 0 keys\nAggs:\n  count(*)\nUnc: Integer(8)", color = "green", shape = "box"];
+18[label = "ExprEval: \n  1\nUnc: Integer(8)", color = "green", shape = "box"];
+19[label = "TempRelAccess 12\n\nUnc: Integer(8)", color = "green", shape = "box"];
+1->0 [label = "V[0] C=4",color = "black",style="bold", arrowtail="inv"];
+2->1 [label = "0",color = "blue"];
+3->2 [label = "0",color = "blue"];
+4->3 [label = "0",color = "blue"];
+5->4 [label = "0",color = "blue"];
+6->5 [label = "0",color = "blue"];
+7->6 [label = "0",color = "blue"];
+8->7 [label = "0",color = "blue"];
+9->8 [label = "0",color = "blue"];
+10->9 [label = "0",color = "blue"];
+11->10 [label = "0",color = "blue"];
+12->11 [label = "0",color = "blue"];
+13->12 [label = "0",color = "blue"];
+14->10 [label = "1",color = "blue"];
+15->14 [label = "0",color = "blue"];
+16->4 [label = "1",color = "blue"];
+17->16 [label = "0",color = "blue"];
+18->17 [label = "0",color = "blue"];
+19->18 [label = "0",color = "blue"];
+}
+digraph G {
+graph [rankdir=BT, label = "BASE QUERY PLAN\nQuery: EXPLAIN WITH t AS (\n  SELECT DISTINCT topic, entity_id FROM bitmap_demo.user_interest\n  WHERE tenant_id = 10 AND snapshot_id = 1\n), a AS (\n  SELECT entity_id FROM t WHERE topic = \'sports\'\n), o AS (\n  SELECT t.topic, COUNT(*) AS size, SUM(CASE WHEN a.entity_id IS NULL THEN 0 ELSE 1 END) AS inter\n  FROM t LEFT JOIN a ON a.entity_id = t.entity_id\n  WHERE t.topic \<\> \'sports\'\n  GROUP BY t.topic\n)\nSELECT \'topic_\' || topic AS predicate, inter AS intersection, size + (SELECT COUNT(*) FROM a) - inter AS union_size,\n       ROUND(inter / (size + (SELECT COUNT(*) FROM a) - inter)::FLOAT, 4) AS jaccard\nFROM o;\n\nAll Nodes Vector: \n\n  node[0]=v_vdb_node0001 (initiator) Up\n\nSection 1", labelloc=t, labeljust=l ordering=out]
+0[label = "NewEENode \nOutBlk=[UncTuple(2)]", color = "green", shape = "box"];
+1[label = "TempRelWrite 11; 2 sorted\n\nUnc: Varchar(40)\nUnc: Integer(8)", color = "green", shape = "box"];
+2[label = "GroupByPipe: 2 keys\nAggs:\nUnc: Varchar(40)\nUnc: Integer(8)", color = "green", shape = "box"];
+3[label = "StorageMergeStep[ee5]: user_interest_super; 2 sorted\nUnc: Varchar(40)\nUnc: Integer(8)", color = "purple", shape = "box"];
+4[label = "GroupByPipe: 2 keys\nAggs:\nUnc: Varchar(40)\nUnc: Integer(8)", color = "brown", shape = "box"];
+5[label = "ScanStep: user_interest_super\n(user_interest.tenant_id = 10)\n(user_interest.snapshot_id = 1)\ntenant_id (not emitted)\nsnapshot_id (not emitted)\ntopic\nentity_id\nUnc: Varchar(40)\nUnc: Integer(8)", color = "brown", shape = "box"];
+1->0 [label = "0",color = "blue"];
+2->1 [label = "0",color = "blue"];
+3->2 [label = "0",color = "blue"];
+4->3 [label = "0",color = "blue"];
+5->4 [label = "0",color = "blue"];
+}
+digraph G {
+graph [rankdir=BT, label = "BASE QUERY PLAN\nQuery: EXPLAIN WITH t AS (\n  SELECT DISTINCT topic, entity_id FROM bitmap_demo.user_interest\n  WHERE tenant_id = 10 AND snapshot_id = 1\n), a AS (\n  SELECT entity_id FROM t WHERE topic = \'sports\'\n), o AS (\n  SELECT t.topic, COUNT(*) AS size, SUM(CASE WHEN a.entity_id IS NULL THEN 0 ELSE 1 END) AS inter\n  FROM t LEFT JOIN a ON a.entity_id = t.entity_id\n  WHERE t.topic \<\> \'sports\'\n  GROUP BY t.topic\n)\nSELECT \'topic_\' || topic AS predicate, inter AS intersection, size + (SELECT COUNT(*) FROM a) - inter AS union_size,\n       ROUND(inter / (size + (SELECT COUNT(*) FROM a) - inter)::FLOAT, 4) AS jaccard\nFROM o;\n\nAll Nodes Vector: \n\n  node[0]=v_vdb_node0001 (initiator) Up\n\nSection 2: Inputs[1]", labelloc=t, labeljust=l ordering=out]
+0[label = "NewEENode \nOutBlk=[UncTuple]", color = "green", shape = "box"];
+1[label = "TempRelWrite 12\n\nUnc: Integer(8)", color = "green", shape = "box"];
+2[label = "ExprEval: \n  t.entity_id\nUnc: Integer(8)", color = "green", shape = "box"];
+3[label = "FilterStep: \n(t.topic = \'sports\')\nUnc: Varchar(40)\nUnc: Integer(8)", color = "green", shape = "box"];
+4[label = "TempRelAccess 11; 2 sorted\n\nUnc: Varchar(40)\nUnc: Integer(8)", color = "green", shape = "box"];
+1->0 [label = "0",color = "blue"];
+2->1 [label = "0",color = "blue"];
+3->2 [label = "0",color = "blue"];
+4->3 [label = "0",color = "blue"];
+}

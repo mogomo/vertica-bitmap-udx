@@ -1,0 +1,4 @@
+query,answer,oracle,rows,hash,oracle_hash,matches,error,ms
+q8.join.N,q8.join,yes,1,af0e074a71c652d7,af0e074a71c652d7/expect=af0e074a71c652d7,yes,,234.30
+q8.join.C,q8.join,,1,af0e074a71c652d7,af0e074a71c652d7/expect=af0e074a71c652d7,yes,,78.25
+q8.agg.C,q8.join,,1,af0e074a71c652d7,af0e074a71c652d7/expect=af0e074a71c652d7,yes,,50.27

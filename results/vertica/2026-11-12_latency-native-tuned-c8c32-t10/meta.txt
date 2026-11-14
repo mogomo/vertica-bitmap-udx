@@ -1,0 +1,6 @@
+area=vertica run=latency-native-tuned-c8c32-t10 folder=2026-11-12_latency-native-tuned-c8c32-t10 milestone=M5a engine=vertica
+duration_s=1982.43 exit_status=1 repo_hash=65d09a9837111dc3
+engine_cpu_s=35802.7 engine_memory_peak_sampled_bytes=39897034752 engine_memory_peak_since_start_bytes=46835445760
+client_cpus=20,21 client_cpu20_busy_pct=5.7 client_cpu21_busy_pct=6.3 client_saturated=no
+limits_ok=yes
+validity=invalid: exit status 1

@@ -1,0 +1,5 @@
+command=bash -c python3\ bench/driver.py\ run\ --client\ socket\ --workload\ bench/workloads/vertica.sql\ --var\ tenant=20\ --out\ \$BENCH_RUN_DIR/driver\ --clients\ 1\ --iterations\ 15\ --warmup\ 1\ --statement-cap\ 300\ --only\ q1.count.Bplus\,q1.ids.Bplus\,q2.daily.B\,q3.Bplus\,q4.Bplus\,q7.Bj\,q7.Bplus\,q8.Bplus\ --expect\ ~/bitmap_record/vertica/2026-11-13_latency-bitmap-c1c32-t20b/driver/check.csv\ --skip-oracles 
+cwd=~/vertica-bitmap-udx
+start_utc=2026-11-13T12:30:36Z
+end_utc=2026-11-13T12:48:02Z
+exit_status=0

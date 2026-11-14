@@ -1,0 +1,44 @@
+------------------------------ 
+QUERY PLAN DESCRIPTION: 
+------------------------------
+
+EXPLAIN SELECT day, SUM(vbitmap.bm_cardinality(payload)) AS users
+FROM bitmap_demo.daily_bitmap
+WHERE tenant_id = 10 AND snapshot_id = 1 AND domain = 'person'
+  AND channel = 'web' AND day >= DATE '2026-10-15' AND day < DATE '2026-10-17'
+GROUP BY day;
+
+Access Path:
++-GROUPBY PIPELINED [Cost: 3K, Rows: 4] (PATH ID: 1)
+|  Aggregates: sum(vbitmap.bm_cardinality(daily_bitmap.payload))
+|  Group By: daily_bitmap.day
+| +---> STORAGE ACCESS for daily_bitmap [Cost: 3K, Rows: 164] (PATH ID: 2)
+| |      Projection: bitmap_demo.daily_bitmap_super
+| |      Materialize: daily_bitmap.day, daily_bitmap.payload
+| |      Filter: (daily_bitmap.tenant_id = 10)
+| |      Filter: (daily_bitmap.snapshot_id = 1)
+| |      Filter: (daily_bitmap.domain = 'person')
+| |      Filter: (daily_bitmap.channel = 'web')
+| |      Filter: ((daily_bitmap.day >= '2026-10-15'::date) AND (daily_bitmap.day < '2026-10-17'::date))
+
+
+------------------------------
+----------------------------------------------- 
+PLAN: BASE QUERY PLAN (GraphViz Format)
+----------------------------------------------- 
+digraph G {
+graph [rankdir=BT, label = "BASE QUERY PLAN\nQuery: EXPLAIN SELECT day, SUM(vbitmap.bm_cardinality(payload)) AS users\nFROM bitmap_demo.daily_bitmap\nWHERE tenant_id = 10 AND snapshot_id = 1 AND domain = \'person\'\n  AND channel = \'web\' AND day \>= DATE \'2026-10-15\' AND day \< DATE \'2026-10-17\'\nGROUP BY day;\n\nAll Nodes Vector: \n\n  node[0]=v_vdb_node0001 (initiator) Up\n", labelloc=t, labeljust=l ordering=out]
+0[label = "Root \nOutBlk=[UncTuple(2)]", color = "green", shape = "house"];
+1[label = "NewEENode \nOutBlk=[UncTuple(2)]", color = "green", shape = "box"];
+2[label = "GroupByPipe: 1 keys\nAggs:\n  sum(vbitmap.bm_cardinality(daily_bitmap.payload))\nUnc: Date(8)\nUnc: Integer(8)", color = "green", shape = "box"];
+3[label = "StorageMergeStep[ee5]: daily_bitmap_super; 1 sorted\nUnc: Date(8)\nUnc: Integer(8)", color = "purple", shape = "box"];
+4[label = "GroupByPipe: 1 keys\nAggs:\n  sum(vbitmap.bm_cardinality(daily_bitmap.payload))\nUnc: Date(8)\nUnc: Integer(8)", color = "brown", shape = "box"];
+5[label = "ExprEval: \n  daily_bitmap.day\n  vbitmap.bm_cardinality(daily_bitmap.payload)\nUnc: Date(8)\nUnc: Integer(8)", color = "brown", shape = "box"];
+6[label = "ScanStep: daily_bitmap_super\n(daily_bitmap.tenant_id = 10)\n(daily_bitmap.snapshot_id = 1)\n(daily_bitmap.domain = \'person\')\n(daily_bitmap.channel = \'web\')\n((daily_bitmap.day \>= \'2026-10-15\'::date) AND (daily_bitmap.day \< \'2026-10-17\'::date))\ntenant_id (not emitted)\nsnapshot_id (not emitted)\ndomain (not emitted)\nchannel (not emitted)\nday\npayload\nUnc: Date(8)\nUnc: Varbinary(16384)", color = "brown", shape = "box"];
+1->0 [label = "V[0] C=2",color = "black",style="bold", arrowtail="inv"];
+2->1 [label = "0",color = "blue"];
+3->2 [label = "0",color = "blue"];
+4->3 [label = "0",color = "blue"];
+5->4 [label = "0",color = "blue"];
+6->5 [label = "0",color = "blue"];
+}

@@ -1,0 +1,6 @@
+area=clickhouse run=live-load-t10 folder=2026-11-13_live-load-t10 milestone=M5c engine=clickhouse
+duration_s=24.74 exit_status=0 repo_hash=d7920e89607da91e
+engine_cpu_s=45.3 engine_memory_peak_sampled_bytes=7139717120 engine_memory_peak_since_start_bytes=7585316864
+client_cpus=20,21 client_cpu20_busy_pct=2.8 client_cpu21_busy_pct=3.1 client_saturated=no
+limits_ok=yes
+validity=valid

@@ -1,0 +1,5 @@
+command=bash -c python3\ bench/driver.py\ check\ --workload\ bench/workloads/vertica.sql\ --var\ tenant=10\ --out\ \$BENCH_RUN_DIR/driver\ --only\ q1.count.Bplus\,q1.ids.Bplus\,q2.daily.B\,q3.Bplus\,q4.Bplus\,q7.B\,q8.Bplus 
+cwd=~/vertica-bitmap-udx
+start_utc=2026-11-12T18:43:11Z
+end_utc=2026-11-12T18:44:09Z
+exit_status=0

@@ -1,0 +1,71 @@
+------------------------------ 
+QUERY PLAN DESCRIPTION: 
+------------------------------
+
+EXPLAIN SELECT COUNT(*) AS cnt FROM bitmap_demo.user_profile p
+WHERE p.tenant_id = 10 AND p.snapshot_id = 1
+  AND ((EXISTS (SELECT 1 FROM bitmap_demo.user_interest i WHERE i.tenant_id = 10 AND i.snapshot_id = 1 AND i.entity_id = p.entity_id AND i.topic = 't8') AND EXISTS (SELECT 1 FROM bitmap_demo.user_interest i WHERE i.tenant_id = 10 AND i.snapshot_id = 1 AND i.entity_id = p.entity_id AND i.topic = 't13')) AND p.country = 'IS');
+
+Access Path:
++-GROUPBY NOTHING [Cost: 1M, Rows: 1] (PATH ID: 1)
+|  Aggregates: count(*)
+| +---> JOIN HASH [Semi] [Cost: 1M, Rows: 51K] (PATH ID: 2)
+| |      Join Cond: (VAL(1) = p.entity_id)
+| |      Materialize at Input: p.entity_id
+| | +-- Outer -> JOIN HASH [Semi] [Cost: 570K, Rows: 101K] (PATH ID: 3)
+| | |      Join Cond: (VAL(1) = p.entity_id)
+| | | +-- Outer -> STORAGE ACCESS for p [Cost: 20K, Rows: 202K] (PATH ID: 4)
+| | | |      Projection: bitmap_demo.user_profile_by_filter
+| | | |      Materialize: p.entity_id
+| | | |      Filter: (p.tenant_id = 10)
+| | | |      Filter: (p.snapshot_id = 1)
+| | | |      Filter: (p.country = 'IS')
+| | | |      Runtime Filters: (SIP2(HashJoin): p.entity_id), (SIP1(HashJoin): p.entity_id)
+| | | +-- Inner -> SELECT [Cost: 549K, Rows: 995K] (PATH ID: 5)
+| | | | +---> STORAGE ACCESS for i [Cost: 549K, Rows: 995K] (PATH ID: 6)
+| | | | |      Projection: bitmap_demo.user_interest_super
+| | | | |      Materialize: i.entity_id
+| | | | |      Filter: (i.tenant_id = 10)
+| | | | |      Filter: (i.snapshot_id = 1)
+| | | | |      Filter: (i.topic = 't8')
+| | +-- Inner -> SELECT [Cost: 549K, Rows: 995K] (PATH ID: 7)
+| | | +---> STORAGE ACCESS for i [Cost: 549K, Rows: 995K] (PATH ID: 8)
+| | | |      Projection: bitmap_demo.user_interest_super
+| | | |      Materialize: i.entity_id
+| | | |      Filter: (i.tenant_id = 10)
+| | | |      Filter: (i.snapshot_id = 1)
+| | | |      Filter: (i.topic = 't13')
+
+
+------------------------------
+----------------------------------------------- 
+PLAN: BASE QUERY PLAN (GraphViz Format)
+----------------------------------------------- 
+digraph G {
+graph [rankdir=BT, label = "BASE QUERY PLAN\nQuery: EXPLAIN SELECT COUNT(*) AS cnt FROM bitmap_demo.user_profile p\nWHERE p.tenant_id = 10 AND p.snapshot_id = 1\n  AND ((EXISTS (SELECT 1 FROM bitmap_demo.user_interest i WHERE i.tenant_id = 10 AND i.snapshot_id = 1 AND i.entity_id = p.entity_id AND i.topic = \'t8\') AND EXISTS (SELECT 1 FROM bitmap_demo.user_interest i WHERE i.tenant_id = 10 AND i.snapshot_id = 1 AND i.entity_id = p.entity_id AND i.topic = \'t13\')) AND p.country = \'IS\');\n\nAll Nodes Vector: \n\n  node[0]=v_vdb_node0001 (initiator) Up\n", labelloc=t, labeljust=l ordering=out]
+0[label = "Root \nOutBlk=[UncTuple]", color = "green", shape = "house"];
+1[label = "NewEENode \nOutBlk=[UncTuple]", color = "green", shape = "box"];
+2[label = "GroupByPipe: 0 keys\nAggs:\n  count(*)\nUnc: Integer(8)", color = "green", shape = "box"];
+3[label = "StorageUnionStep: user_profile_by_filter\nUnc: Integer(8)", color = "purple", shape = "box"];
+4[label = "GroupByPipe: 0 keys\nAggs:\n  count(*)\nUnc: Integer(8)", color = "brown", shape = "box"];
+5[label = "ExprEval: \n  1\nUnc: Integer(8)", color = "brown", shape = "box"];
+6[label = "Join: Hash-Join: \n(bitmap_demo.user_profile x bitmap_demo.user_interest) using previous join and subquery (PATH ID: 2)\n[Semi]\n\nUnc: Integer(8)", color = "brown", shape = "box"];
+7[label = "Join: Hash-Join: \n(bitmap_demo.user_profile x bitmap_demo.user_interest) using user_profile_by_filter and subquery (PATH ID: 3)\n[Semi]\n\nUnc: Integer(8)", color = "brown", shape = "box"];
+8[label = "ScanStep: user_profile_by_filter\n(p.tenant_id = 10)\n(p.snapshot_id = 1)\n(p.country = \'IS\')\nSIP2(HashJoin): p.entity_id\nSIP1(HashJoin): p.entity_id\ntenant_id RLE (not emitted)\nsnapshot_id RLE (not emitted)\ncountry RLE (not emitted)\nentity_id\nUnc: Integer(8)", color = "brown", shape = "box"];
+9[label = "StorageUnionStep: user_interest_super\nUnc: Integer(8)", color = "purple", shape = "box"];
+10[label = "ScanStep: user_interest_super\n(i.tenant_id = 10)\n(i.snapshot_id = 1)\n(i.topic = \'t8\')\ntenant_id (not emitted)\nsnapshot_id (not emitted)\ntopic (not emitted)\nentity_id\nUnc: Integer(8)", color = "brown", shape = "box"];
+11[label = "StorageUnionStep: user_interest_super\nUnc: Integer(8)", color = "purple", shape = "box"];
+12[label = "ScanStep: user_interest_super\n(i.tenant_id = 10)\n(i.snapshot_id = 1)\n(i.topic = \'t13\')\ntenant_id (not emitted)\nsnapshot_id (not emitted)\ntopic (not emitted)\nentity_id\nUnc: Integer(8)", color = "brown", shape = "box"];
+1->0 [label = "V[0]",color = "black"];
+2->1 [label = "0",color = "blue"];
+3->2 [label = "0",color = "blue"];
+4->3 [label = "0",color = "blue"];
+5->4 [label = "0",color = "blue"];
+6->5 [label = "0",color = "blue"];
+7->6 [label = "0",color = "blue"];
+8->7 [label = "0",color = "blue"];
+9->7 [label = "1",color = "blue"];
+10->9 [label = "0",color = "blue"];
+11->6 [label = "1",color = "blue"];
+12->11 [label = "0",color = "blue"];
+}

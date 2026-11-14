@@ -1,0 +1,5 @@
+block,query,answer,clients,n,errors,mismatches,mean_ms,p50_ms,p95_ms,p99_ms,min_ms,max_ms,engine_p50_ms,throughput_qps,window_s
+mixed,q1.count.Bplus,q1.count,32,6416,,,380.968,308.779,920.089,1148.067,34.819,1610.764,nan,21.387,300.000
+mixed+background,q1.count.Bplus,q1.count,32,130,,,312.513,239.975,977.646,1063.304,63.985,1087.078,nan,0.433,300.000
+mixed,q3.Bplus,q3,32,3170,,,2206.350,2405.909,3241.139,3611.238,1015.944,4432.747,nan,10.567,300.000
+mixed+background,q3.Bplus,q3,32,72,,,1773.073,1434.236,3153.706,3330.877,1086.962,3395.432,nan,0.240,300.000

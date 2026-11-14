@@ -1,0 +1,5 @@
+command=bash -c python3\ bench/make_dbd_workload.py\ --workload\ bench/workloads/vertica.sql\ --var\ tenant=10\ --out-workload\ \$BENCH_RUN_DIR/dbd_workload.sql\ --out-queries\ \$BENCH_RUN_DIR/dbd_queries.sql\ \&\&\ bench/dbd.sh\ design\ --queries=\$BENCH_RUN_DIR/dbd_queries.sql\ --out=\$BENCH_RUN_DIR/dbd 
+cwd=~/vertica-bitmap-udx
+start_utc=2026-11-12T13:42:57Z
+end_utc=2026-11-12T13:43:42Z
+exit_status=0

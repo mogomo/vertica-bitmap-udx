@@ -1,0 +1,5 @@
+check: query=q1.ids.text.Bplus answer=q1.ids rows=2515389 hash=00f3b7ce3636bb37 matches=yes ms=667.3
+check: query=q8.text.Bplus answer=q8 rows=5303339 hash=31f7f61ddb774edc matches=yes ms=131.5
+bench: query=q1.ids.text.Bplus clients=1 n=15 p50_ms=133.20 p95_ms=139.11 p99_ms=139.94 mean_ms=131.93 engine_p50_ms=122.0 qps=7.07 errors=0 mismatches=0
+bench: query=q8.text.Bplus clients=1 n=15 p50_ms=142.30 p95_ms=150.29 p99_ms=150.43 mean_ms=141.68 engine_p50_ms=138.0 qps=6.59 errors=0 mismatches=0
+summary: mode=run engine=vertica queries=2 levels=1 check_ok=yes errors=0 mismatches=0 valid=yes

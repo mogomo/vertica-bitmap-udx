@@ -1,0 +1,6 @@
+area=vertica run=latency-wide-ids-t14 folder=2026-11-12_latency-wide-ids-t14 milestone=M5a engine=vertica
+duration_s=1388.47 exit_status=0 repo_hash=84ed9343c15ed4ac
+engine_cpu_s=8718.3 engine_memory_peak_sampled_bytes=35713806336 engine_memory_peak_since_start_bytes=38449909760
+client_cpus=20,21 client_cpu20_busy_pct=3.8 client_cpu21_busy_pct=4.1 client_saturated=no
+limits_ok=yes
+validity=valid

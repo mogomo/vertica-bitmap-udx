@@ -1,0 +1,6 @@
+generate tenant 14 snapshot 1 (seed 42, IDs signup/wide)
+  people: 4.9 s
+  interests: 120.2 s
+  events: 48.7 s
+  rows: 10000000 people, 200000000 interests, 100000000 events, 0 devices, 0 assets, 0 asset sources; IDs 0 to 167125767460479
+generated: tenant=14 snapshot=1 seed=42 id_order=signup id_space=wide people_s=4.9 interests_s=120.2 events_s=48.7 people=10000000 interests=200000000 events=100000000 devices=0 assets=0 asset_sources=0 topics=500 topics_per_user=20 topic_skew=1.5 days=30 user_skew=2 max_id=167125767460479 total_s=174.8

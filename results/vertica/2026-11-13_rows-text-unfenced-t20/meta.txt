@@ -1,0 +1,6 @@
+area=vertica run=rows-text-unfenced-t20 folder=2026-11-13_rows-text-unfenced-t20 milestone=M5d engine=vertica
+duration_s=302.62 exit_status=0 repo_hash=cbbc6e5a6787f0b8
+engine_cpu_s=19.0 engine_memory_peak_sampled_bytes=2740895744 engine_memory_peak_since_start_bytes=2742611968
+client_cpus=20,21 client_cpu20_busy_pct=38.6 client_cpu21_busy_pct=62.6 client_saturated=no
+limits_ok=yes
+validity=valid

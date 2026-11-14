@@ -1,0 +1,3 @@
+query,answer,oracle,rows,hash,oracle_hash,matches,error,ms
+q8.Bplus,q8,,5303339,31f7f61ddb774edc,/expect=31f7f61ddb774edc,yes,,1272.01
+q8.rowtext.Bplus,q8,,5303339,31f7f61ddb774edc,/expect=31f7f61ddb774edc,yes,,246.48

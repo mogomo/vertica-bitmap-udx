@@ -1,0 +1,6 @@
+area=vertica run=build-person-t10 folder=2026-11-12_build-person-t10_2 milestone=M5a engine=vertica
+duration_s=109.31 exit_status=0 repo_hash=cd5dba411697d1e1
+engine_cpu_s=897.7 engine_memory_peak_sampled_bytes=8273870848 engine_memory_peak_since_start_bytes=38449909760
+client_cpus=20,21 client_cpu20_busy_pct=2.0 client_cpu21_busy_pct=2.0 client_saturated=no
+limits_ok=yes
+validity=valid

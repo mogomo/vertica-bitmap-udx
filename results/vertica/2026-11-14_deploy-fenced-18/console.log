@@ -1,0 +1,6 @@
+vsql:sql/install.sql:8: NOTICE 6932:  Replacing bm_build may affect some dependent projections. If the behaviour/signature of the function has changed, drop and re-create the following projections: bitmap_live.bitmap_index, bitmap_live.daily_bitmap
+vsql:sql/install.sql:8: NOTICE 6932:  Replacing bm_union may affect some dependent projections. If the behaviour/signature of the function has changed, drop and re-create the following projections: bitmap_live.bitmap_index, bitmap_live.daily_bitmap
+vsql:sql/install.sql:21: NOTICE 6932:  Replacing bm_build may affect some dependent projections. If the behaviour/signature of the function has changed, drop and re-create the following projections: bitmap_live.bitmap_index, bitmap_live.daily_bitmap
+vsql:sql/install.sql:22: NOTICE 6932:  Replacing bm_union may affect some dependent projections. If the behaviour/signature of the function has changed, drop and re-create the following projections: bitmap_live.bitmap_index, bitmap_live.daily_bitmap
+vbitmap 0.1.0; format 1; CRoaring 5.5.5; -O3 x86_64 g++-15.2.0
+23 functions, fenced: t..t

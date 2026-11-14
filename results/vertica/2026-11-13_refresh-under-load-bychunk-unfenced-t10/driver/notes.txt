@@ -1,0 +1,7 @@
+driver mixed started 2026-11-13T04:14:07+0200 args ['mixed', '--workload', 'bench/workloads/vertica.sql', '--var', 'tenant=10', '--out', '~/bitmap_record/vertica/2026-11-13_refresh-under-load-bychunk-unfenced-t10/driver', '--clients', '32', '--duration', '600', '--warmup-s', '30', '--statement-cap', '600', '--only', 'q1.count.Bplus,q2.daily.B,q3.Bplus,q4.Bplus,q7.Bplus,q8.Bplus', '--weights', 'q1.count.Bplus=4,q2.daily.B=2,q3.Bplus=2,q4.Bplus=1,q7.Bplus=1,q8.Bplus=1', '--expect', '~/bitmap_record/vertica/2026-11-12_check-headline-t10/driver/check.csv', '--background', 'bench/refresh.sh --tenant=10 --fraction=0.01 --spread=random --report=mixed --steps=apply', '--background-at', '60']
+check q1.count.A: answer 251683
+check q1.count.Bplus: answer 251683
+check q2.daily.A: answer 2026-10-15|1551213 ; 2026-10-16|1553098
+check q2.daily.B: answer 2026-10-15|1551213 ; 2026-10-16|1553098
+background: status=0 start_s=60.034 end_s=371.276 duration_s=311.242
+driver ended 2026-11-13T04:29:01+0200 status 0

@@ -1,0 +1,25 @@
+check: query=q1.count.Bplus answer=q1.count rows=1 hash=b4498cf506a5f79c matches=yes ms=117.6
+check: query=q1.ids.Bplus answer=q1.ids rows=251683 hash=8204799bdbdae904 matches=yes ms=42.7
+check: query=q2.daily.B answer=q2.daily rows=2 hash=ce7279e17bf8b689 matches=yes ms=25.3
+check: query=q3.Bplus answer=q3 rows=500 hash=1a17b1531950cc32 matches=yes ms=1585.4
+check: query=q4.Bplus answer=q4 rows=19695 hash=418fbbab9d532966 matches=yes ms=26.0
+check: query=q7.Bj answer=q7 rows=499 hash=8d89f06ae62b8c25 matches=yes ms=1966.0
+check: query=q7.Bplus answer=q7 rows=499 hash=8d89f06ae62b8c25 matches=yes ms=636.1
+check: query=q8.Bplus answer=q8 rows=530315 hash=384c2a5fd45796b7 matches=yes ms=57.7
+bench: query=q1.count.Bplus clients=1 n=15 p50_ms=31.96 p95_ms=38.02 p99_ms=38.52 mean_ms=32.24 engine_p50_ms=29.0 qps=28.93 errors=0 mismatches=0
+bench: query=q1.count.Bplus clients=32 n=64 p50_ms=123.63 p95_ms=153.75 p99_ms=163.49 mean_ms=123.89 engine_p50_ms=77.0 qps=149.99 errors=0 mismatches=0
+bench: query=q1.ids.Bplus clients=1 n=15 p50_ms=46.45 p95_ms=51.16 p99_ms=51.47 mean_ms=46.66 engine_p50_ms=42.0 qps=20.00 errors=0 mismatches=0
+bench: query=q1.ids.Bplus clients=32 n=64 p50_ms=182.15 p95_ms=291.39 p99_ms=311.37 mean_ms=193.89 engine_p50_ms=128.0 qps=105.31 errors=0 mismatches=0
+bench: query=q2.daily.B clients=1 n=15 p50_ms=15.43 p95_ms=20.05 p99_ms=20.88 mean_ms=16.23 engine_p50_ms=13.0 qps=57.43 errors=0 mismatches=0
+bench: query=q2.daily.B clients=32 n=64 p50_ms=172.00 p95_ms=214.82 p99_ms=234.72 mean_ms=172.05 engine_p50_ms=147.5 qps=83.06 errors=0 mismatches=0
+bench: query=q3.Bplus clients=1 n=15 p50_ms=591.50 p95_ms=615.33 p99_ms=618.68 mean_ms=591.89 engine_p50_ms=588.0 qps=1.58 errors=0 mismatches=0
+bench: query=q3.Bplus clients=32 n=64 p50_ms=3097.71 p95_ms=5227.84 p99_ms=5325.31 mean_ms=3674.86 engine_p50_ms=3089.5 qps=5.92 errors=0 mismatches=0
+bench: query=q4.Bplus clients=1 n=15 p50_ms=19.74 p95_ms=20.64 p99_ms=20.94 mean_ms=18.67 engine_p50_ms=15.0 qps=49.96 errors=0 mismatches=0
+bench: query=q4.Bplus clients=32 n=64 p50_ms=94.57 p95_ms=123.79 p99_ms=138.96 mean_ms=95.78 engine_p50_ms=49.0 qps=167.14 errors=0 mismatches=0
+bench: query=q7.Bj clients=1 n=15 p50_ms=1076.13 p95_ms=1129.18 p99_ms=1148.88 mean_ms=1063.30 engine_p50_ms=1072.0 qps=0.88 errors=0 mismatches=0
+bench: query=q7.Bj clients=32 n=64 p50_ms=6536.44 p95_ms=10815.13 p99_ms=11139.40 mean_ms=7828.36 engine_p50_ms=6476.0 qps=3.19 errors=0 mismatches=0
+bench: query=q7.Bplus clients=1 n=15 p50_ms=585.98 p95_ms=617.11 p99_ms=621.83 mean_ms=577.14 engine_p50_ms=580.0 qps=1.62 errors=0 mismatches=0
+bench: query=q7.Bplus clients=32 n=64 p50_ms=3176.65 p95_ms=5027.55 p99_ms=5153.41 mean_ms=3583.30 engine_p50_ms=3167.0 qps=5.30 errors=0 mismatches=0
+bench: query=q8.Bplus clients=1 n=15 p50_ms=56.16 p95_ms=59.94 p99_ms=61.81 mean_ms=55.97 engine_p50_ms=50.0 qps=16.67 errors=0 mismatches=0
+bench: query=q8.Bplus clients=32 n=64 p50_ms=319.28 p95_ms=496.72 p99_ms=538.81 mean_ms=324.28 engine_p50_ms=152.5 qps=80.40 errors=0 mismatches=0
+summary: mode=run engine=vertica queries=8 levels=1,32 check_ok=yes errors=0 mismatches=0 valid=yes

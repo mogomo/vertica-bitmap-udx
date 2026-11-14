@@ -1,0 +1,5 @@
+command=bench/encoding_copy.sh create auto default 
+cwd=~/vertica-bitmap-udx
+start_utc=2026-11-13T21:02:22Z
+end_utc=2026-11-13T21:04:24Z
+exit_status=0

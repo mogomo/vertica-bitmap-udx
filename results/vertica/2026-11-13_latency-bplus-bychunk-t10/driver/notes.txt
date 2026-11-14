@@ -1,0 +1,4 @@
+driver run started 2026-11-13T03:19:58+0200 args ['run', '--workload', 'bench/workloads/vertica.sql', '--var', 'tenant=10', '--out', '~/bitmap_record/vertica/2026-11-13_latency-bplus-bychunk-t10/driver', '--clients', '1,32', '--iterations', '15', '--warmup', '1', '--statement-cap', '300', '--only', 'q1.count.Bplus,q1.ids.Bplus,q3.Bplus,q7.Bj,q7.Bplus,q8.Bplus']
+check q1.count.A: answer 251683
+check q1.count.Bplus: answer 251683
+driver ended 2026-11-13T03:25:18+0200 status 0

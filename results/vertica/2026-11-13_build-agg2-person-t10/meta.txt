@@ -1,0 +1,6 @@
+area=vertica run=build-agg2-person-t10 folder=2026-11-13_build-agg2-person-t10 milestone=M5d engine=vertica
+duration_s=49.85 exit_status=0 repo_hash=da825911c781f72b
+engine_cpu_s=450.6 engine_memory_peak_sampled_bytes=6971613184 engine_memory_peak_since_start_bytes=7145676800
+client_cpus=20,21 client_cpu20_busy_pct=2.5 client_cpu21_busy_pct=2.4 client_saturated=no
+limits_ok=yes
+validity=valid

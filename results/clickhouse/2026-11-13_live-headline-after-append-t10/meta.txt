@@ -1,0 +1,6 @@
+area=clickhouse run=live-headline-after-append-t10 folder=2026-11-13_live-headline-after-append-t10 milestone=M5c engine=clickhouse
+duration_s=39.90 exit_status=0 repo_hash=d7920e89607da91e
+engine_cpu_s=249.8 engine_memory_peak_sampled_bytes=14271217664 engine_memory_peak_since_start_bytes=14724825088
+client_cpus=20,21 client_cpu20_busy_pct=43.5 client_cpu21_busy_pct=23.0 client_saturated=no
+limits_ok=yes
+validity=valid

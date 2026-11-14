@@ -1,0 +1,52 @@
+------------------------------ 
+QUERY PLAN DESCRIPTION: 
+------------------------------
+
+EXPLAIN SELECT event_ts::DATE AS day, COUNT(DISTINCT user_id) AS users
+FROM bitmap_demo.event_log
+WHERE tenant_id = 20 AND channel = 'web'
+  AND event_ts >= TIMESTAMP '2026-10-15 00:00:00' AND event_ts < TIMESTAMP '2026-10-17 00:00:00'
+GROUP BY 1;
+
+Access Path:
++-GROUPBY HASH (LOCAL RESEGMENT GROUPS) [Cost: 5M, Rows: 28M] (PATH ID: 1)
+|  Aggregates: count(DISTINCT event_log.user_id)
+|  Group By: <SVAR>
+| +---> GROUPBY HASH (LOCAL RESEGMENT GROUPS) [Cost: 5M, Rows: 28M] (PATH ID: 2)
+| |      Group By: (event_log.event_ts)::date, event_log.user_id
+| | +---> STORAGE ACCESS for event_log [Cost: 4M, Rows: 28M] (PATH ID: 3)
+| | |      Projection: bitmap_demo.event_log_super
+| | |      Materialize: event_log.event_ts, event_log.user_id
+| | |      Filter: (event_log.tenant_id = 20)
+| | |      Filter: (event_log.channel = 'web')
+| | |      Filter: ((event_log.event_ts >= '2026-10-15 00:00:00'::timestamp) AND (event_log.event_ts < '2026-10-17 00:00:00'::timestamp))
+
+
+------------------------------
+----------------------------------------------- 
+PLAN: BASE QUERY PLAN (GraphViz Format)
+----------------------------------------------- 
+digraph G {
+graph [rankdir=BT, label = "BASE QUERY PLAN\nQuery: EXPLAIN SELECT event_ts::DATE AS day, COUNT(DISTINCT user_id) AS users\nFROM bitmap_demo.event_log\nWHERE tenant_id = 20 AND channel = \'web\'\n  AND event_ts \>= TIMESTAMP \'2026-10-15 00:00:00\' AND event_ts \< TIMESTAMP \'2026-10-17 00:00:00\'\nGROUP BY 1;\n\nAll Nodes Vector: \n\n  node[0]=v_vdb_node0001 (initiator) Up\n", labelloc=t, labeljust=l ordering=out]
+0[label = "Root \nOutBlk=[UncTuple(2)]", color = "green", shape = "house"];
+1[label = "NewEENode \nOutBlk=[UncTuple(2)]", color = "green", shape = "box"];
+2[label = "ParallelUnionStep: \nCombine\nUnc: Date(8)\nUnc: Integer(8)", color = "green", shape = "box"];
+3[label = "GroupByHash(Spill): 1 keys\nAggs:\n  count(DISTINCT event_log.user_id)\nUnc: Date(8)\nUnc: Integer(8)", color = "green", shape = "box"];
+4[label = "ParallelUnionStep: \nLocally Resegment\nUnc: Date(8)\nUnc: Integer(8)", color = "green", shape = "box"];
+5[label = "GroupByPipe(HashPrepass): 1 keys\nAggs:\n  count(DISTINCT event_log.user_id)\nUnc: Date(8)\nUnc: Integer(8)", color = "green", shape = "box"];
+6[label = "GroupByHash(Spill): 2 keys\nAggs:\nUnc: Date(8)\nUnc: Integer(8)", color = "green", shape = "box"];
+7[label = "StorageUnionStep: event_log_super\nLocally Resegment\nUnc: Date(8)\nUnc: Integer(8)", color = "purple", shape = "box"];
+8[label = "GroupByPipe(HashPrepass): 2 keys\nAggs:\nUnc: Date(8)\nUnc: Integer(8)", color = "brown", shape = "box"];
+9[label = "ExprEval: \n  (event_log.event_ts)::date\n  event_log.user_id\nUnc: Date(8)\nUnc: Integer(8)", color = "brown", shape = "box"];
+10[label = "ScanStep: event_log_super\n(event_log.tenant_id = 20)\n(event_log.channel = \'web\')\n((event_log.event_ts \>= \'2026-10-15 00:00:00\'::timestamp) AND (event_log.event_ts \< \'2026-10-17 00:00:00\'::timestamp))\ntenant_id (not emitted)\nchannel (not emitted)\nevent_ts\nuser_id\nUnc: Timestamp(8)\nUnc: Integer(8)", color = "brown", shape = "box"];
+1->0 [label = "V[0] C=2",color = "black",style="bold", arrowtail="inv"];
+2->1 [label = "0",color = "blue"];
+3->2 [label = "0",color = "blue"];
+4->3 [label = "0",color = "blue"];
+5->4 [label = "0",color = "blue"];
+6->5 [label = "0",color = "blue"];
+7->6 [label = "0",color = "blue"];
+8->7 [label = "0",color = "blue"];
+9->8 [label = "0",color = "blue"];
+10->9 [label = "0",color = "blue"];
+}

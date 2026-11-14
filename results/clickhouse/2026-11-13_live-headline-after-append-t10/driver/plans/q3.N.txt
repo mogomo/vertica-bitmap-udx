@@ -1,0 +1,13 @@
+Output: \'topic_\' || topic, uniqExact(entity_id)
+
+CreatingSets (Create sets before main query execution)
+└──Aggregating
+   │  Keys: topic
+   │  Aggregates: uniqExact(entity_id)
+   │  Skip merging: 0
+   └──ReadFromMergeTree (xbench.user_interest)
+         Read type: Default
+         Parts: 1 | Granules: 24415
+         Output: entity_id, topic
+         Prewhere filter
+         Prewhere filter column:  tenant_id = 10 AND snapshot_id = 1 AND entity_id IN subquery1

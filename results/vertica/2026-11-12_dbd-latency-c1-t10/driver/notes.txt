@@ -1,0 +1,12 @@
+driver run started 2026-11-12T15:43:46+0200 args ['run', '--workload', '~/bitmap_record/vertica/2026-11-12_dbd-latency-c1-t10/dbd_workload.sql', '--out', '~/bitmap_record/vertica/2026-11-12_dbd-latency-c1-t10/driver', '--clients', '1', '--iterations', '30', '--warmup', '1']
+check q1.count.A: answer 251683
+check q1.count.D: answer 251683
+check q2.A: answer 2765926
+check q2.D: answer 2765926
+check q2.daily.A: answer 2026-10-16|1553098 ; 2026-10-15|1551213
+check q2.daily.D: answer 2026-10-15|1551213 ; 2026-10-16|1553098
+check q2b.A: answer 3839183
+check q2b.D: answer 3839183
+check q8trap.A: answer 9700374|9600381
+check q8trap.D: answer 9700374|9600381
+driver ended 2026-11-12T17:00:39+0200 status 0

@@ -1,0 +1,3 @@
+query,answer,oracle,rows,hash,oracle_hash,matches,error,ms
+q8.Bplus,q8,,530315,384c2a5fd45796b7,/expect=384c2a5fd45796b7,yes,,46.27
+q8.rowtext.Bplus,q8,,530315,384c2a5fd45796b7,/expect=384c2a5fd45796b7,yes,,37.62

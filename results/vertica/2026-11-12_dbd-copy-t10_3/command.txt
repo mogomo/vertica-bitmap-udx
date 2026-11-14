@@ -1,0 +1,5 @@
+command=bench/dbd.sh copy --tenant=10 
+cwd=~/vertica-bitmap-udx
+start_utc=2026-11-12T13:42:32Z
+end_utc=2026-11-12T13:42:54Z
+exit_status=0

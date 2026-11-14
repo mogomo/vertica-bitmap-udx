@@ -1,0 +1,16 @@
+driver run started 2026-11-12T12:58:23+0200 args ['run', '--workload', '~/bitmap_record/vertica/2026-11-12_sweep-t10/sweep.sql', '--out', '~/bitmap_record/vertica/2026-11-12_sweep-t10/driver', '--clients', '1,8,32', '--iterations', '30', '--min-per-client', '1', '--warmup', '1']
+check sw.n2.A: answer 638142
+check sw.n2.Bplus: answer 638142
+check sw.n8.A: answer 689200
+check sw.n8.Bplus: answer 689200
+check sw.n32.A: answer 1459139
+check sw.n32.Bplus: answer 1459139
+check sw.s0.01.A: answer 997
+check sw.s0.01.Bplus: answer 997
+check sw.s1.A: answer 96392
+check sw.s1.Bplus: answer 96392
+check sw.s10.A: answer 999527
+check sw.s10.Bplus: answer 999527
+check sw.s50.A: answer 4867949
+check sw.s50.Bplus: answer 4867949
+driver ended 2026-11-12T13:08:19+0200 status 0

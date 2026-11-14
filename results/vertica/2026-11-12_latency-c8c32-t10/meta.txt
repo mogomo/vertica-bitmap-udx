@@ -1,0 +1,6 @@
+area=vertica run=latency-c8c32-t10 folder=2026-11-12_latency-c8c32-t10 milestone=M5a engine=vertica
+duration_s=1821.27 exit_status=1 repo_hash=f6d01121c44da340
+engine_cpu_s=28250.1 engine_memory_peak_sampled_bytes=46369984512 engine_memory_peak_since_start_bytes=46835445760
+client_cpus=20,21 client_cpu20_busy_pct=12.4 client_cpu21_busy_pct=12.0 client_saturated=no
+limits_ok=yes
+validity=invalid: exit status 1

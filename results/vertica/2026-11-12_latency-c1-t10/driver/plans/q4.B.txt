@@ -1,0 +1,117 @@
+------------------------------ 
+QUERY PLAN DESCRIPTION: 
+------------------------------
+
+EXPLAIN WITH k AS (
+  SELECT predicate, chunk_id, payload FROM bitmap_demo.bitmap_index
+  WHERE tenant_id = 10 AND snapshot_id = 1 AND domain = 'device'
+), hot AS (
+  SELECT a.chunk_id,
+         vbitmap.bm_and(vbitmap.bm_and(a.payload, b.payload), vbitmap.bm_and(c.payload, d.payload)) AS payload
+  FROM k a
+  JOIN k b ON b.chunk_id = a.chunk_id AND b.predicate = 'zone_A'
+  JOIN k c ON c.chunk_id = a.chunk_id AND c.predicate = 'temp_ge_800'
+  JOIN k d ON d.chunk_id = a.chunk_id AND d.predicate = 'changes_gt_3'
+  WHERE a.predicate = 'online_true'
+)
+SELECT vbitmap.bm_to_ids(chunk_id, payload) OVER (PARTITION ROW) AS device_id FROM hot;
+
+Access Path:
++-JOIN HASH [Cost: 7M, Rows: 77K] (PATH ID: 1) Outer (LOCAL ROUND ROBIN)
+|  Join Cond: (d.chunk_id = a.chunk_id)
+| +-- Outer -> JOIN HASH [Cost: 4M, Rows: 77K] (PATH ID: 2)
+| |      Join Cond: (c.chunk_id = a.chunk_id)
+| | +-- Outer -> JOIN HASH [Cost: 2M, Rows: 77K] (PATH ID: 3) Outer (LOCAL ROUND ROBIN)
+| | |      Join Cond: (b.chunk_id = a.chunk_id)
+| | | +-- Outer -> TEMP RELATION ACCESS for TREL41 [Cost: 177K, Rows: 77K] (PATH ID: 4)
+| | | |      Filter: (b.predicate = 'zone_A')
+| | | |      Filter: (b.chunk_id IS NOT NULL)
+| | | |      Runtime Filter: (SIP3(HashJoin): b.chunk_id)
+| | | |      Path to compute TREL41 (printed once):
+| | | | +---> SELECT (TREL41) [Cost: 177K, Rows: 77K] (PATH ID: 5)
+| | | | | +---> STORAGE ACCESS for bitmap_index [Cost: 177K, Rows: 77K] (PATH ID: 6)
+| | | | | |      Projection: bitmap_demo.bitmap_index_super
+| | | | | |      Materialize: bitmap_index.predicate, bitmap_index.chunk_id, bitmap_index.payload
+| | | | | |      Filter: (bitmap_index.tenant_id = 10)
+| | | | | |      Filter: (bitmap_index.snapshot_id = 1)
+| | | | | |      Filter: (bitmap_index.domain = 'device')
+| | | +-- Inner -> TEMP RELATION ACCESS for TREL41 [Cost: 177K, Rows: 77K] (PATH ID: 7)
+| | | |      Filter: (a.predicate = 'online_true')
+| | | |      Filter: (a.chunk_id IS NOT NULL)
+| | | |      Runtime Filters: (SIP2(HashJoin): a.chunk_id), (SIP1(HashJoin): a.chunk_id)
+| | +-- Inner -> TEMP RELATION ACCESS for TREL41 [Cost: 177K, Rows: 77K] (PATH ID: 8)
+| | |      Filter: (c.predicate = 'temp_ge_800')
+| | |      Filter: (c.chunk_id IS NOT NULL)
+| +-- Inner -> TEMP RELATION ACCESS for TREL41 [Cost: 177K, Rows: 77K] (PATH ID: 9)
+| |      Filter: (d.predicate = 'changes_gt_3')
+| |      Filter: (d.chunk_id IS NOT NULL)
+
+
+------------------------------
+----------------------------------------------- 
+PLAN: BASE QUERY PLAN (GraphViz Format)
+----------------------------------------------- 
+digraph G {
+graph [rankdir=BT, label = "Plan Sections", labelloc=t, labeljust=l ordering=out]
+0[label = "Section 0: Inputs[1]", color = "black", shape = "box"];
+1[label = "Section 1", color = "black", shape = "box"];
+1->0 [label = "Req",color = "black"];
+}
+digraph G {
+graph [rankdir=BT, label = "BASE QUERY PLAN\nQuery: EXPLAIN WITH k AS (\n  SELECT predicate, chunk_id, payload FROM bitmap_demo.bitmap_index\n  WHERE tenant_id = 10 AND snapshot_id = 1 AND domain = \'device\'\n), hot AS (\n  SELECT a.chunk_id,\n         vbitmap.bm_and(vbitmap.bm_and(a.payload, b.payload), vbitmap.bm_and(c.payload, d.payload)) AS payload\n  FROM k a\n  JOIN k b ON b.chunk_id = a.chunk_id AND b.predicate = \'zone_A\'\n  JOIN k c ON c.chunk_id = a.chunk_id AND c.predicate = \'temp_ge_800\'\n  JOIN k d ON d.chunk_id = a.chunk_id AND d.predicate = \'changes_gt_3\'\n  WHERE a.predicate = \'online_true\'\n)\nSELECT vbitmap.bm_to_ids(chunk_id, payload) OVER (PARTITION ROW) AS device_id FROM hot;\n\nAll Nodes Vector: \n\n  node[0]=v_vdb_node0001 (initiator) Up\n\nSection 0: Inputs[1]", labelloc=t, labeljust=l ordering=out]
+0[label = "Root \nOutBlk=[UncTuple]", color = "green", shape = "house"];
+1[label = "NewEENode \nOutBlk=[UncTuple]", color = "green", shape = "box"];
+2[label = "ParallelUnionStep: \nCombine\nUnc: Integer(8)", color = "green", shape = "box"];
+3[label = "UserDefined:\nPartitionBy:<ROW>\nOrderBy:<NONE>\nAnalytical Functions:\n  vbitmap.bm_to_ids(VAL(0), VAL(1))\nUnc: Integer(8)", color = "green", shape = "box"];
+4[label = "ExprEval: \n  VAL(1)\n  vbitmap.bm_and(vbitmap.bm_and(VAL(2), VAL(5)), vbitmap.bm_and(VAL(8), VAL(11)))\nUnc: Integer(8)\nUnc: Varbinary(16384)", color = "green", shape = "box"];
+5[label = "Join: Hash-Join: \n(Temp Relation 41 x Temp Relation 41) using previous join and TempRel access (PATH ID: 1)\n (d.chunk_id = a.chunk_id)\n\nUnc: Integer(8)\nUnc: Varbinary(16384)\nUnc: Varbinary(16384)\nUnc: Varbinary(16384)\nUnc: Varbinary(16384)", color = "green", shape = "box"];
+6[label = "ParallelUnionStep: \nRound Robin\nUnc: Integer(8)\nUnc: Varbinary(16384)\nUnc: Varbinary(16384)\nUnc: Varbinary(16384)", color = "green", shape = "box"];
+7[label = "Join: Hash-Join: \n(Temp Relation 41 x Temp Relation 41) using previous join and TempRel access (PATH ID: 2)\n (c.chunk_id = a.chunk_id)\n\nUnc: Integer(8)\nUnc: Varbinary(16384)\nUnc: Varbinary(16384)\nUnc: Varbinary(16384)", color = "green", shape = "box"];
+8[label = "ParallelUnionStep: \nCombine\nUnc: Integer(8)\nUnc: Varbinary(16384)\nUnc: Varbinary(16384)", color = "green", shape = "box"];
+9[label = "Join: Hash-Join: \n(Temp Relation 41 x Temp Relation 41) using TempRel access and TempRel access (PATH ID: 3)\n (b.chunk_id = a.chunk_id)\n\nUnc: Integer(8)\nUnc: Varbinary(16384)\nUnc: Varbinary(16384)", color = "green", shape = "box"];
+10[label = "ParallelUnionStep: \nRound Robin\nUnc: Integer(8)\nUnc: Varbinary(16384)", color = "green", shape = "box"];
+11[label = "ExprEval: \n  bitmap_index.chunk_id\n  bitmap_index.payload\nUnc: Integer(8)\nUnc: Varbinary(16384)", color = "green", shape = "box"];
+12[label = "FilterStep: \n(b.predicate = \'zone_A\')\n(b.chunk_id IS NOT NULL)\nUnc: Varchar(80)\nUnc: Integer(8)\nUnc: Varbinary(16384)", color = "green", shape = "box"];
+13[label = "TempRelAccess 41\n\nUnc: Varchar(80)\nUnc: Integer(8)\nUnc: Varbinary(16384)", color = "green", shape = "box"];
+14[label = "ExprEval: \n  bitmap_index.chunk_id\n  bitmap_index.payload\nUnc: Integer(8)\nUnc: Varbinary(16384)", color = "green", shape = "box"];
+15[label = "FilterStep: \n(a.predicate = \'online_true\')\n(a.chunk_id IS NOT NULL)\nUnc: Varchar(80)\nUnc: Integer(8)\nUnc: Varbinary(16384)", color = "green", shape = "box"];
+16[label = "TempRelAccess 41\n\nUnc: Varchar(80)\nUnc: Integer(8)\nUnc: Varbinary(16384)", color = "green", shape = "box"];
+17[label = "ExprEval: \n  bitmap_index.chunk_id\n  bitmap_index.payload\nUnc: Integer(8)\nUnc: Varbinary(16384)", color = "green", shape = "box"];
+18[label = "FilterStep: \n(c.predicate = \'temp_ge_800\')\n(c.chunk_id IS NOT NULL)\nUnc: Varchar(80)\nUnc: Integer(8)\nUnc: Varbinary(16384)", color = "green", shape = "box"];
+19[label = "TempRelAccess 41\n\nUnc: Varchar(80)\nUnc: Integer(8)\nUnc: Varbinary(16384)", color = "green", shape = "box"];
+20[label = "ExprEval: \n  bitmap_index.chunk_id\n  bitmap_index.payload\nUnc: Integer(8)\nUnc: Varbinary(16384)", color = "green", shape = "box"];
+21[label = "FilterStep: \n(d.predicate = \'changes_gt_3\')\n(d.chunk_id IS NOT NULL)\nUnc: Varchar(80)\nUnc: Integer(8)\nUnc: Varbinary(16384)", color = "green", shape = "box"];
+22[label = "TempRelAccess 41\n\nUnc: Varchar(80)\nUnc: Integer(8)\nUnc: Varbinary(16384)", color = "green", shape = "box"];
+1->0 [label = "V[0]",color = "black"];
+2->1 [label = "0",color = "blue"];
+3->2 [label = "0",color = "blue"];
+4->3 [label = "0",color = "blue"];
+5->4 [label = "0",color = "blue"];
+6->5 [label = "0",color = "blue"];
+7->6 [label = "0",color = "blue"];
+8->7 [label = "0",color = "blue"];
+9->8 [label = "0",color = "blue"];
+10->9 [label = "0",color = "blue"];
+11->10 [label = "0",color = "blue"];
+12->11 [label = "0",color = "blue"];
+13->12 [label = "0",color = "blue"];
+14->9 [label = "1",color = "blue"];
+15->14 [label = "0",color = "blue"];
+16->15 [label = "0",color = "blue"];
+17->7 [label = "1",color = "blue"];
+18->17 [label = "0",color = "blue"];
+19->18 [label = "0",color = "blue"];
+20->5 [label = "1",color = "blue"];
+21->20 [label = "0",color = "blue"];
+22->21 [label = "0",color = "blue"];
+}
+digraph G {
+graph [rankdir=BT, label = "BASE QUERY PLAN\nQuery: EXPLAIN WITH k AS (\n  SELECT predicate, chunk_id, payload FROM bitmap_demo.bitmap_index\n  WHERE tenant_id = 10 AND snapshot_id = 1 AND domain = \'device\'\n), hot AS (\n  SELECT a.chunk_id,\n         vbitmap.bm_and(vbitmap.bm_and(a.payload, b.payload), vbitmap.bm_and(c.payload, d.payload)) AS payload\n  FROM k a\n  JOIN k b ON b.chunk_id = a.chunk_id AND b.predicate = \'zone_A\'\n  JOIN k c ON c.chunk_id = a.chunk_id AND c.predicate = \'temp_ge_800\'\n  JOIN k d ON d.chunk_id = a.chunk_id AND d.predicate = \'changes_gt_3\'\n  WHERE a.predicate = \'online_true\'\n)\nSELECT vbitmap.bm_to_ids(chunk_id, payload) OVER (PARTITION ROW) AS device_id FROM hot;\n\nAll Nodes Vector: \n\n  node[0]=v_vdb_node0001 (initiator) Up\n\nSection 1", labelloc=t, labeljust=l ordering=out]
+0[label = "NewEENode \nOutBlk=[UncTuple(3)]", color = "green", shape = "box"];
+1[label = "TempRelWrite 41\n\nUnc: Varchar(80)\nUnc: Integer(8)\nUnc: Varbinary(16384)", color = "green", shape = "box"];
+2[label = "StorageUnionStep: bitmap_index_super\nUnc: Varchar(80)\nUnc: Integer(8)\nUnc: Varbinary(16384)", color = "purple", shape = "box"];
+3[label = "ScanStep: bitmap_index_super\n(bitmap_index.tenant_id = 10)\n(bitmap_index.snapshot_id = 1)\n(bitmap_index.domain = \'device\')\ntenant_id (not emitted)\nsnapshot_id (not emitted)\ndomain (not emitted)\npredicate\nchunk_id\npayload\nUnc: Varchar(80)\nUnc: Integer(8)\nUnc: Varbinary(16384)", color = "brown", shape = "box"];
+1->0 [label = "0",color = "blue"];
+2->1 [label = "0",color = "blue"];
+3->2 [label = "0",color = "blue"];
+}

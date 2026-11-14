@@ -1,0 +1,10 @@
+query,answer,oracle,rows,hash,oracle_hash,matches,error,ms
+q1.ids.sum.N,q1.ids.sum,yes,1,7b8cb33c0b7faae7,7b8cb33c0b7faae7/expect=7b8cb33c0b7faae7,yes,,193.80
+q1.ids.sum.C,q1.ids.sum,,1,7b8cb33c0b7faae7,7b8cb33c0b7faae7/expect=7b8cb33c0b7faae7,yes,,60.69
+q4.sum.N,q4.sum,yes,1,c352baac50e874fa,c352baac50e874fa/expect=c352baac50e874fa,yes,,14.00
+q4.sum.C,q4.sum,,1,c352baac50e874fa,c352baac50e874fa/expect=c352baac50e874fa,yes,,34.88
+q8.sum.N,q8.sum,yes,1,01cdc8b1596a149a,01cdc8b1596a149a/expect=01cdc8b1596a149a,yes,,208.71
+q8.sum.C,q8.sum,,1,01cdc8b1596a149a,01cdc8b1596a149a/expect=01cdc8b1596a149a,yes,,45.31
+q8.join.N,q8.join,yes,1,af0e074a71c652d7,af0e074a71c652d7/expect=af0e074a71c652d7,yes,,235.34
+q8.join.C,q8.join,,1,af0e074a71c652d7,af0e074a71c652d7/expect=af0e074a71c652d7,yes,,83.94
+q8.join.Cin,q8.join,,1,af0e074a71c652d7,af0e074a71c652d7/expect=af0e074a71c652d7,yes,,71.47

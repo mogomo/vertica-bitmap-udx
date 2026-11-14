@@ -1,0 +1,10 @@
+check: query=q1.count.N answer=q1.count rows=1 hash=b4498cf506a5f79c matches=yes ms=195.6
+check: query=q1.count.C answer=q1.count rows=1 hash=b4498cf506a5f79c matches=yes ms=34.5
+check: query=q3.N answer=q3 rows=500 hash=1a17b1531950cc32 matches=yes ms=405.3
+check: query=q3.C answer=q3 rows=500 hash=1a17b1531950cc32 matches=yes ms=144.8
+bench: mixed query=q1.count.C clients=32 n=7081 p50_ms=393.02 p95_ms=540.57 p99_ms=599.96 qps=23.60
+bench: mixed query=q1.count.C during_background=yes clients=32 n=67 p50_ms=409.58 p95_ms=538.30 p99_ms=558.75 qps=0.22
+bench: mixed query=q3.C clients=32 n=3496 p50_ms=1856.22 p95_ms=2616.93 p99_ms=3210.00 qps=11.65
+bench: mixed query=q3.C during_background=yes clients=32 n=56 p50_ms=1999.78 p95_ms=2672.72 p99_ms=3324.22 qps=0.19
+background: status=0 start_s=60.000 end_s=62.867 duration_s=2.867
+summary: mode=mixed engine=clickhouse queries=4 levels=32 check_ok=yes errors=0 mismatches=0 valid=yes

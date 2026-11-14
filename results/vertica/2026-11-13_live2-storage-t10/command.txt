@@ -1,0 +1,5 @@
+command=scripts/live_index.sh status 
+cwd=~/vertica-bitmap-udx
+start_utc=2026-11-13T11:14:07Z
+end_utc=2026-11-13T11:14:07Z
+exit_status=0

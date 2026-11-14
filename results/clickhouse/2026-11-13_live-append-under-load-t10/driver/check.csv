@@ -1,0 +1,5 @@
+query,answer,oracle,rows,hash,oracle_hash,matches,error,ms
+q1.count.N,q1.count,yes,1,b4498cf506a5f79c,b4498cf506a5f79c/expect=b4498cf506a5f79c,yes,,195.62
+q1.count.C,q1.count,,1,b4498cf506a5f79c,b4498cf506a5f79c/expect=b4498cf506a5f79c,yes,,34.53
+q3.N,q3,yes,500,1a17b1531950cc32,1a17b1531950cc32/expect=1a17b1531950cc32,yes,,405.35
+q3.C,q3,,500,1a17b1531950cc32,1a17b1531950cc32/expect=1a17b1531950cc32,yes,,144.81

@@ -1,0 +1,6 @@
+area=vertica run=check-headline-t10 folder=2026-11-12_check-headline-t10 milestone=M5b engine=vertica
+duration_s=58.76 exit_status=0 repo_hash=cd5dba411697d1e1
+engine_cpu_s=173.9 engine_memory_peak_sampled_bytes=32494804992 engine_memory_peak_since_start_bytes=52314071040
+client_cpus=20,21 client_cpu20_busy_pct=2.0 client_cpu21_busy_pct=3.9 client_saturated=no
+limits_ok=yes
+validity=valid

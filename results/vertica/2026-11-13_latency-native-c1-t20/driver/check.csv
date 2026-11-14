@@ -1,0 +1,7 @@
+query,answer,oracle,rows,hash,oracle_hash,matches,error,ms
+q1.count.A,q1.count,yes,1,9f29b5c3304ec560,9f29b5c3304ec560,yes,,10145.08
+q1.ids.A,q1.ids,yes,2515389,00f3b7ce3636bb37,00f3b7ce3636bb37,yes,,10701.88
+q2.daily.A,q2.daily,yes,2,c53ffa7f6f213926,c53ffa7f6f213926,yes,,1608.17
+q3.A,q3,yes,500,d80a5e04c545333e,d80a5e04c545333e,yes,,17985.02
+q4.A,q4,yes,197436,64bb422302bb5c7c,64bb422302bb5c7c,yes,,114.89
+q8.A,q8,yes,5303339,31f7f61ddb774edc,31f7f61ddb774edc,yes,,39093.01

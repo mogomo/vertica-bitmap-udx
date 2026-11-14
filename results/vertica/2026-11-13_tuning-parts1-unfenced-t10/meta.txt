@@ -1,0 +1,6 @@
+area=vertica run=tuning-parts1-unfenced-t10 folder=2026-11-13_tuning-parts1-unfenced-t10 milestone=M5c engine=vertica
+duration_s=23.41 exit_status=0 repo_hash=0f4a666a4c356be5
+engine_cpu_s=215.3 engine_memory_peak_sampled_bytes=8314429440 engine_memory_peak_since_start_bytes=19868053504
+client_cpus=20,21 client_cpu20_busy_pct=3.6 client_cpu21_busy_pct=3.0 client_saturated=no
+limits_ok=yes
+validity=valid

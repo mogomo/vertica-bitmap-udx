@@ -1,0 +1,94 @@
+------------------------------ 
+QUERY PLAN DESCRIPTION: 
+------------------------------
+
+EXPLAIN WITH d AS (
+  SELECT DISTINCT event_ts::DATE AS day, user_id
+  FROM bitmap_demo.event_log
+  WHERE tenant_id = 10 AND channel = 'web'
+    AND event_ts >= TIMESTAMP '2026-10-15 00:00:00' AND event_ts < TIMESTAMP '2026-10-22 00:00:00'
+)
+SELECT a.day || ' ' || b.day AS days, COUNT(*) AS users
+FROM d a JOIN d b ON b.user_id = a.user_id AND b.day >= a.day
+GROUP BY a.day, b.day;
+
+Access Path:
++-GROUPBY HASH (LOCAL RESEGMENT GROUPS) [Cost: 1M, Rows: 6M] (PATH ID: 1)
+|  Aggregates: count(*)
+|  Group By: a.day, b.day
+| +---> JOIN HASH [Cost: 1M, Rows: 6M] (PATH ID: 2) Outer (LOCAL ROUND ROBIN)
+| |      Join Cond: (b.user_id = a.user_id)
+| |      Join Filter: (b.day >= a.day)
+| | +-- Outer -> TEMP RELATION ACCESS for TREL59 [Cost: 503K, Rows: 6M] (PATH ID: 3)
+| | |      Runtime Filter: (SIP1(HashJoin): b.user_id)
+| | |      Path to compute TREL59 (printed once):
+| | | +---> SELECT (TREL59) [Cost: 503K, Rows: 6M] (PATH ID: 4)
+| | | | +---> GROUPBY HASH (LOCAL RESEGMENT GROUPS) [Cost: 503K, Rows: 6M] (PATH ID: 5)
+| | | | |      Group By: (event_log.event_ts)::date, event_log.user_id
+| | | | | +---> STORAGE ACCESS for event_log [Cost: 486K, Rows: 9M] (PATH ID: 6)
+| | | | | |      Projection: bitmap_demo.event_log_super
+| | | | | |      Materialize: event_log.event_ts, event_log.user_id
+| | | | | |      Filter: (event_log.tenant_id = 10)
+| | | | | |      Filter: (event_log.channel = 'web')
+| | | | | |      Filter: ((event_log.event_ts >= '2026-10-15 00:00:00'::timestamp) AND (event_log.event_ts < '2026-10-22 00:00:00'::timestamp))
+| | +-- Inner -> TEMP RELATION ACCESS for TREL59 [Cost: 503K, Rows: 6M] (PUSHED GROUPING) (PATH ID: 7)
+
+
+------------------------------
+----------------------------------------------- 
+PLAN: BASE QUERY PLAN (GraphViz Format)
+----------------------------------------------- 
+digraph G {
+graph [rankdir=BT, label = "Plan Sections", labelloc=t, labeljust=l ordering=out]
+0[label = "Section 0: Inputs[1]", color = "black", shape = "box"];
+1[label = "Section 1", color = "black", shape = "box"];
+1->0 [label = "Req",color = "black"];
+}
+digraph G {
+graph [rankdir=BT, label = "BASE QUERY PLAN\nQuery: EXPLAIN WITH d AS (\n  SELECT DISTINCT event_ts::DATE AS day, user_id\n  FROM bitmap_demo.event_log\n  WHERE tenant_id = 10 AND channel = \'web\'\n    AND event_ts \>= TIMESTAMP \'2026-10-15 00:00:00\' AND event_ts \< TIMESTAMP \'2026-10-22 00:00:00\'\n)\nSELECT a.day || \' \' || b.day AS days, COUNT(*) AS users\nFROM d a JOIN d b ON b.user_id = a.user_id AND b.day \>= a.day\nGROUP BY a.day, b.day;\n\nAll Nodes Vector: \n\n  node[0]=v_vdb_node0001 (initiator) Up\n\nSection 0: Inputs[1]", labelloc=t, labeljust=l ordering=out]
+0[label = "Root \nOutBlk=[UncTuple(2)]", color = "green", shape = "house"];
+1[label = "NewEENode \nOutBlk=[UncTuple(2)]", color = "green", shape = "box"];
+2[label = "ParallelUnionStep: \nCombine\nUnc: Varchar(127)\nUnc: Integer(8)", color = "green", shape = "box"];
+3[label = "ExprEval: \n  concat(concat((a.day)::varchar, \' \'), (b.day)::varchar)\n  \<SVAR\>\nUnc: Varchar(127)\nUnc: Integer(8)", color = "green", shape = "box"];
+4[label = "GroupByHash(Spill): 2 keys\nAggs:\n  count(*)\nUnc: Date(8)\nUnc: Date(8)\nUnc: Integer(8)", color = "green", shape = "box"];
+5[label = "ParallelUnionStep: \nLocally Resegment\nUnc: Date(8)\nUnc: Date(8)\nUnc: Integer(8)", color = "green", shape = "box"];
+6[label = "GroupByPipe(HashPrepass): 2 keys\nAggs:\n  count(*)\nUnc: Date(8)\nUnc: Date(8)\nUnc: Integer(8)", color = "green", shape = "box"];
+7[label = "ExprEval: \n  a.day\n  b.day\n  count(*)\nUnc: Date(8)\nUnc: Date(8)\nUnc: Integer(8)", color = "green", shape = "box"];
+8[label = "Join: Hash-Join: \n(Temp Relation 59 x Temp Relation 59) using TempRel access and TempRel access (PATH ID: 2)\n (b.user_id = a.user_id)\n\nUnc: Date(8)\nUnc: Integer(8)\nUnc: Date(8)", color = "green", shape = "box"];
+9[label = "ParallelUnionStep: \nRound Robin\nUnc: Date(8)\nUnc: Integer(8)", color = "green", shape = "box"];
+10[label = "TempRelAccess 59\n\nUnc: Date(8)\nUnc: Integer(8)", color = "green", shape = "box"];
+11[label = "GroupByHash(Cap Memory): 2 keys\nAggs:\n  count(*)\nUnc: Date(8)\nUnc: Integer(8)\nUnc: Integer(8)", color = "green", shape = "box"];
+12[label = "ExprEval: \n  a.day\n  a.user_id\n  1\nUnc: Date(8)\nUnc: Integer(8)\nUnc: Integer(8)", color = "green", shape = "box"];
+13[label = "TempRelAccess 59\n\nUnc: Date(8)\nUnc: Integer(8)", color = "green", shape = "box"];
+1->0 [label = "V[0] C=2",color = "black",style="bold", arrowtail="inv"];
+2->1 [label = "0",color = "blue"];
+3->2 [label = "0",color = "blue"];
+4->3 [label = "0",color = "blue"];
+5->4 [label = "0",color = "blue"];
+6->5 [label = "0",color = "blue"];
+7->6 [label = "0",color = "blue"];
+8->7 [label = "0",color = "blue"];
+9->8 [label = "0",color = "blue"];
+10->9 [label = "0",color = "blue"];
+11->8 [label = "1",color = "blue"];
+12->11 [label = "0",color = "blue"];
+13->12 [label = "0",color = "blue"];
+}
+digraph G {
+graph [rankdir=BT, label = "BASE QUERY PLAN\nQuery: EXPLAIN WITH d AS (\n  SELECT DISTINCT event_ts::DATE AS day, user_id\n  FROM bitmap_demo.event_log\n  WHERE tenant_id = 10 AND channel = \'web\'\n    AND event_ts \>= TIMESTAMP \'2026-10-15 00:00:00\' AND event_ts \< TIMESTAMP \'2026-10-22 00:00:00\'\n)\nSELECT a.day || \' \' || b.day AS days, COUNT(*) AS users\nFROM d a JOIN d b ON b.user_id = a.user_id AND b.day \>= a.day\nGROUP BY a.day, b.day;\n\nAll Nodes Vector: \n\n  node[0]=v_vdb_node0001 (initiator) Up\n\nSection 1", labelloc=t, labeljust=l ordering=out]
+0[label = "NewEENode \nOutBlk=[UncTuple(2)]", color = "green", shape = "box"];
+1[label = "TempRelWrite 59\n\nUnc: Date(8)\nUnc: Integer(8)", color = "green", shape = "box"];
+2[label = "ParallelUnionStep: \nCombine\nUnc: Date(8)\nUnc: Integer(8)", color = "green", shape = "box"];
+3[label = "GroupByHash(Spill): 2 keys\nAggs:\nUnc: Date(8)\nUnc: Integer(8)", color = "green", shape = "box"];
+4[label = "StorageUnionStep: event_log_super\nLocally Resegment\nUnc: Date(8)\nUnc: Integer(8)", color = "purple", shape = "box"];
+5[label = "GroupByPipe(HashPrepass): 2 keys\nAggs:\nUnc: Date(8)\nUnc: Integer(8)", color = "brown", shape = "box"];
+6[label = "ExprEval: \n  (event_log.event_ts)::date\n  event_log.user_id\nUnc: Date(8)\nUnc: Integer(8)", color = "brown", shape = "box"];
+7[label = "ScanStep: event_log_super\n(event_log.tenant_id = 10)\n(event_log.channel = \'web\')\n((event_log.event_ts \>= \'2026-10-15 00:00:00\'::timestamp) AND (event_log.event_ts \< \'2026-10-22 00:00:00\'::timestamp))\ntenant_id (not emitted)\nchannel (not emitted)\nevent_ts\nuser_id\nUnc: Timestamp(8)\nUnc: Integer(8)", color = "brown", shape = "box"];
+1->0 [label = "0",color = "blue"];
+2->1 [label = "0",color = "blue"];
+3->2 [label = "0",color = "blue"];
+4->3 [label = "0",color = "blue"];
+5->4 [label = "0",color = "blue"];
+6->5 [label = "0",color = "blue"];
+7->6 [label = "0",color = "blue"];
+}

@@ -1,0 +1,5 @@
+command=scripts/deploy.sh --fenced=yes 
+cwd=~/vertica-bitmap-udx
+start_utc=2026-11-13T22:29:16Z
+end_utc=2026-11-13T22:29:16Z
+exit_status=0

@@ -1,0 +1,1 @@
+ERROR: Failure in UDx RPC call InvokeSetup(): Error calling setup() in User Defined Object [bm_member] at [src/udx/pinned.cpp:319], error code: 2, message: bm_member: this session has no set pinned as 'q8': call bm_pin first

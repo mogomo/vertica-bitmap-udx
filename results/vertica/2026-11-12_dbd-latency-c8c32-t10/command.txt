@@ -1,0 +1,5 @@
+command=bash -c python3\ bench/make_dbd_workload.py\ --workload\ bench/workloads/vertica.sql\ --var\ tenant=10\ --out-workload\ \$BENCH_RUN_DIR/dbd_workload.sql\ --out-queries\ \$BENCH_RUN_DIR/dbd_queries.sql\ \&\&\ python3\ bench/driver.py\ run\ --workload\ \$BENCH_RUN_DIR/dbd_workload.sql\ --out\ \$BENCH_RUN_DIR/driver\ --clients\ 8\,32\ --iterations\ 30\ --min-per-client\ 1\ --warmup\ 1\ --only\ \$\(grep\ -oE\ \'\^--\ @query\ \[\^\ \]+\'\ \$BENCH_RUN_DIR/dbd_workload.sql\ \|\ cut\ -d\'\ \'\ -f3\ \|\ grep\ -vxE\ \'q7\\.\(A\|D\)\'\ \|\ paste\ -sd\,\) 
+cwd=~/vertica-bitmap-udx
+start_utc=2026-11-12T15:00:42Z
+end_utc=2026-11-12T16:00:01Z
+exit_status=1

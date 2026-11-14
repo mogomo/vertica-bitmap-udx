@@ -1,0 +1,7 @@
+driver check started 2026-11-13T15:16:52+0200 args ['check', '--client', 'socket', '--workload', 'bench/workloads/vertica_ids.sql', '--var', 'tenant=20', '--out', '~/bitmap_record/vertica/2026-11-13_check-agg-t20/driver', '--statement-cap', '1800', '--only', 'q8.agg.Bplus,q8.join.Bplus,q8.sum.Bplus']
+check q8.sum.A: answer 5303339|265180326584837
+check q8.sum.Bplus: answer 5303339|265180326584837
+check q8.join.A: answer 5303339|5197279|280668090
+check q8.join.Bplus: answer 5303339|5197279|280668090
+check q8.agg.Bplus: answer 5303339|5197279|280668090
+driver ended 2026-11-13T15:18:11+0200 status 0

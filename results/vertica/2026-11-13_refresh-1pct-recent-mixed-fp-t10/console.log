@@ -1,0 +1,21 @@
+refresh: step=start tenant=10 base_snapshot=1 source=1 watermark='2026-11-01 00:00:00' batch=1 people=10000000 fraction=0.01 changed=100000 spread=recent report=mixed seed=1
+10000000
+199998035
+147866
+refresh: step=changes profile_changes=50169 topics_removed=49831 topics_added=47866 change_rows=147866 touched_people=50169 touched_chunks=2 chunks=153
+refresh: step=source_and_batch s=90.93 (copy of the source with the changes; not index work)
+refresh: step=build_full snapshot: op=build tenant=10 domain=person snapshot=2 chunk_bits=16 deep=no validate=full build_s=69.70 validate_s=38.59 publish_s=0.01 total_s=108.30 predicates=547 index_rows=83691 index_bytes=403427991 daily_rows=18360 daily_bytes=104539704
+refresh: step=apply_touched snapshot: op=apply tenant=10 domain=person snapshot=3 chunk_bits=16 deep=no validate=touched build_s=24.41 validate_s=75.67 publish_s=0.01 total_s=100.08 predicates=547 index_rows=83691 index_bytes=403427991 daily_rows=18360 daily_bytes=104539704
+refresh: check   ok    families complete: age_band,consent,country,suspended,topic,universe,daily
+refresh: check   ok    one row per index key
+refresh: check   ok    every name in exactly one certified family
+refresh: check   ok    predicate list = index (family, chunks, cardinality, bytes)
+refresh: check   ok    chunk width 16 in every payload header
+refresh: check   ok    cardinality of every (predicate, chunk) = native SQL (changed parts)
+refresh: check   ok    outside the changed parts: equal to base snapshot 1 (length + header with CRC-32C)
+refresh: check   ok    one row per daily key
+refresh: check   ok    cardinality of every (day, channel, chunk) = native SQL (changed parts)
+refresh: check   ok    daily sets outside the changed parts: equal to base snapshot 1 (length + header with CRC-32C)
+refresh: step=apply_full snapshot: op=apply tenant=10 domain=person snapshot=3 chunk_bits=16 deep=no validate=full build_s=23.31 validate_s=36.91 publish_s=0.01 total_s=60.22 predicates=547 index_rows=83691 index_bytes=403427991 daily_rows=18360 daily_bytes=104539704
+refresh: batch: 2 touched chunks, 97697 resolved add/remove changes; 0 (predicate, chunk) sets changed by delta;
+refresh: step=done tenant=10 fraction=0.01 spread=recent report=mixed batch=1 snapshots_full_touched_incremental=2,3,3 differing_rows_touched=0 differing_rows_incremental=0 equal=yes

@@ -1,0 +1,11 @@
+driver run started 2026-11-13T11:27:56+0200 args ['run', '--workload', 'bench/workloads/clickhouse_ids.sql', '--var', 'tenant=10', '--out', '~/bitmap_record/clickhouse/2026-11-13_ids-use-t10/driver', '--clients', '1,32', '--iterations', '15', '--warmup', '1', '--statement-cap', '300', '--only', 'q1.ids.sum.C,q4.sum.C,q8.sum.C,q8.join.C,q8.join.Cin', '--expect', '~/bitmap_record/vertica/2026-11-13_ids-use-fenced-t10/driver/check.csv']
+check q1.ids.sum.N: answer 251683|1259450085479
+check q1.ids.sum.C: answer 251683|1259450085479
+check q4.sum.N: answer 19695|19691728966
+check q4.sum.C: answer 19695|19691728966
+check q8.sum.N: answer 530315|2654247326083
+check q8.sum.C: answer 530315|2654247326083
+check q8.join.N: answer 530315|519750|28073532
+check q8.join.C: answer 530315|519750|28073532
+check q8.join.Cin: answer 530315|519750|28073532
+driver ended 2026-11-13T11:28:11+0200 status 0

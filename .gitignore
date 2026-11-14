@@ -1,0 +1,7 @@
+build/
+local/
+*.o
+*.so
+.DS_Store
+.vscode/
+__pycache__/

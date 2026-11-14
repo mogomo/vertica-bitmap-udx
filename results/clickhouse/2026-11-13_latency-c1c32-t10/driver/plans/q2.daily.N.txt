@@ -1,0 +1,12 @@
+Output: toDate(event_ts), uniqExact(user_id)
+
+Aggregating
+│  Keys: toDate(event_ts)
+│  Aggregates: uniqExact(user_id)
+│  Skip merging: 0
+└──ReadFromMergeTree (xbench.event_log)
+      Read type: Default
+      Parts: 1 | Granules: 448
+      Output: event_ts, user_id
+      Prewhere filter
+      Prewhere filter column:  tenant_id = 10 AND channel = \'web\' AND event_ts < \'2026-10-17 00:00:00\' AND event_ts >= \'2026-10-15 00:00:00\'

@@ -1,0 +1,132 @@
+------------------------------ 
+QUERY PLAN DESCRIPTION: 
+------------------------------
+
+EXPLAIN WITH k AS (
+  SELECT predicate, chunk_id, payload FROM bitmap_demo.bitmap_index
+  WHERE tenant_id = 10 AND snapshot_id = 1 AND domain = 'person'
+    AND predicate LIKE 'topic\_%'
+), a AS (
+  SELECT chunk_id, payload FROM k WHERE predicate = 'topic_sports'
+), o AS (
+  SELECT k.predicate,
+         SUM(vbitmap.bm_cardinality(k.payload)) AS size,
+         SUM(COALESCE(vbitmap.bm_and_cardinality(k.payload, a.payload), 0)) AS inter
+  FROM k LEFT JOIN a ON a.chunk_id = k.chunk_id
+  WHERE k.predicate <> 'topic_sports'
+  GROUP BY k.predicate
+)
+SELECT predicate, inter AS intersection, size + (SELECT SUM(vbitmap.bm_cardinality(payload)) FROM a) - inter AS union_size,
+       ROUND(inter / (size + (SELECT SUM(vbitmap.bm_cardinality(payload)) FROM a) - inter)::FLOAT, 4) AS jaccard
+FROM o;
+
+Access Path:
++-JOIN  (CROSS JOIN) [Cost: 1M, Rows: 2] (PATH ID: 1) Outer (LOCAL ROUND ROBIN)
+| +-- Outer -> SELECT [Cost: 1M, Rows: 2] (PATH ID: 2)
+| | +---> GROUPBY PIPELINED [Cost: 1M, Rows: 2] (PATH ID: 3)
+| | |      Aggregates: sum(vbitmap.bm_cardinality(k.payload)), sum(coalesce(vbitmap.bm_and_cardinality(k.payload, a.payload), 0))
+| | |      Group By: k.predicate
+| | | +---> JOIN HASH [LeftOuter] [Cost: 1M, Rows: 54K] (PATH ID: 4) Outer (LOCAL ROUND ROBIN)
+| | | |      Join Cond: (a.chunk_id = k.chunk_id)
+| | | | +-- Outer -> TEMP RELATION ACCESS for TREL82 [Cost: 158K, Rows: 54K] (PATH ID: 5)
+| | | | |      Filter: (k.predicate <> 'topic_sports')
+| | | | |      Path to compute TREL82 (printed once):
+| | | | | +---> SELECT (TREL82) [Cost: 158K, Rows: 54K] (PATH ID: 6)
+| | | | | | +---> STORAGE ACCESS for bitmap_index [Cost: 158K, Rows: 54K] (PATH ID: 7)
+| | | | | | |      Projection: bitmap_demo.bitmap_index_super
+| | | | | | |      Materialize: bitmap_index.predicate, bitmap_index.chunk_id, bitmap_index.payload
+| | | | | | |      Filter: (bitmap_index.tenant_id = 10)
+| | | | | | |      Filter: (bitmap_index.snapshot_id = 1)
+| | | | | | |      Filter: (bitmap_index.domain = 'person')
+| | | | | | |      Filter: (bitmap_index.predicate ~~ E'topic\\_%')
+| | | | +-- Inner -> TEMP RELATION ACCESS for TREL83 [Cost: 158K, Rows: 54K] (PATH ID: 8)
+| | | | |      Filter: (a.chunk_id IS NOT NULL)
+| | | | |      Path to compute TREL83 (printed once):
+| | | | | +---> SELECT (TREL83) [Cost: 158K, Rows: 54K] (PATH ID: 9)
+| | | | | | +---> TEMP RELATION ACCESS for TREL82 [Cost: 158K, Rows: 54K] (PATH ID: 10)
+| | | | | | |      Filter: (k.predicate = 'topic_sports')
+| +-- Inner -> SELECT [Cost: 180K, Rows: 1] (PATH ID: 11)
+| | +---> GROUPBY NOTHING [Cost: 180K, Rows: 1] (PATH ID: 12)
+| | |      Aggregates: sum(vbitmap.bm_cardinality(a.payload))
+| | | +---> TEMP RELATION ACCESS for TREL83 [Cost: 158K, Rows: 54K] (PATH ID: 13)
+
+
+------------------------------
+----------------------------------------------- 
+PLAN: BASE QUERY PLAN (GraphViz Format)
+----------------------------------------------- 
+digraph G {
+graph [rankdir=BT, label = "Plan Sections", labelloc=t, labeljust=l ordering=out]
+0[label = "Section 0: Inputs[1, 2]", color = "black", shape = "box"];
+1[label = "Section 1", color = "black", shape = "box"];
+2[label = "Section 2: Inputs[1]", color = "black", shape = "box"];
+1->0 [label = "Req",color = "black"];
+1->2 [label = "Req",color = "black"];
+2->0 [label = "Req",color = "black"];
+}
+digraph G {
+graph [rankdir=BT, label = "BASE QUERY PLAN\nQuery: EXPLAIN WITH k AS (\n  SELECT predicate, chunk_id, payload FROM bitmap_demo.bitmap_index\n  WHERE tenant_id = 10 AND snapshot_id = 1 AND domain = \'person\'\n    AND predicate LIKE \'topic\_%\'\n), a AS (\n  SELECT chunk_id, payload FROM k WHERE predicate = \'topic_sports\'\n), o AS (\n  SELECT k.predicate,\n         SUM(vbitmap.bm_cardinality(k.payload)) AS size,\n         SUM(COALESCE(vbitmap.bm_and_cardinality(k.payload, a.payload), 0)) AS inter\n  FROM k LEFT JOIN a ON a.chunk_id = k.chunk_id\n  WHERE k.predicate \<\> \'topic_sports\'\n  GROUP BY k.predicate\n)\nSELECT predicate, inter AS intersection, size + (SELECT SUM(vbitmap.bm_cardinality(payload)) FROM a) - inter AS union_size,\n       ROUND(inter / (size + (SELECT SUM(vbitmap.bm_cardinality(payload)) FROM a) - inter)::FLOAT, 4) AS jaccard\nFROM o;\n\nAll Nodes Vector: \n\n  node[0]=v_vdb_node0001 (initiator) Up\n\nSection 0: Inputs[1, 2]", labelloc=t, labeljust=l ordering=out]
+0[label = "Root \nOutBlk=[UncTuple(4)]", color = "green", shape = "house"];
+1[label = "NewEENode \nOutBlk=[UncTuple(4)]", color = "green", shape = "box"];
+2[label = "ParallelUnionStep: \nCombine\nUnc: Varchar(80)\nUnc: Integer(8)\nUnc: Integer(8)\nUnc: Float(8)", color = "green", shape = "box"];
+3[label = "ExprEval: \n  o.predicate\n  o.inter\n  ((o.size + VAL(2)) - o.inter)\n  round((o.inter / (((o.size + VAL(2)) - o.inter))::float), 4)\nUnc: Varchar(80)\nUnc: Integer(8)\nUnc: Integer(8)\nUnc: Float(8)", color = "green", shape = "box"];
+4[label = "Join: Hash-Join: \n(bitmap_demo.bitmap_index x UNKNOWN) using subquery and subquery (PATH ID: 1)\n[CROSS JOIN]\n\nUnc: Varchar(80)\nUnc: Integer(8)\nUnc: Integer(8)\nUnc: Integer(8)\nUnc: Integer(8)", color = "green", shape = "box"];
+5[label = "ParallelUnionStep: \nRound Robin\nUnc: Varchar(80)\nUnc: Integer(8)\nUnc: Integer(8)", color = "green", shape = "box"];
+6[label = "GroupByPipe: 1 keys\nAggs:\n  sum(vbitmap.bm_cardinality(k.payload))\n  sum(coalesce(vbitmap.bm_and_cardinality(k.payload, a.payload), 0))\nUnc: Varchar(80)\nUnc: Integer(8)\nUnc: Integer(8)", color = "green", shape = "box"];
+7[label = "ParallelMergeStep: 1 sorted\nCombine\nUnc: Varchar(80)\nUnc: Integer(8)\nUnc: Integer(8)", color = "green", shape = "box"];
+8[label = "GroupByPipe: 1 keys\nAggs:\n  sum(vbitmap.bm_cardinality(k.payload))\n  sum(coalesce(vbitmap.bm_and_cardinality(k.payload, a.payload), 0))\nUnc: Varchar(80)\nUnc: Integer(8)\nUnc: Integer(8)", color = "green", shape = "box"];
+9[label = "ExprEval: \n  k.predicate\n  vbitmap.bm_cardinality(k.payload)\n  coalesce(vbitmap.bm_and_cardinality(k.payload, a.payload), 0)\nUnc: Varchar(80)\nUnc: Integer(8)\nUnc: Integer(8)", color = "green", shape = "box"];
+10[label = "Join: Hash-Join: \n(Temp Relation 82 x Temp Relation 83) using TempRel access and TempRel access (PATH ID: 4)\n[LeftOuter]\n (a.chunk_id = k.chunk_id)\n\nUnc: Varchar(80)\nUnc: Varbinary(16384)\nUnc: Varbinary(16384)", color = "green", shape = "box"];
+11[label = "ParallelUnionStep: \nRound Robin\nUnc: Varchar(80)\nUnc: Integer(8)\nUnc: Varbinary(16384)", color = "green", shape = "box"];
+12[label = "FilterStep: \n(k.predicate \<\> \'topic_sports\')\nUnc: Varchar(80)\nUnc: Integer(8)\nUnc: Varbinary(16384)", color = "green", shape = "box"];
+13[label = "TempRelAccess 82; 2 sorted\n\nUnc: Varchar(80)\nUnc: Integer(8)\nUnc: Varbinary(16384)", color = "green", shape = "box"];
+14[label = "FilterStep: \n(a.chunk_id IS NOT NULL)\nUnc: Integer(8)\nUnc: Varbinary(16384)", color = "green", shape = "box"];
+15[label = "TempRelAccess 83\n\nUnc: Integer(8)\nUnc: Varbinary(16384)", color = "green", shape = "box"];
+16[label = "ExprEval: \n  \<SVAR\>\n  \<SVAR\>\nUnc: Integer(8)\nUnc: Integer(8)", color = "green", shape = "box"];
+17[label = "GroupByPipe: 0 keys\nAggs:\n  sum(vbitmap.bm_cardinality(a.payload))\nUnc: Integer(8)", color = "green", shape = "box"];
+18[label = "ExprEval: \n  vbitmap.bm_cardinality(a.payload)\nUnc: Integer(8)", color = "green", shape = "box"];
+19[label = "ExprEval: \n  a.payload\nUnc: Varbinary(16384)", color = "green", shape = "box"];
+20[label = "TempRelAccess 83\n\nUnc: Integer(8)\nUnc: Varbinary(16384)", color = "green", shape = "box"];
+1->0 [label = "V[0] C=4",color = "black",style="bold", arrowtail="inv"];
+2->1 [label = "0",color = "blue"];
+3->2 [label = "0",color = "blue"];
+4->3 [label = "0",color = "blue"];
+5->4 [label = "0",color = "blue"];
+6->5 [label = "0",color = "blue"];
+7->6 [label = "0",color = "blue"];
+8->7 [label = "0",color = "blue"];
+9->8 [label = "0",color = "blue"];
+10->9 [label = "0",color = "blue"];
+11->10 [label = "0",color = "blue"];
+12->11 [label = "0",color = "blue"];
+13->12 [label = "0",color = "blue"];
+14->10 [label = "1",color = "blue"];
+15->14 [label = "0",color = "blue"];
+16->4 [label = "1",color = "blue"];
+17->16 [label = "0",color = "blue"];
+18->17 [label = "0",color = "blue"];
+19->18 [label = "0",color = "blue"];
+20->19 [label = "0",color = "blue"];
+}
+digraph G {
+graph [rankdir=BT, label = "BASE QUERY PLAN\nQuery: EXPLAIN WITH k AS (\n  SELECT predicate, chunk_id, payload FROM bitmap_demo.bitmap_index\n  WHERE tenant_id = 10 AND snapshot_id = 1 AND domain = \'person\'\n    AND predicate LIKE \'topic\_%\'\n), a AS (\n  SELECT chunk_id, payload FROM k WHERE predicate = \'topic_sports\'\n), o AS (\n  SELECT k.predicate,\n         SUM(vbitmap.bm_cardinality(k.payload)) AS size,\n         SUM(COALESCE(vbitmap.bm_and_cardinality(k.payload, a.payload), 0)) AS inter\n  FROM k LEFT JOIN a ON a.chunk_id = k.chunk_id\n  WHERE k.predicate \<\> \'topic_sports\'\n  GROUP BY k.predicate\n)\nSELECT predicate, inter AS intersection, size + (SELECT SUM(vbitmap.bm_cardinality(payload)) FROM a) - inter AS union_size,\n       ROUND(inter / (size + (SELECT SUM(vbitmap.bm_cardinality(payload)) FROM a) - inter)::FLOAT, 4) AS jaccard\nFROM o;\n\nAll Nodes Vector: \n\n  node[0]=v_vdb_node0001 (initiator) Up\n\nSection 1", labelloc=t, labeljust=l ordering=out]
+0[label = "NewEENode \nOutBlk=[UncTuple(3)]", color = "green", shape = "box"];
+1[label = "TempRelWrite 82; 2 sorted\n\nUnc: Varchar(80)\nUnc: Integer(8)\nUnc: Varbinary(16384)", color = "green", shape = "box"];
+2[label = "StorageUnionStep: bitmap_index_super\nUnc: Varchar(80)\nUnc: Integer(8)\nUnc: Varbinary(16384)", color = "purple", shape = "box"];
+3[label = "ScanStep: bitmap_index_super\n(bitmap_index.tenant_id = 10)\n(bitmap_index.snapshot_id = 1)\n(bitmap_index.domain = \'person\')\n(bitmap_index.predicate ~~ E\'topic\\_%\')\ntenant_id (not emitted)\nsnapshot_id (not emitted)\ndomain (not emitted)\npredicate\nchunk_id\npayload\nUnc: Varchar(80)\nUnc: Integer(8)\nUnc: Varbinary(16384)", color = "brown", shape = "box"];
+1->0 [label = "0",color = "blue"];
+2->1 [label = "0",color = "blue"];
+3->2 [label = "0",color = "blue"];
+}
+digraph G {
+graph [rankdir=BT, label = "BASE QUERY PLAN\nQuery: EXPLAIN WITH k AS (\n  SELECT predicate, chunk_id, payload FROM bitmap_demo.bitmap_index\n  WHERE tenant_id = 10 AND snapshot_id = 1 AND domain = \'person\'\n    AND predicate LIKE \'topic\_%\'\n), a AS (\n  SELECT chunk_id, payload FROM k WHERE predicate = \'topic_sports\'\n), o AS (\n  SELECT k.predicate,\n         SUM(vbitmap.bm_cardinality(k.payload)) AS size,\n         SUM(COALESCE(vbitmap.bm_and_cardinality(k.payload, a.payload), 0)) AS inter\n  FROM k LEFT JOIN a ON a.chunk_id = k.chunk_id\n  WHERE k.predicate \<\> \'topic_sports\'\n  GROUP BY k.predicate\n)\nSELECT predicate, inter AS intersection, size + (SELECT SUM(vbitmap.bm_cardinality(payload)) FROM a) - inter AS union_size,\n       ROUND(inter / (size + (SELECT SUM(vbitmap.bm_cardinality(payload)) FROM a) - inter)::FLOAT, 4) AS jaccard\nFROM o;\n\nAll Nodes Vector: \n\n  node[0]=v_vdb_node0001 (initiator) Up\n\nSection 2: Inputs[1]", labelloc=t, labeljust=l ordering=out]
+0[label = "NewEENode \nOutBlk=[UncTuple(2)]", color = "green", shape = "box"];
+1[label = "TempRelWrite 83\n\nUnc: Integer(8)\nUnc: Varbinary(16384)", color = "green", shape = "box"];
+2[label = "ExprEval: \n  k.chunk_id\n  k.payload\nUnc: Integer(8)\nUnc: Varbinary(16384)", color = "green", shape = "box"];
+3[label = "FilterStep: \n(k.predicate = \'topic_sports\')\nUnc: Varchar(80)\nUnc: Integer(8)\nUnc: Varbinary(16384)", color = "green", shape = "box"];
+4[label = "TempRelAccess 82; 2 sorted\n\nUnc: Varchar(80)\nUnc: Integer(8)\nUnc: Varbinary(16384)", color = "green", shape = "box"];
+1->0 [label = "0",color = "blue"];
+2->1 [label = "0",color = "blue"];
+3->2 [label = "0",color = "blue"];
+4->3 [label = "0",color = "blue"];
+}

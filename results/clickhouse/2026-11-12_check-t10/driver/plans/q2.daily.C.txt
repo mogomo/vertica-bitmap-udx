@@ -1,0 +1,12 @@
+Output: day, groupBitmapMerge(bm)
+
+Aggregating
+│  Keys: day
+│  Aggregates: groupBitmapMerge(bm)
+│  Skip merging: 0
+└──ReadFromMergeTree (xbench.daily_bitmap)
+      Read type: Default
+      Parts: 1 | Granules: 2
+      Output: day, bm
+      Prewhere filter
+      Prewhere filter column:  tenant_id = 10 AND snapshot_id = 1 AND channel = \'web\' AND day < \'2026-10-17\' AND day >= \'2026-10-15\'

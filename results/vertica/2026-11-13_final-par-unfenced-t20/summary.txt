@@ -1,0 +1,5 @@
+check: query=q3.Bpar answer=q3 rows=500 hash=d80a5e04c545333e matches=yes ms=9257.1
+check: query=q7.Bpar answer=q7 rows=499 hash=a2963265780c0ee9 matches=yes ms=9726.9
+bench: query=q3.Bpar clients=1 n=15 p50_ms=9874.72 p95_ms=9919.48 p99_ms=9926.79 mean_ms=9882.39 engine_p50_ms=9873.0 qps=0.09 errors=0 mismatches=0
+bench: query=q7.Bpar clients=1 n=15 p50_ms=9740.95 p95_ms=9756.93 p99_ms=9759.37 mean_ms=9734.88 engine_p50_ms=9738.0 qps=0.10 errors=0 mismatches=0
+summary: mode=run engine=vertica queries=2 levels=1 check_ok=yes errors=0 mismatches=0 valid=yes

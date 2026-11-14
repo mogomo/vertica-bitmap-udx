@@ -1,0 +1,6 @@
+area=vertica run=latency-bplus-bychunk-unfenced-t10 folder=2026-11-13_latency-bplus-bychunk-unfenced-t10 milestone=M5b engine=vertica
+duration_s=251.82 exit_status=0 repo_hash=82096cc9e0fea3dd
+engine_cpu_s=760.5 engine_memory_peak_sampled_bytes=41436397568 engine_memory_peak_since_start_bytes=60129542144
+client_cpus=20,21 client_cpu20_busy_pct=22.2 client_cpu21_busy_pct=24.4 client_saturated=no
+limits_ok=yes
+validity=valid

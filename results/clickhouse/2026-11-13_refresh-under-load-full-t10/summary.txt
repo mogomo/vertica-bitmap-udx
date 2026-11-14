@@ -1,0 +1,14 @@
+check: query=q1.count.N answer=q1.count rows=1 hash=b4498cf506a5f79c matches=yes ms=212.8
+check: query=q1.count.C answer=q1.count rows=1 hash=b4498cf506a5f79c matches=yes ms=43.3
+check: query=q2.daily.N answer=q2.daily rows=2 hash=ce7279e17bf8b689 matches=yes ms=42.3
+check: query=q2.daily.C answer=q2.daily rows=2 hash=ce7279e17bf8b689 matches=yes ms=23.8
+check: query=q3.N answer=q3 rows=500 hash=1a17b1531950cc32 matches=yes ms=472.3
+check: query=q3.C answer=q3 rows=500 hash=1a17b1531950cc32 matches=yes ms=203.4
+check: query=q4.N answer=q4 rows=19695 hash=418fbbab9d532966 matches=yes ms=30.1
+check: query=q4.C answer=q4 rows=19695 hash=418fbbab9d532966 matches=yes ms=16.4
+check: query=q7.N answer=q7 rows=499 hash=8d89f06ae62b8c25 matches=yes ms=1449.9
+check: query=q7.C answer=q7 rows=499 hash=8d89f06ae62b8c25 matches=yes ms=120.4
+check: query=q8.N answer=q8 rows=530315 hash=384c2a5fd45796b7 matches=yes ms=194.1
+check: query=q8.C answer=q8 rows=530315 hash=384c2a5fd45796b7 matches=yes ms=38.5
+background: status=0 start_s=60.010 end_s=73.057 duration_s=13.047
+summary: mode=mixed engine=clickhouse queries=12 levels=32 check_ok=yes errors=0 mismatches=0 valid=yes

@@ -1,0 +1,6 @@
+area=vertica run=live2-ids-unfenced-t10 folder=2026-11-13_live2-ids-unfenced-t10 milestone=M5c engine=vertica
+duration_s=29.02 exit_status=0 repo_hash=6ba884bd2a71d691
+engine_cpu_s=14.5 engine_memory_peak_sampled_bytes=5597913088 engine_memory_peak_since_start_bytes=10422403072
+client_cpus=20,21 client_cpu20_busy_pct=81.0 client_cpu21_busy_pct=11.2 client_saturated=no
+limits_ok=yes
+validity=valid

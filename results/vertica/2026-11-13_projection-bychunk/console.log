@@ -1,0 +1,24 @@
+CREATE PROJECTION bitmap_demo.bitmap_index_by_chunk AS
+SELECT tenant_id, snapshot_id, domain, predicate, chunk_id, payload FROM bitmap_demo.bitmap_index
+ORDER BY tenant_id, snapshot_id, domain, chunk_id, predicate
+SEGMENTED BY HASH(tenant_id, domain, chunk_id) ALL NODES;
+vsql:bench/vertica_projection_bychunk.sql:9: WARNING 4468:  Projection <bitmap_demo.bitmap_index_by_chunk> is not available for query processing. Execute the select start_refresh() function to copy data into this projection.
+          The projection must have a sufficient number of buddy projections and all nodes must be up before starting a refresh
+CREATE PROJECTION
+SELECT REFRESH('bitmap_demo.bitmap_index');
+                                                                                                                                                        REFRESH                                                                                                                                                         
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ Refresh completed with the following outcomes:
+Projection Name: [Anchor Table] [Status] [Refresh Method] [Error Count] [Duration (sec)]
+----------------------------------------------------------------------------------------
+"bitmap_demo"."bitmap_index_by_chunk": [bitmap_index] [refreshed] [scratch] [0] [62]
+
+(1 row)
+
+SELECT 'summary: projection=bitmap_index_by_chunk up_to_date=' || is_up_to_date FROM v_catalog.projections
+WHERE projection_schema = 'bitmap_demo' AND projection_name = 'bitmap_index_by_chunk';
+                        ?column?                        
+--------------------------------------------------------
+ summary: projection=bitmap_index_by_chunk up_to_date=t
+(1 row)
+

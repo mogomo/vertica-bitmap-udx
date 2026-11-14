@@ -1,0 +1,3581 @@
+{
+ "_about": "Written by blog/charts/make_spec.py; values are read by bench/charts.py from the recorded runs.",
+ "one_question": {
+  "title": "One question, five ways to answer it: Vertica's bitmap database is first, {x0} times ahead of ClickHouse's bitmap functions for one user and {x1} times with 32 users",
+  "subtitle": "The question: how many consenting, active users in the country, aged 25 to 54, like sports or finance? 10 million people, 200 million interest rows; one machine, each engine limited to 20 CPUs and 56 GiB; median time of the recorded executions, shorter is faster; every answer checked against plain SQL",
+  "panels": [
+   {
+    "title": "One user asks",
+    "verdict": [
+     "Vertica",
+     [
+      "v_bitmap",
+      "v_fenced"
+     ],
+     "ClickHouse",
+     [
+      "ch_bitmap"
+     ]
+    ],
+    "bars": [
+     {
+      "pick": "min",
+      "from": [
+       {
+        "run": "vertica/2026-11-12_latency-c1-t10",
+        "query": "q1.count.A",
+        "clients": 1
+       },
+       {
+        "run": "vertica/2026-11-12_latency-c1-t10",
+        "query": "q1.count.D",
+        "clients": 1
+       },
+       {
+        "run": "vertica/2026-11-12_latency-native-tuned-c1-t10",
+        "query": "q1.count.A",
+        "clients": 1
+       },
+       {
+        "run": "vertica/2026-11-12_latency-native-tuned-c1-t10",
+        "query": "q1.count.D",
+        "clients": 1
+       },
+       {
+        "run": "vertica/2026-11-12_dbd-latency-c1-t10",
+        "query": "q1.count.A",
+        "clients": 1
+       },
+       {
+        "run": "vertica/2026-11-12_dbd-latency-c1-t10",
+        "query": "q1.count.D",
+        "clients": 1
+       }
+      ],
+      "series": "v_sql"
+     },
+     {
+      "from": [
+       {
+        "run": "clickhouse/2026-11-13_latency-c1c32-t10",
+        "query": "q1.count.N",
+        "clients": 1
+       }
+      ],
+      "series": "ch_sql"
+     },
+     {
+      "from": [
+       {
+        "run": "clickhouse/2026-11-13_latency-c1c32-t10",
+        "query": "q1.count.C",
+        "clients": 1
+       }
+      ],
+      "series": "ch_bitmap"
+     },
+     {
+      "from": [
+       {
+        "run": "vertica/2026-11-13_final-headline-fenced-t10",
+        "query": "q1.count.Bplus",
+        "clients": 1
+       }
+      ],
+      "series": "v_fenced"
+     },
+     {
+      "from": [
+       {
+        "run": "vertica/2026-11-13_final-headline-unfenced-t10",
+        "query": "q1.count.Bplus",
+        "clients": 1
+       }
+      ],
+      "series": "v_bitmap"
+     }
+    ]
+   },
+   {
+    "title": "32 users ask at once",
+    "verdict": [
+     "Vertica",
+     [
+      "v_bitmap",
+      "v_fenced"
+     ],
+     "ClickHouse",
+     [
+      "ch_bitmap"
+     ]
+    ],
+    "bars": [
+     {
+      "pick": "min",
+      "from": [
+       {
+        "run": "vertica/2026-11-12_latency-c8c32-t10",
+        "query": "q1.count.A",
+        "clients": 32
+       },
+       {
+        "run": "vertica/2026-11-12_latency-c8c32-t10",
+        "query": "q1.count.D",
+        "clients": 32
+       },
+       {
+        "run": "vertica/2026-11-12_latency-native-tuned-c8c32-t10",
+        "query": "q1.count.A",
+        "clients": 32
+       },
+       {
+        "run": "vertica/2026-11-12_latency-native-tuned-c8c32-t10",
+        "query": "q1.count.D",
+        "clients": 32
+       },
+       {
+        "run": "vertica/2026-11-12_dbd-latency-c8c32-t10",
+        "query": "q1.count.A",
+        "clients": 32
+       },
+       {
+        "run": "vertica/2026-11-12_dbd-latency-c8c32-t10",
+        "query": "q1.count.D",
+        "clients": 32
+       }
+      ],
+      "series": "v_sql"
+     },
+     {
+      "from": [
+       {
+        "run": "clickhouse/2026-11-13_latency-c1c32-t10",
+        "query": "q1.count.N",
+        "clients": 32
+       }
+      ],
+      "series": "ch_sql"
+     },
+     {
+      "from": [
+       {
+        "run": "clickhouse/2026-11-13_latency-c1c32-t10",
+        "query": "q1.count.C",
+        "clients": 32
+       }
+      ],
+      "series": "ch_bitmap"
+     },
+     {
+      "from": [
+       {
+        "run": "vertica/2026-11-13_final-headline-fenced-t10",
+        "query": "q1.count.Bplus",
+        "clients": 32
+       }
+      ],
+      "series": "v_fenced"
+     },
+     {
+      "from": [
+       {
+        "run": "vertica/2026-11-13_final-headline-unfenced-t10",
+        "query": "q1.count.Bplus",
+        "clients": 32
+       }
+      ],
+      "series": "v_bitmap"
+     }
+    ]
+   }
+  ]
+ },
+ "latency_1_client": {
+  "title": "Inside Vertica, one user: the bitmap database answers the audience count {x0} times faster than tuned plain SQL",
+  "subtitle": "10 million people, 200 million interest rows; one machine, each engine limited to 20 CPUs and 56 GiB; median time of the recorded executions, shorter is faster; every answer checked against plain SQL",
+  "panels": [
+   {
+    "title": "How many people are in this audience? (5 filters, 2 topics)",
+    "verdict": [
+     "Bitmap",
+     [
+      "v_bitmap",
+      "v_fenced"
+     ],
+     "Plain SQL",
+     [
+      "v_sql"
+     ]
+    ],
+    "bars": [
+     {
+      "pick": "min",
+      "from": [
+       {
+        "run": "vertica/2026-11-12_latency-c1-t10",
+        "query": "q1.count.A",
+        "clients": 1
+       },
+       {
+        "run": "vertica/2026-11-12_latency-c1-t10",
+        "query": "q1.count.D",
+        "clients": 1
+       },
+       {
+        "run": "vertica/2026-11-12_latency-native-tuned-c1-t10",
+        "query": "q1.count.A",
+        "clients": 1
+       },
+       {
+        "run": "vertica/2026-11-12_latency-native-tuned-c1-t10",
+        "query": "q1.count.D",
+        "clients": 1
+       },
+       {
+        "run": "vertica/2026-11-12_dbd-latency-c1-t10",
+        "query": "q1.count.A",
+        "clients": 1
+       },
+       {
+        "run": "vertica/2026-11-12_dbd-latency-c1-t10",
+        "query": "q1.count.D",
+        "clients": 1
+       }
+      ],
+      "series": "v_sql"
+     },
+     {
+      "from": [
+       {
+        "run": "vertica/2026-11-13_final-headline-fenced-t10",
+        "query": "q1.count.Bplus",
+        "clients": 1
+       }
+      ],
+      "series": "v_fenced"
+     },
+     {
+      "from": [
+       {
+        "run": "vertica/2026-11-13_final-headline-unfenced-t10",
+        "query": "q1.count.Bplus",
+        "clients": 1
+       }
+      ],
+      "series": "v_bitmap"
+     }
+    ]
+   },
+   {
+    "title": "How many distinct web users on each of two days?",
+    "verdict": [
+     "Bitmap",
+     [
+      "v_bitmap",
+      "v_fenced"
+     ],
+     "Plain SQL",
+     [
+      "v_sql"
+     ]
+    ],
+    "bars": [
+     {
+      "pick": "min",
+      "from": [
+       {
+        "run": "vertica/2026-11-12_latency-c1-t10",
+        "query": "q2.daily.A",
+        "clients": 1
+       },
+       {
+        "run": "vertica/2026-11-12_latency-c1-t10",
+        "query": "q2.daily.D",
+        "clients": 1
+       },
+       {
+        "run": "vertica/2026-11-12_latency-native-tuned-c1-t10",
+        "query": "q2.daily.A",
+        "clients": 1
+       },
+       {
+        "run": "vertica/2026-11-12_latency-native-tuned-c1-t10",
+        "query": "q2.daily.D",
+        "clients": 1
+       },
+       {
+        "run": "vertica/2026-11-12_dbd-latency-c1-t10",
+        "query": "q2.daily.A",
+        "clients": 1
+       },
+       {
+        "run": "vertica/2026-11-12_dbd-latency-c1-t10",
+        "query": "q2.daily.D",
+        "clients": 1
+       }
+      ],
+      "series": "v_sql"
+     },
+     {
+      "from": [
+       {
+        "run": "vertica/2026-11-13_final-headline-fenced-t10",
+        "query": "q2.daily.B",
+        "clients": 1
+       }
+      ],
+      "series": "v_fenced"
+     },
+     {
+      "from": [
+       {
+        "run": "vertica/2026-11-13_final-headline-unfenced-t10",
+        "query": "q2.daily.B",
+        "clients": 1
+       }
+      ],
+      "series": "v_bitmap"
+     }
+    ]
+   },
+   {
+    "title": "Split the audience by all 500 topics",
+    "verdict": [
+     "Bitmap",
+     [
+      "v_bitmap",
+      "v_fenced"
+     ],
+     "Plain SQL",
+     [
+      "v_sql"
+     ]
+    ],
+    "bars": [
+     {
+      "pick": "min",
+      "from": [
+       {
+        "run": "vertica/2026-11-12_latency-c1-t10",
+        "query": "q3.A",
+        "clients": 1
+       },
+       {
+        "run": "vertica/2026-11-12_latency-c1-t10",
+        "query": "q3.D",
+        "clients": 1
+       },
+       {
+        "run": "vertica/2026-11-12_latency-native-tuned-c1-t10",
+        "query": "q3.A",
+        "clients": 1
+       },
+       {
+        "run": "vertica/2026-11-12_latency-native-tuned-c1-t10",
+        "query": "q3.D",
+        "clients": 1
+       },
+       {
+        "run": "vertica/2026-11-12_dbd-latency-c1-t10",
+        "query": "q3.A",
+        "clients": 1
+       },
+       {
+        "run": "vertica/2026-11-12_dbd-latency-c1-t10",
+        "query": "q3.D",
+        "clients": 1
+       }
+      ],
+      "series": "v_sql"
+     },
+     {
+      "pick": "min",
+      "from": [
+       {
+        "run": "vertica/2026-11-13_final-headline-fenced-t10",
+        "query": "q3.Bplus",
+        "clients": 1
+       },
+       {
+        "run": "vertica/2026-11-13_final-par-fenced-t10",
+        "query": "q3.Bpar",
+        "clients": 1
+       }
+      ],
+      "series": "v_fenced"
+     },
+     {
+      "pick": "min",
+      "from": [
+       {
+        "run": "vertica/2026-11-13_final-headline-unfenced-t10",
+        "query": "q3.Bplus",
+        "clients": 1
+       },
+       {
+        "run": "vertica/2026-11-13_final-par-unfenced-t10",
+        "query": "q3.Bpar",
+        "clients": 1
+       }
+      ],
+      "series": "v_bitmap"
+     }
+    ]
+   },
+   {
+    "title": "Rank 499 topics by their overlap with sports",
+    "verdict": [
+     "Bitmap",
+     [
+      "v_bitmap",
+      "v_fenced"
+     ],
+     "Plain SQL",
+     [
+      "v_sql"
+     ]
+    ],
+    "bars": [
+     {
+      "pick": "min",
+      "from": [
+       {
+        "run": "vertica/2026-11-12_latency-c1-t10",
+        "query": "q7.A",
+        "clients": 1
+       },
+       {
+        "run": "vertica/2026-11-12_latency-c1-t10",
+        "query": "q7.D",
+        "clients": 1
+       },
+       {
+        "run": "vertica/2026-11-12_latency-c1-t10",
+        "query": "q7.At",
+        "clients": 1
+       },
+       {
+        "run": "vertica/2026-11-12_latency-c1-t10",
+        "query": "q7.Dt",
+        "clients": 1
+       },
+       {
+        "run": "vertica/2026-11-12_latency-native-tuned-c1-t10",
+        "query": "q7.A",
+        "clients": 1
+       },
+       {
+        "run": "vertica/2026-11-12_latency-native-tuned-c1-t10",
+        "query": "q7.D",
+        "clients": 1
+       },
+       {
+        "run": "vertica/2026-11-12_latency-native-tuned-c1-t10",
+        "query": "q7.At",
+        "clients": 1
+       },
+       {
+        "run": "vertica/2026-11-12_latency-native-tuned-c1-t10",
+        "query": "q7.Dt",
+        "clients": 1
+       },
+       {
+        "run": "vertica/2026-11-12_dbd-latency-c1-t10",
+        "query": "q7.A",
+        "clients": 1
+       },
+       {
+        "run": "vertica/2026-11-12_dbd-latency-c1-t10",
+        "query": "q7.D",
+        "clients": 1
+       },
+       {
+        "run": "vertica/2026-11-12_dbd-latency-c1-t10",
+        "query": "q7.At",
+        "clients": 1
+       },
+       {
+        "run": "vertica/2026-11-12_dbd-latency-c1-t10",
+        "query": "q7.Dt",
+        "clients": 1
+       }
+      ],
+      "series": "v_sql"
+     },
+     {
+      "pick": "min",
+      "from": [
+       {
+        "run": "vertica/2026-11-13_final-headline-fenced-t10",
+        "query": "q7.Bplus",
+        "clients": 1
+       },
+       {
+        "run": "vertica/2026-11-13_final-par-fenced-t10",
+        "query": "q7.Bpar",
+        "clients": 1
+       }
+      ],
+      "series": "v_fenced"
+     },
+     {
+      "pick": "min",
+      "from": [
+       {
+        "run": "vertica/2026-11-13_final-headline-unfenced-t10",
+        "query": "q7.Bplus",
+        "clients": 1
+       },
+       {
+        "run": "vertica/2026-11-13_final-par-unfenced-t10",
+        "query": "q7.Bpar",
+        "clients": 1
+       }
+      ],
+      "series": "v_bitmap"
+     }
+    ]
+   },
+   {
+    "title": "Send the 530,315 IDs of an audience, one row per ID",
+    "verdict": [
+     "Bitmap",
+     [
+      "v_bitmap",
+      "v_fenced"
+     ],
+     "Plain SQL",
+     [
+      "v_sql"
+     ]
+    ],
+    "bars": [
+     {
+      "pick": "min",
+      "from": [
+       {
+        "run": "vertica/2026-11-13_native-ids-socket-t10",
+        "query": "q8.A",
+        "clients": 1
+       },
+       {
+        "run": "vertica/2026-11-13_native-ids-socket-t10",
+        "query": "q8.D",
+        "clients": 1
+       }
+      ],
+      "series": "v_sql"
+     },
+     {
+      "from": [
+       {
+        "run": "vertica/2026-11-13_final-ids-rows-fenced-t10",
+        "query": "q8.Bplus",
+        "clients": 1
+       }
+      ],
+      "series": "v_fenced"
+     },
+     {
+      "pick": "median",
+      "from": [
+       {
+        "run": "vertica/2026-11-13_rows-text-unfenced-t10",
+        "query": "q8.rowtext.Bplus",
+        "clients": 1
+       },
+       {
+        "run": "vertica/2026-11-13_encoding-rows-orig-unfenced-r1-t10",
+        "query": "q8.rowtext.Bplus",
+        "clients": 1
+       },
+       {
+        "run": "vertica/2026-11-13_encoding-rows-orig-unfenced-r2-t10",
+        "query": "q8.rowtext.Bplus",
+        "clients": 1
+       }
+      ],
+      "series": "v_bitmap"
+     }
+    ]
+   },
+   {
+    "title": "List the 19,695 hot devices (4 filters)",
+    "verdict": [
+     "Bitmap",
+     [
+      "v_bitmap",
+      "v_fenced"
+     ],
+     "Plain SQL",
+     [
+      "v_sql"
+     ]
+    ],
+    "bars": [
+     {
+      "pick": "min",
+      "from": [
+       {
+        "run": "vertica/2026-11-13_native-ids-socket-t10",
+        "query": "q4.A",
+        "clients": 1
+       },
+       {
+        "run": "vertica/2026-11-13_native-ids-socket-t10",
+        "query": "q4.D",
+        "clients": 1
+       }
+      ],
+      "series": "v_sql"
+     },
+     {
+      "from": [
+       {
+        "run": "vertica/2026-11-13_final-ids-rows-fenced-t10",
+        "query": "q4.Bplus",
+        "clients": 1
+       }
+      ],
+      "series": "v_fenced"
+     },
+     {
+      "from": [
+       {
+        "run": "vertica/2026-11-13_final-ids-rows-unfenced-t10",
+        "query": "q4.Bplus",
+        "clients": 1
+       }
+      ],
+      "series": "v_bitmap"
+     }
+    ]
+   }
+  ]
+ },
+ "latency_32_clients": {
+  "title": "Inside Vertica, 32 users at once: the bitmap database answers the audience count {x0} times faster than tuned plain SQL",
+  "subtitle": "10 million people, 200 million interest rows; one machine, each engine limited to 20 CPUs and 56 GiB; median time of the recorded executions, shorter is faster; every answer checked against plain SQL",
+  "panels": [
+   {
+    "title": "How many people are in this audience? (5 filters, 2 topics)",
+    "verdict": [
+     "Bitmap",
+     [
+      "v_bitmap",
+      "v_fenced"
+     ],
+     "Plain SQL",
+     [
+      "v_sql"
+     ]
+    ],
+    "bars": [
+     {
+      "pick": "min",
+      "from": [
+       {
+        "run": "vertica/2026-11-12_latency-c8c32-t10",
+        "query": "q1.count.A",
+        "clients": 32
+       },
+       {
+        "run": "vertica/2026-11-12_latency-c8c32-t10",
+        "query": "q1.count.D",
+        "clients": 32
+       },
+       {
+        "run": "vertica/2026-11-12_latency-native-tuned-c8c32-t10",
+        "query": "q1.count.A",
+        "clients": 32
+       },
+       {
+        "run": "vertica/2026-11-12_latency-native-tuned-c8c32-t10",
+        "query": "q1.count.D",
+        "clients": 32
+       },
+       {
+        "run": "vertica/2026-11-12_dbd-latency-c8c32-t10",
+        "query": "q1.count.A",
+        "clients": 32
+       },
+       {
+        "run": "vertica/2026-11-12_dbd-latency-c8c32-t10",
+        "query": "q1.count.D",
+        "clients": 32
+       }
+      ],
+      "series": "v_sql"
+     },
+     {
+      "from": [
+       {
+        "run": "vertica/2026-11-13_final-headline-fenced-t10",
+        "query": "q1.count.Bplus",
+        "clients": 32
+       }
+      ],
+      "series": "v_fenced"
+     },
+     {
+      "from": [
+       {
+        "run": "vertica/2026-11-13_final-headline-unfenced-t10",
+        "query": "q1.count.Bplus",
+        "clients": 32
+       }
+      ],
+      "series": "v_bitmap"
+     }
+    ]
+   },
+   {
+    "title": "How many distinct web users on each of two days?",
+    "verdict": [
+     "Bitmap",
+     [
+      "v_bitmap",
+      "v_fenced"
+     ],
+     "Plain SQL",
+     [
+      "v_sql"
+     ]
+    ],
+    "bars": [
+     {
+      "pick": "min",
+      "from": [
+       {
+        "run": "vertica/2026-11-12_latency-c8c32-t10",
+        "query": "q2.daily.A",
+        "clients": 32
+       },
+       {
+        "run": "vertica/2026-11-12_latency-c8c32-t10",
+        "query": "q2.daily.D",
+        "clients": 32
+       },
+       {
+        "run": "vertica/2026-11-12_latency-native-tuned-c8c32-t10",
+        "query": "q2.daily.A",
+        "clients": 32
+       },
+       {
+        "run": "vertica/2026-11-12_latency-native-tuned-c8c32-t10",
+        "query": "q2.daily.D",
+        "clients": 32
+       },
+       {
+        "run": "vertica/2026-11-12_dbd-latency-c8c32-t10",
+        "query": "q2.daily.A",
+        "clients": 32
+       },
+       {
+        "run": "vertica/2026-11-12_dbd-latency-c8c32-t10",
+        "query": "q2.daily.D",
+        "clients": 32
+       }
+      ],
+      "series": "v_sql"
+     },
+     {
+      "from": [
+       {
+        "run": "vertica/2026-11-13_final-headline-fenced-t10",
+        "query": "q2.daily.B",
+        "clients": 32
+       }
+      ],
+      "series": "v_fenced"
+     },
+     {
+      "from": [
+       {
+        "run": "vertica/2026-11-13_final-headline-unfenced-t10",
+        "query": "q2.daily.B",
+        "clients": 32
+       }
+      ],
+      "series": "v_bitmap"
+     }
+    ]
+   },
+   {
+    "title": "Split the audience by all 500 topics",
+    "verdict": [
+     "Bitmap",
+     [
+      "v_bitmap",
+      "v_fenced"
+     ],
+     "Plain SQL",
+     [
+      "v_sql"
+     ]
+    ],
+    "bars": [
+     {
+      "pick": "min",
+      "from": [
+       {
+        "run": "vertica/2026-11-12_latency-c8c32-t10",
+        "query": "q3.A",
+        "clients": 32
+       },
+       {
+        "run": "vertica/2026-11-12_latency-c8c32-t10",
+        "query": "q3.D",
+        "clients": 32
+       },
+       {
+        "run": "vertica/2026-11-12_latency-native-tuned-c8c32-t10",
+        "query": "q3.A",
+        "clients": 32
+       },
+       {
+        "run": "vertica/2026-11-12_latency-native-tuned-c8c32-t10",
+        "query": "q3.D",
+        "clients": 32
+       },
+       {
+        "run": "vertica/2026-11-12_dbd-latency-c8c32-t10",
+        "query": "q3.A",
+        "clients": 32
+       },
+       {
+        "run": "vertica/2026-11-12_dbd-latency-c8c32-t10",
+        "query": "q3.D",
+        "clients": 32
+       }
+      ],
+      "series": "v_sql"
+     },
+     {
+      "pick": "min",
+      "from": [
+       {
+        "run": "vertica/2026-11-13_final-headline-fenced-t10",
+        "query": "q3.Bplus",
+        "clients": 32
+       },
+       {
+        "run": "vertica/2026-11-13_final-par-fenced-t10",
+        "query": "q3.Bpar",
+        "clients": 32
+       }
+      ],
+      "series": "v_fenced"
+     },
+     {
+      "pick": "min",
+      "from": [
+       {
+        "run": "vertica/2026-11-13_final-headline-unfenced-t10",
+        "query": "q3.Bplus",
+        "clients": 32
+       },
+       {
+        "run": "vertica/2026-11-13_final-par-unfenced-t10",
+        "query": "q3.Bpar",
+        "clients": 32
+       }
+      ],
+      "series": "v_bitmap"
+     }
+    ]
+   },
+   {
+    "title": "Rank 499 topics by their overlap with sports",
+    "verdict": [
+     "Bitmap",
+     [
+      "v_bitmap",
+      "v_fenced"
+     ],
+     "Plain SQL",
+     [
+      "v_sql"
+     ]
+    ],
+    "bars": [
+     {
+      "pick": "min",
+      "from": [
+       {
+        "run": "vertica/2026-11-12_latency-c8c32-t10",
+        "query": "q7.A",
+        "clients": 32
+       },
+       {
+        "run": "vertica/2026-11-12_latency-c8c32-t10",
+        "query": "q7.D",
+        "clients": 32
+       },
+       {
+        "run": "vertica/2026-11-12_latency-c8c32-t10",
+        "query": "q7.At",
+        "clients": 32
+       },
+       {
+        "run": "vertica/2026-11-12_latency-c8c32-t10",
+        "query": "q7.Dt",
+        "clients": 32
+       },
+       {
+        "run": "vertica/2026-11-12_latency-native-tuned-c8c32-t10",
+        "query": "q7.A",
+        "clients": 32
+       },
+       {
+        "run": "vertica/2026-11-12_latency-native-tuned-c8c32-t10",
+        "query": "q7.D",
+        "clients": 32
+       },
+       {
+        "run": "vertica/2026-11-12_latency-native-tuned-c8c32-t10",
+        "query": "q7.At",
+        "clients": 32
+       },
+       {
+        "run": "vertica/2026-11-12_latency-native-tuned-c8c32-t10",
+        "query": "q7.Dt",
+        "clients": 32
+       },
+       {
+        "run": "vertica/2026-11-12_dbd-latency-c8c32-t10",
+        "query": "q7.A",
+        "clients": 32
+       },
+       {
+        "run": "vertica/2026-11-12_dbd-latency-c8c32-t10",
+        "query": "q7.D",
+        "clients": 32
+       },
+       {
+        "run": "vertica/2026-11-12_dbd-latency-c8c32-t10",
+        "query": "q7.At",
+        "clients": 32
+       },
+       {
+        "run": "vertica/2026-11-12_dbd-latency-c8c32-t10",
+        "query": "q7.Dt",
+        "clients": 32
+       }
+      ],
+      "series": "v_sql"
+     },
+     {
+      "pick": "min",
+      "from": [
+       {
+        "run": "vertica/2026-11-13_final-headline-fenced-t10",
+        "query": "q7.Bplus",
+        "clients": 32
+       },
+       {
+        "run": "vertica/2026-11-13_final-par-fenced-t10",
+        "query": "q7.Bpar",
+        "clients": 32
+       }
+      ],
+      "series": "v_fenced"
+     },
+     {
+      "pick": "min",
+      "from": [
+       {
+        "run": "vertica/2026-11-13_final-headline-unfenced-t10",
+        "query": "q7.Bplus",
+        "clients": 32
+       },
+       {
+        "run": "vertica/2026-11-13_final-par-unfenced-t10",
+        "query": "q7.Bpar",
+        "clients": 32
+       }
+      ],
+      "series": "v_bitmap"
+     }
+    ]
+   },
+   {
+    "title": "Send the 530,315 IDs of an audience, one row per ID",
+    "verdict": [
+     "Bitmap",
+     [
+      "v_bitmap",
+      "v_fenced"
+     ],
+     "Plain SQL",
+     [
+      "v_sql"
+     ]
+    ],
+    "bars": [
+     {
+      "pick": "min",
+      "from": [
+       {
+        "run": "vertica/2026-11-13_native-ids-socket-t10",
+        "query": "q8.A",
+        "clients": 32
+       },
+       {
+        "run": "vertica/2026-11-13_native-ids-socket-t10",
+        "query": "q8.D",
+        "clients": 32
+       }
+      ],
+      "series": "v_sql"
+     },
+     {
+      "from": [
+       {
+        "run": "vertica/2026-11-13_final-ids-rows-fenced-t10",
+        "query": "q8.Bplus",
+        "clients": 32
+       }
+      ],
+      "series": "v_fenced"
+     },
+     {
+      "pick": "median",
+      "from": [
+       {
+        "run": "vertica/2026-11-13_rows-text-unfenced-t10",
+        "query": "q8.rowtext.Bplus",
+        "clients": 32
+       },
+       {
+        "run": "vertica/2026-11-13_encoding-rows-orig-unfenced-r1-t10",
+        "query": "q8.rowtext.Bplus",
+        "clients": 32
+       },
+       {
+        "run": "vertica/2026-11-13_encoding-rows-orig-unfenced-r2-t10",
+        "query": "q8.rowtext.Bplus",
+        "clients": 32
+       }
+      ],
+      "series": "v_bitmap"
+     }
+    ]
+   },
+   {
+    "title": "List the 19,695 hot devices (4 filters)",
+    "verdict": [
+     "Bitmap",
+     [
+      "v_bitmap",
+      "v_fenced"
+     ],
+     "Plain SQL",
+     [
+      "v_sql"
+     ]
+    ],
+    "bars": [
+     {
+      "pick": "min",
+      "from": [
+       {
+        "run": "vertica/2026-11-13_native-ids-socket-t10",
+        "query": "q4.A",
+        "clients": 32
+       },
+       {
+        "run": "vertica/2026-11-13_native-ids-socket-t10",
+        "query": "q4.D",
+        "clients": 32
+       }
+      ],
+      "series": "v_sql"
+     },
+     {
+      "from": [
+       {
+        "run": "vertica/2026-11-13_final-ids-rows-fenced-t10",
+        "query": "q4.Bplus",
+        "clients": 32
+       }
+      ],
+      "series": "v_fenced"
+     },
+     {
+      "from": [
+       {
+        "run": "vertica/2026-11-13_final-ids-rows-unfenced-t10",
+        "query": "q4.Bplus",
+        "clients": 32
+       }
+      ],
+      "series": "v_bitmap"
+     }
+    ]
+   }
+  ]
+ },
+ "engines_1_client": {
+  "title": "Vertica against ClickHouse, one user: Vertica's bitmap database is faster on {a_wins} of {n} questions, {x0} times on the audience count",
+  "subtitle": "Same data, same machine, same limits, one engine running at a time, identical answers. 10 million people, 200 million interest rows; one machine, each engine limited to 20 CPUs and 56 GiB; median time of the recorded executions, shorter is faster; every answer checked against plain SQL",
+  "panels": [
+   {
+    "title": "How many people are in this audience? (5 filters, 2 topics)",
+    "verdict": [
+     "Vertica",
+     [
+      "v_bitmap",
+      "v_fenced"
+     ],
+     "ClickHouse",
+     [
+      "ch_bitmap"
+     ]
+    ],
+    "bars": [
+     {
+      "from": [
+       {
+        "run": "vertica/2026-11-13_final-headline-unfenced-t10",
+        "query": "q1.count.Bplus",
+        "clients": 1
+       }
+      ],
+      "series": "v_bitmap"
+     },
+     {
+      "from": [
+       {
+        "run": "vertica/2026-11-13_final-headline-fenced-t10",
+        "query": "q1.count.Bplus",
+        "clients": 1
+       }
+      ],
+      "series": "v_fenced"
+     },
+     {
+      "from": [
+       {
+        "run": "clickhouse/2026-11-13_latency-c1c32-t10",
+        "query": "q1.count.C",
+        "clients": 1
+       }
+      ],
+      "series": "ch_bitmap"
+     }
+    ]
+   },
+   {
+    "title": "How many distinct web users on each of two days?",
+    "verdict": [
+     "Vertica",
+     [
+      "v_bitmap",
+      "v_fenced"
+     ],
+     "ClickHouse",
+     [
+      "ch_bitmap"
+     ]
+    ],
+    "bars": [
+     {
+      "from": [
+       {
+        "run": "vertica/2026-11-13_final-headline-unfenced-t10",
+        "query": "q2.daily.B",
+        "clients": 1
+       }
+      ],
+      "series": "v_bitmap"
+     },
+     {
+      "from": [
+       {
+        "run": "vertica/2026-11-13_final-headline-fenced-t10",
+        "query": "q2.daily.B",
+        "clients": 1
+       }
+      ],
+      "series": "v_fenced"
+     },
+     {
+      "from": [
+       {
+        "run": "clickhouse/2026-11-13_latency-c1c32-t10",
+        "query": "q2.daily.C",
+        "clients": 1
+       }
+      ],
+      "series": "ch_bitmap"
+     }
+    ]
+   },
+   {
+    "title": "Split the audience by all 500 topics",
+    "verdict": [
+     "Vertica",
+     [
+      "v_bitmap",
+      "v_fenced"
+     ],
+     "ClickHouse",
+     [
+      "ch_bitmap"
+     ]
+    ],
+    "bars": [
+     {
+      "pick": "min",
+      "from": [
+       {
+        "run": "vertica/2026-11-13_final-headline-unfenced-t10",
+        "query": "q3.Bplus",
+        "clients": 1
+       },
+       {
+        "run": "vertica/2026-11-13_final-par-unfenced-t10",
+        "query": "q3.Bpar",
+        "clients": 1
+       }
+      ],
+      "series": "v_bitmap"
+     },
+     {
+      "pick": "min",
+      "from": [
+       {
+        "run": "vertica/2026-11-13_final-headline-fenced-t10",
+        "query": "q3.Bplus",
+        "clients": 1
+       },
+       {
+        "run": "vertica/2026-11-13_final-par-fenced-t10",
+        "query": "q3.Bpar",
+        "clients": 1
+       }
+      ],
+      "series": "v_fenced"
+     },
+     {
+      "from": [
+       {
+        "run": "clickhouse/2026-11-13_latency-c1c32-t10",
+        "query": "q3.C",
+        "clients": 1
+       }
+      ],
+      "series": "ch_bitmap"
+     }
+    ]
+   },
+   {
+    "title": "Rank 499 topics by their overlap with sports",
+    "verdict": [
+     "Vertica",
+     [
+      "v_bitmap",
+      "v_fenced"
+     ],
+     "ClickHouse",
+     [
+      "ch_bitmap"
+     ]
+    ],
+    "bars": [
+     {
+      "pick": "min",
+      "from": [
+       {
+        "run": "vertica/2026-11-13_final-headline-unfenced-t10",
+        "query": "q7.Bplus",
+        "clients": 1
+       },
+       {
+        "run": "vertica/2026-11-13_final-par-unfenced-t10",
+        "query": "q7.Bpar",
+        "clients": 1
+       }
+      ],
+      "series": "v_bitmap"
+     },
+     {
+      "pick": "min",
+      "from": [
+       {
+        "run": "vertica/2026-11-13_final-headline-fenced-t10",
+        "query": "q7.Bplus",
+        "clients": 1
+       },
+       {
+        "run": "vertica/2026-11-13_final-par-fenced-t10",
+        "query": "q7.Bpar",
+        "clients": 1
+       }
+      ],
+      "series": "v_fenced"
+     },
+     {
+      "from": [
+       {
+        "run": "clickhouse/2026-11-13_latency-c1c32-t10",
+        "query": "q7.C",
+        "clients": 1
+       }
+      ],
+      "series": "ch_bitmap"
+     }
+    ]
+   },
+   {
+    "title": "Send the 530,315 IDs of an audience, one row per ID",
+    "verdict": [
+     "Vertica",
+     [
+      "v_bitmap",
+      "v_fenced"
+     ],
+     "ClickHouse",
+     [
+      "ch_bitmap"
+     ]
+    ],
+    "bars": [
+     {
+      "pick": "median",
+      "from": [
+       {
+        "run": "vertica/2026-11-13_rows-text-unfenced-t10",
+        "query": "q8.rowtext.Bplus",
+        "clients": 1
+       },
+       {
+        "run": "vertica/2026-11-13_encoding-rows-orig-unfenced-r1-t10",
+        "query": "q8.rowtext.Bplus",
+        "clients": 1
+       },
+       {
+        "run": "vertica/2026-11-13_encoding-rows-orig-unfenced-r2-t10",
+        "query": "q8.rowtext.Bplus",
+        "clients": 1
+       }
+      ],
+      "series": "v_bitmap"
+     },
+     {
+      "from": [
+       {
+        "run": "vertica/2026-11-13_final-ids-rows-fenced-t10",
+        "query": "q8.Bplus",
+        "clients": 1
+       }
+      ],
+      "series": "v_fenced"
+     },
+     {
+      "from": [
+       {
+        "run": "clickhouse/2026-11-13_ids-rows2-t10",
+        "query": "q8.C",
+        "clients": 1
+       }
+      ],
+      "series": "ch_bitmap"
+     }
+    ]
+   },
+   {
+    "title": "List the 19,695 hot devices (4 filters)",
+    "verdict": [
+     "Vertica",
+     [
+      "v_bitmap",
+      "v_fenced"
+     ],
+     "ClickHouse",
+     [
+      "ch_bitmap"
+     ]
+    ],
+    "bars": [
+     {
+      "from": [
+       {
+        "run": "vertica/2026-11-13_final-ids-rows-unfenced-t10",
+        "query": "q4.Bplus",
+        "clients": 1
+       }
+      ],
+      "series": "v_bitmap"
+     },
+     {
+      "from": [
+       {
+        "run": "vertica/2026-11-13_final-ids-rows-fenced-t10",
+        "query": "q4.Bplus",
+        "clients": 1
+       }
+      ],
+      "series": "v_fenced"
+     },
+     {
+      "from": [
+       {
+        "run": "clickhouse/2026-11-13_ids-rows-raw-t10",
+        "query": "q4.C",
+        "clients": 1
+       }
+      ],
+      "series": "ch_bitmap"
+     }
+    ]
+   }
+  ]
+ },
+ "engines_32_clients": {
+  "title": "Vertica against ClickHouse, 32 users at once: Vertica's bitmap database answers the audience count {x0} times faster",
+  "subtitle": "Same data, same machine, same limits, one engine running at a time, identical answers. 10 million people, 200 million interest rows; one machine, each engine limited to 20 CPUs and 56 GiB; median time of the recorded executions, shorter is faster; every answer checked against plain SQL",
+  "panels": [
+   {
+    "title": "How many people are in this audience? (5 filters, 2 topics)",
+    "verdict": [
+     "Vertica",
+     [
+      "v_bitmap",
+      "v_fenced"
+     ],
+     "ClickHouse",
+     [
+      "ch_bitmap"
+     ]
+    ],
+    "bars": [
+     {
+      "from": [
+       {
+        "run": "vertica/2026-11-13_final-headline-unfenced-t10",
+        "query": "q1.count.Bplus",
+        "clients": 32
+       }
+      ],
+      "series": "v_bitmap"
+     },
+     {
+      "from": [
+       {
+        "run": "vertica/2026-11-13_final-headline-fenced-t10",
+        "query": "q1.count.Bplus",
+        "clients": 32
+       }
+      ],
+      "series": "v_fenced"
+     },
+     {
+      "from": [
+       {
+        "run": "clickhouse/2026-11-13_latency-c1c32-t10",
+        "query": "q1.count.C",
+        "clients": 32
+       }
+      ],
+      "series": "ch_bitmap"
+     }
+    ]
+   },
+   {
+    "title": "How many distinct web users on each of two days?",
+    "verdict": [
+     "Vertica",
+     [
+      "v_bitmap",
+      "v_fenced"
+     ],
+     "ClickHouse",
+     [
+      "ch_bitmap"
+     ]
+    ],
+    "bars": [
+     {
+      "from": [
+       {
+        "run": "vertica/2026-11-13_final-headline-unfenced-t10",
+        "query": "q2.daily.B",
+        "clients": 32
+       }
+      ],
+      "series": "v_bitmap"
+     },
+     {
+      "from": [
+       {
+        "run": "vertica/2026-11-13_final-headline-fenced-t10",
+        "query": "q2.daily.B",
+        "clients": 32
+       }
+      ],
+      "series": "v_fenced"
+     },
+     {
+      "from": [
+       {
+        "run": "clickhouse/2026-11-13_latency-c1c32-t10",
+        "query": "q2.daily.C",
+        "clients": 32
+       }
+      ],
+      "series": "ch_bitmap"
+     }
+    ]
+   },
+   {
+    "title": "Split the audience by all 500 topics",
+    "verdict": [
+     "Vertica",
+     [
+      "v_bitmap",
+      "v_fenced"
+     ],
+     "ClickHouse",
+     [
+      "ch_bitmap"
+     ]
+    ],
+    "bars": [
+     {
+      "pick": "min",
+      "from": [
+       {
+        "run": "vertica/2026-11-13_final-headline-unfenced-t10",
+        "query": "q3.Bplus",
+        "clients": 32
+       },
+       {
+        "run": "vertica/2026-11-13_final-par-unfenced-t10",
+        "query": "q3.Bpar",
+        "clients": 32
+       }
+      ],
+      "series": "v_bitmap"
+     },
+     {
+      "pick": "min",
+      "from": [
+       {
+        "run": "vertica/2026-11-13_final-headline-fenced-t10",
+        "query": "q3.Bplus",
+        "clients": 32
+       },
+       {
+        "run": "vertica/2026-11-13_final-par-fenced-t10",
+        "query": "q3.Bpar",
+        "clients": 32
+       }
+      ],
+      "series": "v_fenced"
+     },
+     {
+      "from": [
+       {
+        "run": "clickhouse/2026-11-13_latency-c1c32-t10",
+        "query": "q3.C",
+        "clients": 32
+       }
+      ],
+      "series": "ch_bitmap"
+     }
+    ]
+   },
+   {
+    "title": "Rank 499 topics by their overlap with sports",
+    "verdict": [
+     "Vertica",
+     [
+      "v_bitmap",
+      "v_fenced"
+     ],
+     "ClickHouse",
+     [
+      "ch_bitmap"
+     ]
+    ],
+    "bars": [
+     {
+      "pick": "min",
+      "from": [
+       {
+        "run": "vertica/2026-11-13_final-headline-unfenced-t10",
+        "query": "q7.Bplus",
+        "clients": 32
+       },
+       {
+        "run": "vertica/2026-11-13_final-par-unfenced-t10",
+        "query": "q7.Bpar",
+        "clients": 32
+       }
+      ],
+      "series": "v_bitmap"
+     },
+     {
+      "pick": "min",
+      "from": [
+       {
+        "run": "vertica/2026-11-13_final-headline-fenced-t10",
+        "query": "q7.Bplus",
+        "clients": 32
+       },
+       {
+        "run": "vertica/2026-11-13_final-par-fenced-t10",
+        "query": "q7.Bpar",
+        "clients": 32
+       }
+      ],
+      "series": "v_fenced"
+     },
+     {
+      "from": [
+       {
+        "run": "clickhouse/2026-11-13_latency-c1c32-t10",
+        "query": "q7.C",
+        "clients": 32
+       }
+      ],
+      "series": "ch_bitmap"
+     }
+    ]
+   },
+   {
+    "title": "Send the 530,315 IDs of an audience, one row per ID",
+    "verdict": [
+     "Vertica",
+     [
+      "v_bitmap",
+      "v_fenced"
+     ],
+     "ClickHouse",
+     [
+      "ch_bitmap"
+     ]
+    ],
+    "bars": [
+     {
+      "pick": "median",
+      "from": [
+       {
+        "run": "vertica/2026-11-13_rows-text-unfenced-t10",
+        "query": "q8.rowtext.Bplus",
+        "clients": 32
+       },
+       {
+        "run": "vertica/2026-11-13_encoding-rows-orig-unfenced-r1-t10",
+        "query": "q8.rowtext.Bplus",
+        "clients": 32
+       },
+       {
+        "run": "vertica/2026-11-13_encoding-rows-orig-unfenced-r2-t10",
+        "query": "q8.rowtext.Bplus",
+        "clients": 32
+       }
+      ],
+      "series": "v_bitmap"
+     },
+     {
+      "from": [
+       {
+        "run": "vertica/2026-11-13_final-ids-rows-fenced-t10",
+        "query": "q8.Bplus",
+        "clients": 32
+       }
+      ],
+      "series": "v_fenced"
+     },
+     {
+      "from": [
+       {
+        "run": "clickhouse/2026-11-13_ids-rows2-t10",
+        "query": "q8.C",
+        "clients": 32
+       }
+      ],
+      "series": "ch_bitmap"
+     }
+    ]
+   },
+   {
+    "title": "List the 19,695 hot devices (4 filters)",
+    "verdict": [
+     "Vertica",
+     [
+      "v_bitmap",
+      "v_fenced"
+     ],
+     "ClickHouse",
+     [
+      "ch_bitmap"
+     ]
+    ],
+    "bars": [
+     {
+      "from": [
+       {
+        "run": "vertica/2026-11-13_final-ids-rows-unfenced-t10",
+        "query": "q4.Bplus",
+        "clients": 32
+       }
+      ],
+      "series": "v_bitmap"
+     },
+     {
+      "from": [
+       {
+        "run": "vertica/2026-11-13_final-ids-rows-fenced-t10",
+        "query": "q4.Bplus",
+        "clients": 32
+       }
+      ],
+      "series": "v_fenced"
+     },
+     {
+      "from": [
+       {
+        "run": "clickhouse/2026-11-13_ids-rows-raw-t10",
+        "query": "q4.C",
+        "clients": 32
+       }
+      ],
+      "series": "ch_bitmap"
+     }
+    ]
+   }
+  ]
+ },
+ "id_lists_1_client": {
+  "title": "The people behind the count, one user: Vertica's bitmap database is faster in all {n} uses of the list",
+  "subtitle": "An audience of 530,315 people out of 10 million. Both engines are read the same way: the clock stops when the last byte of the answer has arrived. Same machine and limits; median time, shorter is faster",
+  "require": "a",
+  "panels": [
+   {
+    "title": "Use the list inside the database (count and sum of the IDs)",
+    "verdict": [
+     "Vertica",
+     [
+      "v_bitmap",
+      "v_fenced"
+     ],
+     "ClickHouse",
+     [
+      "ch_bitmap"
+     ]
+    ],
+    "bars": [
+     {
+      "from": [
+       {
+        "run": "vertica/2026-11-13_final-ids-use-unfenced-t10",
+        "query": "q8.sum.Bplus",
+        "clients": 1
+       }
+      ],
+      "series": "v_bitmap"
+     },
+     {
+      "from": [
+       {
+        "run": "vertica/2026-11-13_final-ids-use-fenced-t10",
+        "query": "q8.sum.Bplus",
+        "clients": 1
+       }
+      ],
+      "series": "v_fenced"
+     },
+     {
+      "from": [
+       {
+        "run": "clickhouse/2026-11-13_ids-use-t10",
+        "query": "q8.sum.C",
+        "clients": 1
+       }
+      ],
+      "series": "ch_bitmap"
+     }
+    ]
+   },
+   {
+    "title": "Save the audience as a set",
+    "verdict": [
+     "Vertica",
+     [
+      "v_bitmap",
+      "v_fenced"
+     ],
+     "ClickHouse",
+     [
+      "ch_bitmap"
+     ]
+    ],
+    "bars": [
+     {
+      "from": [
+       {
+        "run": "vertica/2026-11-13_final-ids-save-unfenced-t10",
+        "query": "q8.save.set.Bplus",
+        "clients": 1
+       }
+      ],
+      "series": "v_bitmap"
+     },
+     {
+      "from": [
+       {
+        "run": "vertica/2026-11-13_final-ids-save-fenced-t10",
+        "query": "q8.save.set.Bplus",
+        "clients": 1
+       }
+      ],
+      "series": "v_fenced"
+     },
+     {
+      "from": [
+       {
+        "run": "clickhouse/2026-11-13_ids-save-t10",
+        "query": "q8.save.set.C",
+        "clients": 1
+       }
+      ],
+      "series": "ch_bitmap"
+     }
+    ]
+   },
+   {
+    "title": "Save the audience as a table of IDs",
+    "verdict": [
+     "Vertica",
+     [
+      "v_bitmap",
+      "v_fenced"
+     ],
+     "ClickHouse",
+     [
+      "ch_bitmap"
+     ]
+    ],
+    "bars": [
+     {
+      "from": [
+       {
+        "run": "vertica/2026-11-13_final-ids-save-unfenced-t10",
+        "query": "q8.save.ids.Bplus",
+        "clients": 1
+       }
+      ],
+      "series": "v_bitmap"
+     },
+     {
+      "from": [
+       {
+        "run": "vertica/2026-11-13_final-ids-save-fenced-t10",
+        "query": "q8.save.ids.Bplus",
+        "clients": 1
+       }
+      ],
+      "series": "v_fenced"
+     },
+     {
+      "from": [
+       {
+        "run": "clickhouse/2026-11-13_ids-save-t10",
+        "query": "q8.save.ids.C",
+        "clients": 1
+       }
+      ],
+      "series": "ch_bitmap"
+     }
+    ]
+   },
+   {
+    "title": "Send the list as text blocks (ClickHouse: its row stream)",
+    "verdict": [
+     "Vertica",
+     [
+      "v_bitmap",
+      "v_fenced"
+     ],
+     "ClickHouse",
+     [
+      "ch_bitmap"
+     ]
+    ],
+    "bars": [
+     {
+      "from": [
+       {
+        "run": "vertica/2026-11-13_final-ids-rows-unfenced-t10",
+        "query": "q8.text.Bplus",
+        "clients": 1
+       }
+      ],
+      "series": "v_bitmap"
+     },
+     {
+      "from": [
+       {
+        "run": "vertica/2026-11-13_final-ids-rows-fenced-t10",
+        "query": "q8.text.Bplus",
+        "clients": 1
+       }
+      ],
+      "series": "v_fenced"
+     },
+     {
+      "from": [
+       {
+        "run": "clickhouse/2026-11-13_ids-rows-raw-t10",
+        "query": "q8.C",
+        "clients": 1
+       }
+      ],
+      "series": "ch_bitmap"
+     }
+    ]
+   },
+   {
+    "title": "Send the list, one row per ID",
+    "verdict": [
+     "Vertica",
+     [
+      "v_bitmap",
+      "v_fenced"
+     ],
+     "ClickHouse",
+     [
+      "ch_bitmap"
+     ]
+    ],
+    "bars": [
+     {
+      "pick": "median",
+      "from": [
+       {
+        "run": "vertica/2026-11-13_rows-text-unfenced-t10",
+        "query": "q8.rowtext.Bplus",
+        "clients": 1
+       },
+       {
+        "run": "vertica/2026-11-13_encoding-rows-orig-unfenced-r1-t10",
+        "query": "q8.rowtext.Bplus",
+        "clients": 1
+       },
+       {
+        "run": "vertica/2026-11-13_encoding-rows-orig-unfenced-r2-t10",
+        "query": "q8.rowtext.Bplus",
+        "clients": 1
+       }
+      ],
+      "series": "v_bitmap"
+     },
+     {
+      "from": [
+       {
+        "run": "vertica/2026-11-13_final-ids-rows-fenced-t10",
+        "query": "q8.Bplus",
+        "clients": 1
+       }
+      ],
+      "series": "v_fenced"
+     },
+     {
+      "from": [
+       {
+        "run": "clickhouse/2026-11-13_ids-rows2-t10",
+        "query": "q8.C",
+        "clients": 1
+       }
+      ],
+      "series": "ch_bitmap"
+     }
+    ]
+   },
+   {
+    "title": "Size, known ages and sum of ages, from bit-sliced sets",
+    "verdict": [
+     "Vertica",
+     [
+      "v_bitmap",
+      "v_fenced"
+     ],
+     "ClickHouse",
+     [
+      "ch_bitmap"
+     ]
+    ],
+    "bars": [
+     {
+      "from": [
+       {
+        "run": "vertica/2026-11-13_final-agg-unfenced-t10",
+        "query": "q8.agg.Bplus",
+        "clients": 1
+       }
+      ],
+      "series": "v_bitmap"
+     },
+     {
+      "from": [
+       {
+        "run": "vertica/2026-11-13_final-agg-fenced-t10",
+        "query": "q8.agg.Bplus",
+        "clients": 1
+       }
+      ],
+      "series": "v_fenced"
+     },
+     {
+      "from": [
+       {
+        "run": "clickhouse/2026-11-13_ids-agg-t10",
+        "query": "q8.agg.C",
+        "clients": 1
+       }
+      ],
+      "series": "ch_bitmap"
+     }
+    ]
+   },
+   {
+    "title": "The same totals from 10 M profile rows, audience as a filter",
+    "verdict": [
+     "Vertica",
+     [
+      "v_bitmap",
+      "v_fenced"
+     ],
+     "ClickHouse",
+     [
+      "ch_bitmap"
+     ]
+    ],
+    "bars": [
+     {
+      "pick": "median",
+      "from": [
+       {
+        "run": "vertica/2026-11-13_join-pin-unfenced-t10",
+        "query": "q8.join.Bpin",
+        "clients": 1
+       },
+       {
+        "run": "vertica/2026-11-13_encoding-join-orig-unfenced-r1-t10",
+        "query": "q8.join.Bpin",
+        "clients": 1
+       },
+       {
+        "run": "vertica/2026-11-14_encoding-join-orig-unfenced-r2-t10",
+        "query": "q8.join.Bpin",
+        "clients": 1
+       }
+      ],
+      "series": "v_bitmap"
+     },
+     {
+      "from": [
+       {
+        "run": "vertica/2026-11-13_join-pin-fenced-t10",
+        "query": "q8.join.Bplus",
+        "clients": 1
+       }
+      ],
+      "series": "v_fenced",
+      "label": "Vertica fenced (join with the list)"
+     },
+     {
+      "from": [
+       {
+        "run": "clickhouse/2026-11-13_ids-join2-t10",
+        "query": "q8.join.C",
+        "clients": 1
+       }
+      ],
+      "series": "ch_bitmap"
+     }
+    ]
+   }
+  ]
+ },
+ "id_lists_32_clients": {
+  "title": "The people behind the count, 32 users at once: Vertica's bitmap database is faster in {a_wins} of {n} uses, level in {level}",
+  "subtitle": "An audience of 530,315 people out of 10 million. Both engines are read the same way: the clock stops when the last byte of the answer has arrived. Same machine and limits; median time, shorter is faster",
+  "panels": [
+   {
+    "title": "Use the list inside the database (count and sum of the IDs)",
+    "verdict": [
+     "Vertica",
+     [
+      "v_bitmap",
+      "v_fenced"
+     ],
+     "ClickHouse",
+     [
+      "ch_bitmap"
+     ]
+    ],
+    "bars": [
+     {
+      "from": [
+       {
+        "run": "vertica/2026-11-13_final-ids-use-unfenced-t10",
+        "query": "q8.sum.Bplus",
+        "clients": 32
+       }
+      ],
+      "series": "v_bitmap"
+     },
+     {
+      "from": [
+       {
+        "run": "vertica/2026-11-13_final-ids-use-fenced-t10",
+        "query": "q8.sum.Bplus",
+        "clients": 32
+       }
+      ],
+      "series": "v_fenced"
+     },
+     {
+      "from": [
+       {
+        "run": "clickhouse/2026-11-13_ids-use-t10",
+        "query": "q8.sum.C",
+        "clients": 32
+       }
+      ],
+      "series": "ch_bitmap"
+     }
+    ]
+   },
+   {
+    "title": "Send the list as text blocks (ClickHouse: its row stream)",
+    "verdict": [
+     "Vertica",
+     [
+      "v_bitmap",
+      "v_fenced"
+     ],
+     "ClickHouse",
+     [
+      "ch_bitmap"
+     ]
+    ],
+    "bars": [
+     {
+      "from": [
+       {
+        "run": "vertica/2026-11-13_final-ids-rows-unfenced-t10",
+        "query": "q8.text.Bplus",
+        "clients": 32
+       }
+      ],
+      "series": "v_bitmap"
+     },
+     {
+      "from": [
+       {
+        "run": "vertica/2026-11-13_final-ids-rows-fenced-t10",
+        "query": "q8.text.Bplus",
+        "clients": 32
+       }
+      ],
+      "series": "v_fenced"
+     },
+     {
+      "from": [
+       {
+        "run": "clickhouse/2026-11-13_ids-rows-raw-t10",
+        "query": "q8.C",
+        "clients": 32
+       }
+      ],
+      "series": "ch_bitmap"
+     }
+    ]
+   },
+   {
+    "title": "Send the list, one row per ID",
+    "verdict": [
+     "Vertica",
+     [
+      "v_bitmap",
+      "v_fenced"
+     ],
+     "ClickHouse",
+     [
+      "ch_bitmap"
+     ]
+    ],
+    "bars": [
+     {
+      "pick": "median",
+      "from": [
+       {
+        "run": "vertica/2026-11-13_rows-text-unfenced-t10",
+        "query": "q8.rowtext.Bplus",
+        "clients": 32
+       },
+       {
+        "run": "vertica/2026-11-13_encoding-rows-orig-unfenced-r1-t10",
+        "query": "q8.rowtext.Bplus",
+        "clients": 32
+       },
+       {
+        "run": "vertica/2026-11-13_encoding-rows-orig-unfenced-r2-t10",
+        "query": "q8.rowtext.Bplus",
+        "clients": 32
+       }
+      ],
+      "series": "v_bitmap"
+     },
+     {
+      "from": [
+       {
+        "run": "vertica/2026-11-13_final-ids-rows-fenced-t10",
+        "query": "q8.Bplus",
+        "clients": 32
+       }
+      ],
+      "series": "v_fenced"
+     },
+     {
+      "from": [
+       {
+        "run": "clickhouse/2026-11-13_ids-rows2-t10",
+        "query": "q8.C",
+        "clients": 32
+       }
+      ],
+      "series": "ch_bitmap"
+     }
+    ]
+   },
+   {
+    "title": "Size, known ages and sum of ages, from bit-sliced sets",
+    "verdict": [
+     "Vertica",
+     [
+      "v_bitmap",
+      "v_fenced"
+     ],
+     "ClickHouse",
+     [
+      "ch_bitmap"
+     ]
+    ],
+    "bars": [
+     {
+      "from": [
+       {
+        "run": "vertica/2026-11-13_final-agg-unfenced-t10",
+        "query": "q8.agg.Bplus",
+        "clients": 32
+       }
+      ],
+      "series": "v_bitmap"
+     },
+     {
+      "from": [
+       {
+        "run": "vertica/2026-11-13_final-agg-fenced-t10",
+        "query": "q8.agg.Bplus",
+        "clients": 32
+       }
+      ],
+      "series": "v_fenced"
+     },
+     {
+      "from": [
+       {
+        "run": "clickhouse/2026-11-13_ids-agg-t10",
+        "query": "q8.agg.C",
+        "clients": 32
+       }
+      ],
+      "series": "ch_bitmap"
+     }
+    ]
+   },
+   {
+    "title": "The same totals from 10 M profile rows, audience as a filter",
+    "verdict": [
+     "Vertica",
+     [
+      "v_bitmap",
+      "v_fenced"
+     ],
+     "ClickHouse",
+     [
+      "ch_bitmap"
+     ]
+    ],
+    "bars": [
+     {
+      "pick": "median",
+      "from": [
+       {
+        "run": "vertica/2026-11-13_join-pin-unfenced-t10",
+        "query": "q8.join.Bpin",
+        "clients": 32
+       },
+       {
+        "run": "vertica/2026-11-13_encoding-join-orig-unfenced-r1-t10",
+        "query": "q8.join.Bpin",
+        "clients": 32
+       },
+       {
+        "run": "vertica/2026-11-14_encoding-join-orig-unfenced-r2-t10",
+        "query": "q8.join.Bpin",
+        "clients": 32
+       }
+      ],
+      "series": "v_bitmap"
+     },
+     {
+      "from": [
+       {
+        "run": "vertica/2026-11-13_join-pin-fenced-t10",
+        "query": "q8.join.Bplus",
+        "clients": 32
+       }
+      ],
+      "series": "v_fenced",
+      "label": "Vertica fenced (join with the list)"
+     },
+     {
+      "from": [
+       {
+        "run": "clickhouse/2026-11-13_ids-join2-t10",
+        "query": "q8.join.C",
+        "clients": 32
+       }
+      ],
+      "series": "ch_bitmap"
+     }
+    ]
+   }
+  ]
+ },
+ "fresh_data": {
+  "title": "Fresh data while 32 users query: Vertica's live index takes in 2 million rows in {v0.0} (ClickHouse: {v0.1}) and answers the audience count {x1} times faster meanwhile",
+  "subtitle": "2 million new tag rows (1 % more data, every ID chunk) appended to sets that the engine maintains itself, during a mixed load of counts and facet breakdowns from 32 clients. No failed statement, no wrong answer, in either engine",
+  "unit": "s",
+  "labels": {
+   "v_bitmap": "Vertica live index",
+   "ch_bitmap": "ClickHouse live sets"
+  },
+  "panels": [
+   {
+    "title": "Append 2 million rows; the sets are exact at commit",
+    "verdict": [
+     "Vertica",
+     [
+      "v_bitmap",
+      "v_fenced"
+     ],
+     "ClickHouse",
+     [
+      "ch_bitmap"
+     ]
+    ],
+    "bars": [
+     {
+      "from": [
+       {
+        "run": "vertica/2026-11-13_live2-append-under-load-unfenced-t10",
+        "line": "background: .* duration_s=([0-9.]+)",
+        "scale": 1
+       }
+      ],
+      "series": "v_bitmap"
+     },
+     {
+      "from": [
+       {
+        "run": "clickhouse/2026-11-13_live-append-under-load-t10",
+        "line": "background: .* duration_s=([0-9.]+)",
+        "scale": 1
+       }
+      ],
+      "series": "ch_bitmap"
+     }
+    ]
+   },
+   {
+    "title": "The audience count during that load (32 users)",
+    "unit": "ms",
+    "verdict": [
+     "Vertica",
+     [
+      "v_bitmap",
+      "v_fenced"
+     ],
+     "ClickHouse",
+     [
+      "ch_bitmap"
+     ]
+    ],
+    "bars": [
+     {
+      "from": [
+       {
+        "run": "vertica/2026-11-13_live2-append-under-load-unfenced-t10",
+        "query": "q1.count.Bplus",
+        "clients": 32
+       }
+      ],
+      "series": "v_bitmap"
+     },
+     {
+      "from": [
+       {
+        "run": "clickhouse/2026-11-13_live-append-under-load-t10",
+        "query": "q1.count.C",
+        "clients": 32
+       }
+      ],
+      "series": "ch_bitmap"
+     }
+    ]
+   },
+   {
+    "title": "The 500-topic breakdown during that load (32 users)",
+    "unit": "ms",
+    "verdict": [
+     "Vertica",
+     [
+      "v_bitmap",
+      "v_fenced"
+     ],
+     "ClickHouse",
+     [
+      "ch_bitmap"
+     ]
+    ],
+    "bars": [
+     {
+      "from": [
+       {
+        "run": "vertica/2026-11-13_live2-append-under-load-unfenced-t10",
+        "query": "q3.Bplus",
+        "clients": 32
+       }
+      ],
+      "series": "v_bitmap"
+     },
+     {
+      "from": [
+       {
+        "run": "clickhouse/2026-11-13_live-append-under-load-t10",
+        "query": "q3.C",
+        "clients": 32
+       }
+      ],
+      "series": "ch_bitmap"
+     }
+    ]
+   },
+   {
+    "title": "Build all 698 sets from the source tables",
+    "verdict": [
+     "Vertica",
+     [
+      "v_bitmap",
+      "v_fenced"
+     ],
+     "ClickHouse",
+     [
+      "ch_bitmap"
+     ]
+    ],
+    "bars": [
+     {
+      "pick": "sum",
+      "from": [
+       {
+        "run": "vertica/2026-11-13_build-agg2-person-t10",
+        "line": "op=build .* build_s=([0-9.]+)",
+        "scale": 1
+       },
+       {
+        "run": "vertica/2026-11-13_build-agg2-device-t10",
+        "line": "op=build .* build_s=([0-9.]+)",
+        "scale": 1
+       }
+      ],
+      "series": "v_bitmap",
+      "label": "Vertica, aggregate builder"
+     },
+     {
+      "pick": "sum",
+      "from": [
+       {
+        "run": "clickhouse/2026-11-13_build2-t10",
+        "line": "op=build .* total_s=([0-9.]+)",
+        "scale": 1
+       },
+       {
+        "run": "clickhouse/2026-11-13_build-bits2-t10",
+        "line": "op=build-bits .* s=([0-9.]+)",
+        "scale": 1
+       }
+      ],
+      "series": "ch_bitmap",
+      "label": "ClickHouse, groupBitmap"
+     }
+    ]
+   }
+  ]
+ },
+ "scale_100m": {
+  "title": "Ten times the data, 100 million people: the audience count takes {v0.2} in Vertica's bitmap database and {v0.0} in plain SQL",
+  "subtitle": "2 billion interest rows, 1 billion events, one user, one node; plain SQL on the hand-tuned projection (the overlap ranking: its single check execution); median time, shorter is faster",
+  "panels": [
+   {
+    "title": "How many people are in this audience?",
+    "verdict": [
+     "Bitmap",
+     [
+      "v_bitmap",
+      "v_fenced"
+     ],
+     "Plain SQL",
+     [
+      "v_sql"
+     ]
+    ],
+    "bars": [
+     {
+      "series": "v_sql",
+      "from": [
+       {
+        "run": "vertica/2026-11-13_latency-native-c1-t20",
+        "query": "q1.count.A",
+        "clients": 1
+       }
+      ]
+     },
+     {
+      "pick": "min",
+      "from": [
+       {
+        "run": "vertica/2026-11-13_final-headline-fenced-t20",
+        "query": "q1.count.Bplus",
+        "clients": 1
+       }
+      ],
+      "series": "v_fenced"
+     },
+     {
+      "pick": "min",
+      "from": [
+       {
+        "run": "vertica/2026-11-13_final-headline-unfenced-t20",
+        "query": "q1.count.Bplus",
+        "clients": 1
+       }
+      ],
+      "series": "v_bitmap"
+     }
+    ]
+   },
+   {
+    "title": "How many distinct web users on each of two days?",
+    "verdict": [
+     "Bitmap",
+     [
+      "v_bitmap",
+      "v_fenced"
+     ],
+     "Plain SQL",
+     [
+      "v_sql"
+     ]
+    ],
+    "bars": [
+     {
+      "series": "v_sql",
+      "from": [
+       {
+        "run": "vertica/2026-11-13_latency-native-c1-t20",
+        "query": "q2.daily.A",
+        "clients": 1
+       }
+      ]
+     },
+     {
+      "pick": "min",
+      "from": [
+       {
+        "run": "vertica/2026-11-13_final-headline-fenced-t20",
+        "query": "q2.daily.B",
+        "clients": 1
+       }
+      ],
+      "series": "v_fenced"
+     },
+     {
+      "pick": "min",
+      "from": [
+       {
+        "run": "vertica/2026-11-13_final-headline-unfenced-t20",
+        "query": "q2.daily.B",
+        "clients": 1
+       }
+      ],
+      "series": "v_bitmap"
+     }
+    ]
+   },
+   {
+    "title": "Split the audience by all 500 topics",
+    "verdict": [
+     "Bitmap",
+     [
+      "v_bitmap",
+      "v_fenced"
+     ],
+     "Plain SQL",
+     [
+      "v_sql"
+     ]
+    ],
+    "bars": [
+     {
+      "series": "v_sql",
+      "from": [
+       {
+        "run": "vertica/2026-11-13_latency-native-c1-t20",
+        "query": "q3.A",
+        "clients": 1
+       }
+      ]
+     },
+     {
+      "pick": "min",
+      "from": [
+       {
+        "run": "vertica/2026-11-13_final-headline-fenced-t20",
+        "query": "q3.Bplus",
+        "clients": 1
+       },
+       {
+        "run": "vertica/2026-11-13_final-par-fenced-t20",
+        "query": "q3.Bpar",
+        "clients": 1
+       }
+      ],
+      "series": "v_fenced"
+     },
+     {
+      "pick": "min",
+      "from": [
+       {
+        "run": "vertica/2026-11-13_final-headline-unfenced-t20",
+        "query": "q3.Bplus",
+        "clients": 1
+       },
+       {
+        "run": "vertica/2026-11-13_final-par-unfenced-t20",
+        "query": "q3.Bpar",
+        "clients": 1
+       }
+      ],
+      "series": "v_bitmap"
+     }
+    ]
+   },
+   {
+    "title": "Rank 499 topics by their overlap with sports",
+    "verdict": [
+     "Bitmap",
+     [
+      "v_bitmap",
+      "v_fenced"
+     ],
+     "Plain SQL",
+     [
+      "v_sql"
+     ]
+    ],
+    "bars": [
+     {
+      "series": "v_sql",
+      "from": [
+       {
+        "run": "vertica/2026-11-13_latency-bitmap-c1c32-t20b",
+        "line": "check: query=q7\\.A .* ms=([0-9.]+)"
+       }
+      ]
+     },
+     {
+      "pick": "min",
+      "from": [
+       {
+        "run": "vertica/2026-11-13_final-headline-fenced-t20",
+        "query": "q7.Bplus",
+        "clients": 1
+       },
+       {
+        "run": "vertica/2026-11-13_final-par-fenced-t20",
+        "query": "q7.Bpar",
+        "clients": 1
+       }
+      ],
+      "series": "v_fenced"
+     },
+     {
+      "pick": "min",
+      "from": [
+       {
+        "run": "vertica/2026-11-13_final-headline-unfenced-t20",
+        "query": "q7.Bplus",
+        "clients": 1
+       },
+       {
+        "run": "vertica/2026-11-13_final-par-unfenced-t20",
+        "query": "q7.Bpar",
+        "clients": 1
+       }
+      ],
+      "series": "v_bitmap"
+     }
+    ]
+   },
+   {
+    "title": "Send the 5,303,339 IDs of an audience, one row per ID",
+    "verdict": [
+     "Bitmap",
+     [
+      "v_bitmap",
+      "v_fenced"
+     ],
+     "Plain SQL",
+     [
+      "v_sql"
+     ]
+    ],
+    "bars": [
+     {
+      "series": "v_sql",
+      "from": [
+       {
+        "run": "vertica/2026-11-13_latency-native-c1-t20",
+        "query": "q8.A",
+        "clients": 1
+       }
+      ]
+     },
+     {
+      "pick": "min",
+      "from": [
+       {
+        "run": "vertica/2026-11-13_final-headline-fenced-t20",
+        "query": "q8.Bplus",
+        "clients": 1
+       }
+      ],
+      "series": "v_fenced"
+     },
+     {
+      "pick": "min",
+      "from": [
+       {
+        "run": "vertica/2026-11-13_rows-text-unfenced-t20",
+        "query": "q8.rowtext.Bplus",
+        "clients": 1
+       }
+      ],
+      "series": "v_bitmap"
+     }
+    ]
+   },
+   {
+    "title": "List the 197,436 hot devices",
+    "verdict": [
+     "Bitmap",
+     [
+      "v_bitmap",
+      "v_fenced"
+     ],
+     "Plain SQL",
+     [
+      "v_sql"
+     ]
+    ],
+    "bars": [
+     {
+      "series": "v_sql",
+      "from": [
+       {
+        "run": "vertica/2026-11-13_native-q4-socket-t20",
+        "query": "q4.A",
+        "clients": 1
+       }
+      ]
+     },
+     {
+      "pick": "min",
+      "from": [
+       {
+        "run": "vertica/2026-11-13_final-headline-fenced-t20",
+        "query": "q4.Bplus",
+        "clients": 1
+       }
+      ],
+      "series": "v_fenced"
+     },
+     {
+      "pick": "min",
+      "from": [
+       {
+        "run": "vertica/2026-11-13_final-headline-unfenced-t20",
+        "query": "q4.Bplus",
+        "clients": 1
+       }
+      ],
+      "series": "v_bitmap"
+     }
+    ]
+   }
+  ]
+ },
+ "refresh": {
+  "title": "Vertica's validated snapshots: a change of 1 % of the people is applied in {v0.1} instead of a {v0.0} rebuild",
+  "subtitle": "10 million people, 1 % changed; seconds, including the validation of every set against the source; the incremental result equals the full rebuild byte for byte",
+  "unit": "s",
+  "labels": {
+   "v_fenced": "Vertica: full rebuild",
+   "v_bitmap": "Vertica: incremental refresh"
+  },
+  "panels": [
+   {
+    "title": "Changes reported as add / remove (198,219 changes)",
+    "verdict": [
+     "Incremental",
+     [
+      "v_bitmap"
+     ],
+     "Full rebuild",
+     [
+      "v_fenced"
+     ]
+    ],
+    "bars": [
+     {
+      "from": [
+       {
+        "run": "vertica/2026-11-13_refresh-1pct-random-delta-fp-t10",
+        "line": "step=build_full .* total_s=([0-9.]+)"
+       }
+      ],
+      "series": "v_fenced",
+      "label": "Full rebuild"
+     },
+     {
+      "from": [
+       {
+        "run": "vertica/2026-11-13_refresh-1pct-random-delta-fp-t10",
+        "line": "step=apply_full .* total_s=([0-9.]+)"
+       }
+      ],
+      "series": "v_bitmap",
+      "label": "Incremental refresh"
+     }
+    ]
+   },
+   {
+    "title": "Changes on recent sign-ups (2 of 153 ID chunks)",
+    "verdict": [
+     "Incremental",
+     [
+      "v_bitmap"
+     ],
+     "Full rebuild",
+     [
+      "v_fenced"
+     ]
+    ],
+    "bars": [
+     {
+      "from": [
+       {
+        "run": "vertica/2026-11-13_refresh-1pct-recent-mixed-fp-t10",
+        "line": "step=build_full .* total_s=([0-9.]+)"
+       }
+      ],
+      "series": "v_fenced",
+      "label": "Full rebuild"
+     },
+     {
+      "from": [
+       {
+        "run": "vertica/2026-11-13_refresh-1pct-recent-mixed-fp-t10",
+        "line": "step=apply_full .* total_s=([0-9.]+)"
+       }
+      ],
+      "series": "v_bitmap",
+      "label": "Incremental refresh"
+     }
+    ]
+   },
+   {
+    "title": "\"This person changed\", spread over every chunk",
+    "verdict": [
+     "Incremental",
+     [
+      "v_bitmap"
+     ],
+     "Full rebuild",
+     [
+      "v_fenced"
+     ]
+    ],
+    "bars": [
+     {
+      "from": [
+       {
+        "run": "vertica/2026-11-13_refresh-1pct-random-mixed-fp-t10",
+        "line": "step=build_full .* total_s=([0-9.]+)"
+       }
+      ],
+      "series": "v_fenced",
+      "label": "Full rebuild"
+     },
+     {
+      "from": [
+       {
+        "run": "vertica/2026-11-13_refresh-1pct-random-mixed-fp-t10",
+        "line": "step=apply_full .* total_s=([0-9.]+)"
+       }
+      ],
+      "series": "v_bitmap",
+      "label": "Incremental refresh"
+     }
+    ]
+   }
+  ]
+ },
+ "scoreboard": {
+  "type": "scoreboard",
+  "contenders": [
+   "Vertica",
+   "ClickHouse"
+  ],
+  "colours": [
+   "v_bitmap",
+   "ch_bitmap"
+  ],
+  "title": "The scoreboard: Vertica faster in {a_wins} of {n} tests, ClickHouse faster in {b_wins}, level in {level}",
+  "subtitle": "Vertica's bitmap database against ClickHouse's bitmap functions, 10 million people, same machine and limits, identical answers, median times. The bar shows how many times faster the winner is",
+  "groups": [
+   {
+    "title": "Audience questions, one user",
+    "rows": [
+     {
+      "label": "How many people are in this audience?",
+      "a": {
+       "from": [
+        {
+         "run": "vertica/2026-11-13_final-headline-unfenced-t10",
+         "query": "q1.count.Bplus",
+         "clients": 1
+        }
+       ]
+      },
+      "b": {
+       "from": [
+        {
+         "run": "clickhouse/2026-11-13_latency-c1c32-t10",
+         "query": "q1.count.C",
+         "clients": 1
+        }
+       ]
+      },
+      "unit": "ms"
+     },
+     {
+      "label": "How many distinct web users on each of two days?",
+      "a": {
+       "from": [
+        {
+         "run": "vertica/2026-11-13_final-headline-unfenced-t10",
+         "query": "q2.daily.B",
+         "clients": 1
+        }
+       ]
+      },
+      "b": {
+       "from": [
+        {
+         "run": "clickhouse/2026-11-13_latency-c1c32-t10",
+         "query": "q2.daily.C",
+         "clients": 1
+        }
+       ]
+      },
+      "unit": "ms"
+     },
+     {
+      "label": "Split the audience by all 500 topics",
+      "a": {
+       "pick": "min",
+       "from": [
+        {
+         "run": "vertica/2026-11-13_final-headline-unfenced-t10",
+         "query": "q3.Bplus",
+         "clients": 1
+        },
+        {
+         "run": "vertica/2026-11-13_final-par-unfenced-t10",
+         "query": "q3.Bpar",
+         "clients": 1
+        }
+       ]
+      },
+      "b": {
+       "from": [
+        {
+         "run": "clickhouse/2026-11-13_latency-c1c32-t10",
+         "query": "q3.C",
+         "clients": 1
+        }
+       ]
+      },
+      "unit": "ms"
+     },
+     {
+      "label": "Rank 499 topics by their overlap with sports",
+      "a": {
+       "pick": "min",
+       "from": [
+        {
+         "run": "vertica/2026-11-13_final-headline-unfenced-t10",
+         "query": "q7.Bplus",
+         "clients": 1
+        },
+        {
+         "run": "vertica/2026-11-13_final-par-unfenced-t10",
+         "query": "q7.Bpar",
+         "clients": 1
+        }
+       ]
+      },
+      "b": {
+       "from": [
+        {
+         "run": "clickhouse/2026-11-13_latency-c1c32-t10",
+         "query": "q7.C",
+         "clients": 1
+        }
+       ]
+      },
+      "unit": "ms"
+     },
+     {
+      "label": "Send the 530,315 IDs of an audience, one row per ID",
+      "a": {
+       "pick": "median",
+       "from": [
+        {
+         "run": "vertica/2026-11-13_rows-text-unfenced-t10",
+         "query": "q8.rowtext.Bplus",
+         "clients": 1
+        },
+        {
+         "run": "vertica/2026-11-13_encoding-rows-orig-unfenced-r1-t10",
+         "query": "q8.rowtext.Bplus",
+         "clients": 1
+        },
+        {
+         "run": "vertica/2026-11-13_encoding-rows-orig-unfenced-r2-t10",
+         "query": "q8.rowtext.Bplus",
+         "clients": 1
+        }
+       ]
+      },
+      "b": {
+       "from": [
+        {
+         "run": "clickhouse/2026-11-13_ids-rows2-t10",
+         "query": "q8.C",
+         "clients": 1
+        }
+       ]
+      },
+      "unit": "ms"
+     },
+     {
+      "label": "Use that list of IDs inside the database",
+      "a": {
+       "from": [
+        {
+         "run": "vertica/2026-11-13_final-ids-use-unfenced-t10",
+         "query": "q8.sum.Bplus",
+         "clients": 1
+        }
+       ]
+      },
+      "b": {
+       "from": [
+        {
+         "run": "clickhouse/2026-11-13_ids-use-t10",
+         "query": "q8.sum.C",
+         "clients": 1
+        }
+       ]
+      },
+      "unit": "ms"
+     },
+     {
+      "label": "Filter a 10 M-row table by the audience",
+      "a": {
+       "pick": "median",
+       "from": [
+        {
+         "run": "vertica/2026-11-13_join-pin-unfenced-t10",
+         "query": "q8.join.Bpin",
+         "clients": 1
+        },
+        {
+         "run": "vertica/2026-11-13_encoding-join-orig-unfenced-r1-t10",
+         "query": "q8.join.Bpin",
+         "clients": 1
+        },
+        {
+         "run": "vertica/2026-11-14_encoding-join-orig-unfenced-r2-t10",
+         "query": "q8.join.Bpin",
+         "clients": 1
+        }
+       ]
+      },
+      "b": {
+       "from": [
+        {
+         "run": "clickhouse/2026-11-13_ids-join2-t10",
+         "query": "q8.join.C",
+         "clients": 1
+        }
+       ]
+      },
+      "unit": "ms"
+     },
+     {
+      "label": "Total an attribute over the audience (bit slices)",
+      "a": {
+       "from": [
+        {
+         "run": "vertica/2026-11-13_final-agg-unfenced-t10",
+         "query": "q8.agg.Bplus",
+         "clients": 1
+        }
+       ]
+      },
+      "b": {
+       "from": [
+        {
+         "run": "clickhouse/2026-11-13_ids-agg-t10",
+         "query": "q8.agg.C",
+         "clients": 1
+        }
+       ]
+      },
+      "unit": "ms"
+     },
+     {
+      "label": "Save the audience as a set",
+      "a": {
+       "from": [
+        {
+         "run": "vertica/2026-11-13_final-ids-save-unfenced-t10",
+         "query": "q8.save.set.Bplus",
+         "clients": 1
+        }
+       ]
+      },
+      "b": {
+       "from": [
+        {
+         "run": "clickhouse/2026-11-13_ids-save-t10",
+         "query": "q8.save.set.C",
+         "clients": 1
+        }
+       ]
+      },
+      "unit": "ms"
+     },
+     {
+      "label": "List the 19,695 hot devices",
+      "a": {
+       "from": [
+        {
+         "run": "vertica/2026-11-13_final-ids-rows-unfenced-t10",
+         "query": "q4.Bplus",
+         "clients": 1
+        }
+       ]
+      },
+      "b": {
+       "from": [
+        {
+         "run": "clickhouse/2026-11-13_ids-rows-raw-t10",
+         "query": "q4.C",
+         "clients": 1
+        }
+       ]
+      },
+      "unit": "ms"
+     }
+    ]
+   },
+   {
+    "title": "Audience questions, 32 users at once",
+    "rows": [
+     {
+      "label": "How many people are in this audience?",
+      "a": {
+       "from": [
+        {
+         "run": "vertica/2026-11-13_final-headline-unfenced-t10",
+         "query": "q1.count.Bplus",
+         "clients": 32
+        }
+       ]
+      },
+      "b": {
+       "from": [
+        {
+         "run": "clickhouse/2026-11-13_latency-c1c32-t10",
+         "query": "q1.count.C",
+         "clients": 32
+        }
+       ]
+      },
+      "unit": "ms"
+     },
+     {
+      "label": "How many distinct web users on each of two days?",
+      "a": {
+       "from": [
+        {
+         "run": "vertica/2026-11-13_final-headline-unfenced-t10",
+         "query": "q2.daily.B",
+         "clients": 32
+        }
+       ]
+      },
+      "b": {
+       "from": [
+        {
+         "run": "clickhouse/2026-11-13_latency-c1c32-t10",
+         "query": "q2.daily.C",
+         "clients": 32
+        }
+       ]
+      },
+      "unit": "ms"
+     },
+     {
+      "label": "Split the audience by all 500 topics",
+      "a": {
+       "pick": "min",
+       "from": [
+        {
+         "run": "vertica/2026-11-13_final-headline-unfenced-t10",
+         "query": "q3.Bplus",
+         "clients": 32
+        },
+        {
+         "run": "vertica/2026-11-13_final-par-unfenced-t10",
+         "query": "q3.Bpar",
+         "clients": 32
+        }
+       ]
+      },
+      "b": {
+       "from": [
+        {
+         "run": "clickhouse/2026-11-13_latency-c1c32-t10",
+         "query": "q3.C",
+         "clients": 32
+        }
+       ]
+      },
+      "unit": "ms"
+     },
+     {
+      "label": "Rank 499 topics by their overlap with sports",
+      "a": {
+       "pick": "min",
+       "from": [
+        {
+         "run": "vertica/2026-11-13_final-headline-unfenced-t10",
+         "query": "q7.Bplus",
+         "clients": 32
+        },
+        {
+         "run": "vertica/2026-11-13_final-par-unfenced-t10",
+         "query": "q7.Bpar",
+         "clients": 32
+        }
+       ]
+      },
+      "b": {
+       "from": [
+        {
+         "run": "clickhouse/2026-11-13_latency-c1c32-t10",
+         "query": "q7.C",
+         "clients": 32
+        }
+       ]
+      },
+      "unit": "ms"
+     },
+     {
+      "label": "Send the 530,315 IDs of an audience, one row per ID",
+      "a": {
+       "pick": "median",
+       "from": [
+        {
+         "run": "vertica/2026-11-13_rows-text-unfenced-t10",
+         "query": "q8.rowtext.Bplus",
+         "clients": 32
+        },
+        {
+         "run": "vertica/2026-11-13_encoding-rows-orig-unfenced-r1-t10",
+         "query": "q8.rowtext.Bplus",
+         "clients": 32
+        },
+        {
+         "run": "vertica/2026-11-13_encoding-rows-orig-unfenced-r2-t10",
+         "query": "q8.rowtext.Bplus",
+         "clients": 32
+        }
+       ]
+      },
+      "b": {
+       "from": [
+        {
+         "run": "clickhouse/2026-11-13_ids-rows2-t10",
+         "query": "q8.C",
+         "clients": 32
+        }
+       ]
+      },
+      "unit": "ms"
+     },
+     {
+      "label": "Use that list of IDs inside the database",
+      "a": {
+       "from": [
+        {
+         "run": "vertica/2026-11-13_final-ids-use-unfenced-t10",
+         "query": "q8.sum.Bplus",
+         "clients": 32
+        }
+       ]
+      },
+      "b": {
+       "from": [
+        {
+         "run": "clickhouse/2026-11-13_ids-use-t10",
+         "query": "q8.sum.C",
+         "clients": 32
+        }
+       ]
+      },
+      "unit": "ms"
+     },
+     {
+      "label": "Filter a 10 M-row table by the audience",
+      "a": {
+       "pick": "median",
+       "from": [
+        {
+         "run": "vertica/2026-11-13_join-pin-unfenced-t10",
+         "query": "q8.join.Bpin",
+         "clients": 32
+        },
+        {
+         "run": "vertica/2026-11-13_encoding-join-orig-unfenced-r1-t10",
+         "query": "q8.join.Bpin",
+         "clients": 32
+        },
+        {
+         "run": "vertica/2026-11-14_encoding-join-orig-unfenced-r2-t10",
+         "query": "q8.join.Bpin",
+         "clients": 32
+        }
+       ]
+      },
+      "b": {
+       "from": [
+        {
+         "run": "clickhouse/2026-11-13_ids-join2-t10",
+         "query": "q8.join.C",
+         "clients": 32
+        }
+       ]
+      },
+      "unit": "ms"
+     },
+     {
+      "label": "Total an attribute over the audience (bit slices)",
+      "a": {
+       "from": [
+        {
+         "run": "vertica/2026-11-13_final-agg-unfenced-t10",
+         "query": "q8.agg.Bplus",
+         "clients": 32
+        }
+       ]
+      },
+      "b": {
+       "from": [
+        {
+         "run": "clickhouse/2026-11-13_ids-agg-t10",
+         "query": "q8.agg.C",
+         "clients": 32
+        }
+       ]
+      },
+      "unit": "ms"
+     },
+     {
+      "label": "List the 19,695 hot devices",
+      "a": {
+       "from": [
+        {
+         "run": "vertica/2026-11-13_final-ids-rows-unfenced-t10",
+         "query": "q4.Bplus",
+         "clients": 32
+        }
+       ]
+      },
+      "b": {
+       "from": [
+        {
+         "run": "clickhouse/2026-11-13_ids-rows-raw-t10",
+         "query": "q4.C",
+         "clients": 32
+        }
+       ]
+      },
+      "unit": "ms"
+     }
+    ]
+   },
+   {
+    "title": "Keeping the sets fresh",
+    "rows": [
+     {
+      "label": "Append 2 M rows to live sets under 32 users",
+      "a": {
+       "from": [
+        {
+         "run": "vertica/2026-11-13_live2-append-under-load-unfenced-t10",
+         "line": "background: .* duration_s=([0-9.]+)",
+         "scale": 1
+        }
+       ]
+      },
+      "b": {
+       "from": [
+        {
+         "run": "clickhouse/2026-11-13_live-append-under-load-t10",
+         "line": "background: .* duration_s=([0-9.]+)",
+         "scale": 1
+        }
+       ]
+      },
+      "unit": "s"
+     },
+     {
+      "label": "Audience count during that load",
+      "a": {
+       "from": [
+        {
+         "run": "vertica/2026-11-13_live2-append-under-load-unfenced-t10",
+         "query": "q1.count.Bplus",
+         "clients": 32
+        }
+       ]
+      },
+      "b": {
+       "from": [
+        {
+         "run": "clickhouse/2026-11-13_live-append-under-load-t10",
+         "query": "q1.count.C",
+         "clients": 32
+        }
+       ]
+      },
+      "unit": "ms"
+     },
+     {
+      "label": "500-topic breakdown during that load",
+      "a": {
+       "from": [
+        {
+         "run": "vertica/2026-11-13_live2-append-under-load-unfenced-t10",
+         "query": "q3.Bplus",
+         "clients": 32
+        }
+       ]
+      },
+      "b": {
+       "from": [
+        {
+         "run": "clickhouse/2026-11-13_live-append-under-load-t10",
+         "query": "q3.C",
+         "clients": 32
+        }
+       ]
+      },
+      "unit": "ms"
+     },
+     {
+      "label": "Build all 698 sets from the source tables",
+      "a": {
+       "pick": "sum",
+       "from": [
+        {
+         "run": "vertica/2026-11-13_build-agg2-person-t10",
+         "line": "op=build .* build_s=([0-9.]+)",
+         "scale": 1
+        },
+        {
+         "run": "vertica/2026-11-13_build-agg2-device-t10",
+         "line": "op=build .* build_s=([0-9.]+)",
+         "scale": 1
+        }
+       ]
+      },
+      "b": {
+       "pick": "sum",
+       "from": [
+        {
+         "run": "clickhouse/2026-11-13_build2-t10",
+         "line": "op=build .* total_s=([0-9.]+)",
+         "scale": 1
+        },
+        {
+         "run": "clickhouse/2026-11-13_build-bits2-t10",
+         "line": "op=build-bits .* s=([0-9.]+)",
+         "scale": 1
+        }
+       ]
+      },
+      "unit": "s"
+     }
+    ]
+   }
+  ],
+  "note": "A lead below 5 % counts as level. Vertica's bitmap functions run unfenced here, inside the server, as ClickHouse's built-in functions do; the fenced numbers are in the article's tables. Sources: sources.csv."
+ }
+}

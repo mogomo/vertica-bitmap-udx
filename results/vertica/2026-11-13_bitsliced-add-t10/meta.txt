@@ -1,0 +1,6 @@
+area=vertica run=bitsliced-add-t10 folder=2026-11-13_bitsliced-add-t10 milestone=M5c engine=vertica
+duration_s=7.25 exit_status=0 repo_hash=92a8ad21f8cb4443
+engine_cpu_s=37.8 engine_memory_peak_sampled_bytes=6676062208 engine_memory_peak_since_start_bytes=12008161280
+client_cpus=20,21 client_cpu20_busy_pct=2.8 client_cpu21_busy_pct=3.0 client_saturated=no
+limits_ok=yes
+validity=valid

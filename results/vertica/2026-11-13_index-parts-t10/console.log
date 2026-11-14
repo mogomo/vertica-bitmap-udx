@@ -1,0 +1,4 @@
+vsql:bench/vertica_index_partitioned.sql:6: NOTICE 4185:  Nothing was dropped
+83691
+0
+summary: table=bitmap_index_parts rows=83691 containers=16 bytes=395020820

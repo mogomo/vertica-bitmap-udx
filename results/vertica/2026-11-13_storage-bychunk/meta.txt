@@ -1,0 +1,6 @@
+area=vertica run=storage-bychunk folder=2026-11-13_storage-bychunk milestone=M5b engine=vertica
+duration_s=9.29 exit_status=0 repo_hash=82096cc9e0fea3dd
+engine_cpu_s=9.3 engine_memory_peak_sampled_bytes=17715056640 engine_memory_peak_since_start_bytes=60129542144
+client_cpus=20,21 client_cpu20_busy_pct=2.5 client_cpu21_busy_pct=3.1 client_saturated=no
+limits_ok=yes
+validity=valid

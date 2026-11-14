@@ -1,0 +1,7 @@
+query,answer,oracle,rows,hash,oracle_hash,matches,error,ms
+q1.ids.Bplus,q1.ids,,251683,8204799bdbdae904,/expect=8204799bdbdae904,yes,,26.38
+q4.Bplus,q4,,19695,418fbbab9d532966,/expect=418fbbab9d532966,yes,,7.75
+q8.Bplus,q8,,530315,384c2a5fd45796b7,/expect=384c2a5fd45796b7,yes,,48.54
+q1.ids.rowtext.Bplus,q1.ids,,251683,8204799bdbdae904,/expect=8204799bdbdae904,yes,,29.35
+q4.rowtext.Bplus,q4,,19695,418fbbab9d532966,/expect=418fbbab9d532966,yes,,8.70
+q8.rowtext.Bplus,q8,,530315,384c2a5fd45796b7,/expect=384c2a5fd45796b7,yes,,37.61

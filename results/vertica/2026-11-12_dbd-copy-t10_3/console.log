@@ -1,0 +1,20 @@
+10000000
+dbd: op=copy table=user_profile rows=10000000 s=1.02
+200000000
+dbd: op=copy table=user_interest rows=200000000 s=10.23
+100000000
+dbd: op=copy table=event_log rows=100000000 s=7.74
+2000000
+dbd: op=copy table=device_state rows=2000000 s=0.39
+5000000
+dbd: op=copy table=asset_state rows=5000000 s=0.53
+10001085
+dbd: op=copy table=asset_source rows=10001085 s=0.63
+dbd: op=copy statistics_s=0.89 total_s=21.48 tenant=10 schema=bitmap_dbd
+storage: table=asset_source projection=asset_source_super rows=10001085 used_bytes=30792562
+storage: table=asset_state projection=asset_state_super rows=5000000 used_bytes=49184934
+storage: table=device_state projection=device_state_super rows=2000000 used_bytes=24305672
+storage: table=event_log projection=event_log_super rows=100000000 used_bytes=945157736
+storage: table=user_interest projection=user_interest_super rows=200000000 used_bytes=617731700
+storage: table=user_profile projection=user_profile_super rows=10000000 used_bytes=52458731
+dbd: op=storage schema=bitmap_dbd projections=6 used_bytes=1719631335

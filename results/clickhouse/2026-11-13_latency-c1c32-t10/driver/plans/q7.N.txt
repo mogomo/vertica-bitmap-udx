@@ -1,0 +1,37 @@
+Output: \'topic_\' || topic, uniqExactIf(entity_id, entity_id IN subquery1), uniqExact(entity_id) + uniqExact(entity_id) − uniqExactIf(entity_id, entity_id IN subquery1), round(uniqExactIf(entity_id, entity_id IN subquery1) / (uniqExact(entity_id) + uniqExact(entity_id) − uniqExactIf(entity_id, entity_id IN subquery1)), 4)
+
+Join (JOIN FillRightFirst)
+│  t × s[1]
+│  Type: cross | Strictness: all | Algorithm: ConstantJoin
+│  Output:
+│    Left:  topic, size, inter
+│    Right: n
+├──CreatingSets (Create sets before main query execution)
+│  ├──Aggregating
+│  │  │  Keys: topic
+│  │  │  Aggregates: uniqExact(entity_id), uniqExactIf(entity_id, entity_id IN subquery1)
+│  │  │  Skip merging: 0
+│  │  └──ReadFromMergeTree (xbench.user_interest)
+│  │        Read type: Default
+│  │        Parts: 1 | Granules: 24075
+│  │        Output: topic, entity_id
+│  │        Prewhere filter
+│  │        Prewhere filter column:  tenant_id = 10 AND snapshot_id = 1 AND topic != \'sports\'
+│  └──CreatingSet (Create set for subquery)
+│     │  Set: subquery1
+│     └──ReadFromMergeTree (xbench.user_interest)
+│           Read type: Default
+│           Parts: 1 | Granules: 342
+│           Output: entity_id
+│           Prewhere filter
+│           Prewhere filter column:  tenant_id = 10 AND snapshot_id = 1 AND topic = \'sports\'
+└──Aggregating
+   │  Keys:
+   │  Aggregates: uniqExact(entity_id)
+   │  Skip merging: 0
+   └──ReadFromMergeTree (xbench.user_interest)
+         Read type: Default
+         Parts: 1 | Granules: 342
+         Output: entity_id
+         Prewhere filter
+         Prewhere filter column:  tenant_id = 10 AND snapshot_id = 1 AND topic = \'sports\'

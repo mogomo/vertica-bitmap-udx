@@ -1,0 +1,1 @@
+HTTP 500: Code: 80. DB::Exception: Only SELECT is supported for EXPLAIN query. (INCORRECT_QUERY)

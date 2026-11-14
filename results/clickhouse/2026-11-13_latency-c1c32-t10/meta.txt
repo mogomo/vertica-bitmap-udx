@@ -1,0 +1,6 @@
+area=clickhouse run=latency-c1c32-t10 folder=2026-11-13_latency-c1c32-t10 milestone=M5b engine=clickhouse
+duration_s=346.06 exit_status=1 repo_hash=82096cc9e0fea3dd
+engine_cpu_s=4726.0 engine_memory_peak_sampled_bytes=55382626304 engine_memory_peak_since_start_bytes=55774441472
+client_cpus=20,21 client_cpu20_busy_pct=16.9 client_cpu21_busy_pct=10.6 client_saturated=no
+limits_ok=yes
+validity=invalid: exit status 1

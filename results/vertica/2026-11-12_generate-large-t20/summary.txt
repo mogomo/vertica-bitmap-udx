@@ -1,0 +1,1 @@
+generated: tenant=20 snapshot=1 seed=42 id_order=signup id_space=dense people_s=40.5 interests_s=1197.0 events_s=520.4 devices_s=6.6 assets_s=34.8 people=100000000 interests=2000000000 events=1000000000 devices=20000000 assets=50000000 asset_sources=100007065 topics=500 topics_per_user=20 topic_skew=1.5 days=30 user_skew=2 max_id=99999999 total_s=1805.4

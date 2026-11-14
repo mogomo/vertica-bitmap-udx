@@ -1,0 +1,8 @@
+check: query=q8.join.N answer=q8.join rows=1 hash=af0e074a71c652d7 matches=yes ms=234.3
+check: query=q8.join.C answer=q8.join rows=1 hash=af0e074a71c652d7 matches=yes ms=78.2
+check: query=q8.agg.C answer=q8.join rows=1 hash=af0e074a71c652d7 matches=yes ms=50.3
+bench: query=q8.join.C clients=1 n=15 p50_ms=60.16 p95_ms=66.83 p99_ms=73.27 mean_ms=60.80 engine_p50_ms=59.0 qps=15.34 errors=0 mismatches=0
+bench: query=q8.join.C clients=32 n=64 p50_ms=541.22 p95_ms=774.20 p99_ms=869.71 mean_ms=563.91 engine_p50_ms=539.5 qps=30.06 errors=0 mismatches=0
+bench: query=q8.agg.C clients=1 n=15 p50_ms=47.11 p95_ms=53.59 p99_ms=60.87 mean_ms=48.22 engine_p50_ms=46.0 qps=19.34 errors=0 mismatches=0
+bench: query=q8.agg.C clients=32 n=64 p50_ms=335.03 p95_ms=554.47 p99_ms=617.54 mean_ms=366.25 engine_p50_ms=332.5 qps=54.88 errors=0 mismatches=0
+summary: mode=run engine=clickhouse queries=3 levels=1,32 check_ok=yes errors=0 mismatches=0 valid=yes

@@ -1,0 +1,12 @@
+query,answer,oracle,rows,hash,oracle_hash,matches,error,ms
+q1.count.A,q1.count,yes,1,b4498cf506a5f79c,b4498cf506a5f79c,yes,,10050.23
+q1.count.Bplus,q1.count,,1,b4498cf506a5f79c,b4498cf506a5f79c,yes,,76.03
+q1.ids.A,q1.ids,yes,251683,8204799bdbdae904,8204799bdbdae904,yes,,10068.71
+q1.ids.Bplus,q1.ids,,251683,8204799bdbdae904,8204799bdbdae904,yes,,87.40
+q3.A,q3,yes,500,1a17b1531950cc32,1a17b1531950cc32,yes,,10527.75
+q3.Bplus,q3,,500,1a17b1531950cc32,1a17b1531950cc32,yes,,1442.90
+q7.A,q7,yes,499,8d89f06ae62b8c25,8d89f06ae62b8c25,yes,,50902.47
+q7.Bj,q7,,499,8d89f06ae62b8c25,8d89f06ae62b8c25,yes,,1278.67
+q7.Bplus,q7,,499,8d89f06ae62b8c25,8d89f06ae62b8c25,yes,,858.26
+q8.A,q8,yes,530315,384c2a5fd45796b7,384c2a5fd45796b7,yes,,34806.75
+q8.Bplus,q8,,530315,384c2a5fd45796b7,384c2a5fd45796b7,yes,,144.16

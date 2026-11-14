@@ -1,0 +1,6 @@
+area=vertica run=dbd-latency-c8c32-t10 folder=2026-11-12_dbd-latency-c8c32-t10 milestone=M5a engine=vertica
+duration_s=3558.68 exit_status=1 repo_hash=993305b4b92fc231
+engine_cpu_s=63774.4 engine_memory_peak_sampled_bytes=38059900928 engine_memory_peak_since_start_bytes=38449909760
+client_cpus=20,21 client_cpu20_busy_pct=6.2 client_cpu21_busy_pct=6.8 client_saturated=no
+limits_ok=yes
+validity=invalid: exit status 1

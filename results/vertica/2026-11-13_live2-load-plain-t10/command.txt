@@ -1,0 +1,5 @@
+command=scripts/live_index.sh load --tenant=10 --watermark=2026-11-01\ 00:00:00 
+cwd=~/vertica-bitmap-udx
+start_utc=2026-11-13T10:47:37Z
+end_utc=2026-11-13T10:48:18Z
+exit_status=0

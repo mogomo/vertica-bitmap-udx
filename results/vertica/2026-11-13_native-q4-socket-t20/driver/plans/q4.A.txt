@@ -1,0 +1,37 @@
+------------------------------ 
+QUERY PLAN DESCRIPTION: 
+------------------------------
+
+EXPLAIN SELECT device_id
+FROM bitmap_demo.device_state
+WHERE tenant_id = 20 AND snapshot_id = 1
+  AND observed_at > TIMESTAMPADD('minute', -30, '2026-11-01 12:00:00'::TIMESTAMP) AND observed_at <= '2026-11-01 12:00:00'::TIMESTAMP
+  AND online IS TRUE AND zone = 'A' AND temp_tenths >= 800 AND changes_10m > 3
+
+Access Path:
++-STORAGE ACCESS for device_state [Cost: 192K, Rows: 256K] (PATH ID: 1)
+|  Projection: bitmap_demo.device_state_super
+|  Materialize: device_state.device_id
+|  Filter: (device_state.tenant_id = 20)
+|  Filter: (device_state.snapshot_id = 1)
+|  Filter: (device_state.zone = 'A')
+|  Filter: (device_state.temp_tenths >= 800)
+|  Filter: (device_state.changes_10m > 3)
+|  Filter: (device_state.online IS TRUE)
+|  Filter: ((device_state.observed_at > '2026-11-01 11:30:00'::timestamp) AND (device_state.observed_at <= '2026-11-01 12:00:00'::timestamp))
+
+
+------------------------------
+----------------------------------------------- 
+PLAN: BASE QUERY PLAN (GraphViz Format)
+----------------------------------------------- 
+digraph G {
+graph [rankdir=BT, label = "BASE QUERY PLAN\nQuery: EXPLAIN SELECT device_id\nFROM bitmap_demo.device_state\nWHERE tenant_id = 20 AND snapshot_id = 1\n  AND observed_at \> TIMESTAMPADD(\'minute\', -30, \'2026-11-01 12:00:00\'::TIMESTAMP) AND observed_at \<= \'2026-11-01 12:00:00\'::TIMESTAMP\n  AND online IS TRUE AND zone = \'A\' AND temp_tenths \>= 800 AND changes_10m \> 3\n\nAll Nodes Vector: \n\n  node[0]=v_vdb_node0001 (initiator) Up\n", labelloc=t, labeljust=l ordering=out]
+0[label = "Root \nOutBlk=[UncTuple]", color = "green", shape = "house"];
+1[label = "NewEENode \nOutBlk=[UncTuple]", color = "green", shape = "box"];
+2[label = "StorageUnionStep: device_state_super\nUnc: Integer(8)", color = "purple", shape = "box"];
+3[label = "ScanStep: device_state_super\n(device_state.tenant_id = 20)\n(device_state.snapshot_id = 1)\n(device_state.zone = \'A\')\n(device_state.temp_tenths \>= 800)\n(device_state.changes_10m \> 3)\n(device_state.online IS TRUE)\n((device_state.observed_at \> \'2026-11-01 11:30:00\'::timestamp) AND (device_state.observed_at \<= \'2026-11-01 12:00:00\'::timestamp))\ntenant_id (not emitted)\nsnapshot_id (not emitted)\ndevice_id\nonline (not emitted)\nzone (not emitted)\ntemp_tenths (not emitted)\nchanges_10m (not emitted)\nobserved_at (not emitted)\nUnc: Integer(8)", color = "brown", shape = "box"];
+1->0 [label = "V[0]",color = "black"];
+2->1 [label = "0",color = "blue"];
+3->2 [label = "0",color = "blue"];
+}

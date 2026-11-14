@@ -1,0 +1,5 @@
+check: query=q1.count.Bplus answer=q1.count rows=1 hash=9f29b5c3304ec560 matches=yes ms=378.6
+check: query=q2.daily.B answer=q2.daily rows=2 hash=c53ffa7f6f213926 matches=yes ms=111.3
+bench: query=q1.count.Bplus clients=32 n=64 p50_ms=612.38 p95_ms=781.02 p99_ms=921.89 mean_ms=622.80 engine_p50_ms=579.5 qps=41.27 errors=0 mismatches=0
+bench: query=q2.daily.B clients=32 n=64 p50_ms=312.13 p95_ms=474.23 p99_ms=486.28 mean_ms=314.31 engine_p50_ms=291.5 qps=62.04 errors=0 mismatches=0
+summary: mode=run engine=vertica queries=2 levels=32 check_ok=yes errors=0 mismatches=0 valid=yes

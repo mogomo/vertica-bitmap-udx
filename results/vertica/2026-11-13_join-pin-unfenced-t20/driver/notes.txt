@@ -1,0 +1,5 @@
+driver run started 2026-11-13T18:15:04+0200 args ['run', '--client', 'socket', '--workload', 'bench/workloads/vertica_ids.sql', '--var', 'tenant=20', '--out', '~/bitmap_record/vertica/2026-11-13_join-pin-unfenced-t20/driver', '--clients', '1', '--iterations', '15', '--warmup', '1', '--statement-cap', '300', '--only', 'q8.join.Bplus,q8.join.Bpin', '--expect', '~/bitmap_record/vertica/2026-11-13_check-agg-t20/driver/check.csv', '--skip-oracles']
+check q8.join.Bplus: answer 5303339|5197279|280668090
+check q8.join.Bpin: answer 5303339|5197279|280668090
+block 2 client 0: 16 executions, 32 engine times: not matched
+driver ended 2026-11-13T18:15:24+0200 status 0

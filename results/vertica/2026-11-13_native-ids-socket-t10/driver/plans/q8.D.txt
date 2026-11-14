@@ -1,0 +1,67 @@
+------------------------------ 
+QUERY PLAN DESCRIPTION: 
+------------------------------
+
+EXPLAIN SELECT p.entity_id
+FROM bitmap_dbd.user_profile p
+WHERE p.tenant_id = 10 AND p.snapshot_id = 1 AND p.country = 'IL'
+  AND EXISTS (SELECT 1 FROM bitmap_dbd.user_interest i
+              WHERE i.tenant_id = p.tenant_id AND i.snapshot_id = p.snapshot_id
+                AND i.entity_id = p.entity_id AND i.topic = 'sports')
+  AND NOT EXISTS (SELECT 1 FROM bitmap_dbd.user_interest i
+                  WHERE i.tenant_id = p.tenant_id AND i.snapshot_id = p.snapshot_id
+                    AND i.entity_id = p.entity_id AND i.topic = 'finance')
+
+Access Path:
++-JOIN HASH [Anti] [Cost: 49K, Rows: 357K] (PATH ID: 1)
+|  Join Cond: (VAL(1) = p.tenant_id) AND (VAL(1) = p.snapshot_id) AND (VAL(1) = p.entity_id)
+|  Materialize at Input: p.tenant_id, p.snapshot_id, p.entity_id
+| +-- Outer -> JOIN HASH [Semi] [Cost: 38K, Rows: 714K] (PATH ID: 2)
+| |      Join Cond: (VAL(1) = p.tenant_id) AND (VAL(1) = p.snapshot_id) AND (VAL(1) = p.entity_id)
+| | +-- Outer -> STORAGE ACCESS for p [Cost: 20K, Rows: 1M] (PATH ID: 3)
+| | |      Projection: bitmap_dbd.user_profile_DBD_1_rep_vbitmap_dbd
+| | |      Materialize: p.snapshot_id, p.tenant_id, p.entity_id
+| | |      Filter: (p.tenant_id = 10)
+| | |      Filter: (p.country = 'IL')
+| | |      Filter: (p.snapshot_id = 1)
+| | |      Runtime Filters: (SIP1(HashJoin): p.tenant_id), (SIP2(HashJoin): p.snapshot_id), (SIP3(HashJoin): p.entity_id), (SIP4(HashJoin): p.tenant_id, p.snapshot_id, p.entity_id)
+| | +-- Inner -> SELECT [Cost: 7K, Rows: 3M] (PATH ID: 4)
+| | | +---> STORAGE ACCESS for i [Cost: 7K, Rows: 3M] (PATH ID: 5)
+| | | |      Projection: bitmap_dbd.user_interest_DBD_2_rep_vbitmap_dbd
+| | | |      Materialize: i.tenant_id, i.snapshot_id, i.entity_id
+| | | |      Filter: (i.topic = 'sports')
+| +-- Inner -> SELECT [Cost: 5K, Rows: 2M] (PATH ID: 6)
+| | +---> STORAGE ACCESS for i [Cost: 5K, Rows: 2M] (PATH ID: 7)
+| | |      Projection: bitmap_dbd.user_interest_DBD_2_rep_vbitmap_dbd
+| | |      Materialize: i.tenant_id, i.snapshot_id, i.entity_id
+| | |      Filter: (i.topic = 'finance')
+
+
+------------------------------
+----------------------------------------------- 
+PLAN: BASE QUERY PLAN (GraphViz Format)
+----------------------------------------------- 
+digraph G {
+graph [rankdir=BT, label = "BASE QUERY PLAN\nQuery: EXPLAIN SELECT p.entity_id\nFROM bitmap_dbd.user_profile p\nWHERE p.tenant_id = 10 AND p.snapshot_id = 1 AND p.country = \'IL\'\n  AND EXISTS (SELECT 1 FROM bitmap_dbd.user_interest i\n              WHERE i.tenant_id = p.tenant_id AND i.snapshot_id = p.snapshot_id\n                AND i.entity_id = p.entity_id AND i.topic = \'sports\')\n  AND NOT EXISTS (SELECT 1 FROM bitmap_dbd.user_interest i\n                  WHERE i.tenant_id = p.tenant_id AND i.snapshot_id = p.snapshot_id\n                    AND i.entity_id = p.entity_id AND i.topic = \'finance\')\n\nAll Nodes Vector: \n\n  node[0]=v_vdb_node0001 (initiator) Up\n", labelloc=t, labeljust=l ordering=out]
+0[label = "Root \nOutBlk=[UncTuple]", color = "green", shape = "house"];
+1[label = "NewEENode \nOutBlk=[UncTuple]", color = "green", shape = "box"];
+2[label = "StorageUnionStep: user_profile_DBD_1_rep_vbitmap_dbd\nUnc: Integer(8)", color = "purple", shape = "box"];
+3[label = "ExprEval: \n  p.entity_id\nUnc: Integer(8)", color = "brown", shape = "box"];
+4[label = "Join: Hash-Join: \n(bitmap_dbd.user_profile x bitmap_dbd.user_interest) using previous join and subquery (PATH ID: 1)\n[Anti]\n\nUnc: Integer(8)", color = "brown", shape = "box"];
+5[label = "Join: Hash-Join: \n(bitmap_dbd.user_profile x bitmap_dbd.user_interest) using user_profile_DBD_1_rep_vbitmap_dbd and subquery (PATH ID: 2)\n[Semi]\n\nUnc: Integer(8)\nUnc: Integer(8)\nUnc: Integer(8)", color = "brown", shape = "box"];
+6[label = "ScanStep: user_profile_DBD_1_rep_vbitmap_dbd\n(p.tenant_id = 10)\n(p.country = \'IL\')\n(p.snapshot_id = 1)\nSIP1(HashJoin): p.tenant_id\nSIP2(HashJoin): p.snapshot_id\nSIP3(HashJoin): p.entity_id\nSIP4(HashJoin): p.tenant_id, p.snapshot_id, p.entity_id\ntenant_id RLE\ncountry RLE (not emitted)\nsnapshot_id RLE\nentity_id\nRLE: Integer(8)\nRLE: Integer(8)\nUnc: Integer(8)", color = "brown", shape = "box"];
+7[label = "StorageUnionStep: user_interest_DBD_2_rep_vbitmap_dbd\nRLE: Integer(8)\nRLE: Integer(8)\nUnc: Integer(8)", color = "purple", shape = "box"];
+8[label = "ScanStep: user_interest_DBD_2_rep_vbitmap_dbd\n(i.topic = \'sports\')\ntopic RLE (not emitted)\ntenant_id RLE\nsnapshot_id RLE\nentity_id\nRLE: Integer(8)\nRLE: Integer(8)\nUnc: Integer(8)", color = "brown", shape = "box"];
+9[label = "StorageUnionStep: user_interest_DBD_2_rep_vbitmap_dbd\nRLE: Integer(8)\nRLE: Integer(8)\nUnc: Integer(8)", color = "purple", shape = "box"];
+10[label = "ScanStep: user_interest_DBD_2_rep_vbitmap_dbd\n(i.topic = \'finance\')\ntopic RLE (not emitted)\ntenant_id RLE\nsnapshot_id RLE\nentity_id\nRLE: Integer(8)\nRLE: Integer(8)\nUnc: Integer(8)", color = "brown", shape = "box"];
+1->0 [label = "V[0]",color = "black"];
+2->1 [label = "0",color = "blue"];
+3->2 [label = "0",color = "blue"];
+4->3 [label = "0",color = "blue"];
+5->4 [label = "0",color = "blue"];
+6->5 [label = "0",color = "blue"];
+7->5 [label = "1",color = "blue"];
+8->7 [label = "0",color = "blue"];
+9->4 [label = "1",color = "blue"];
+10->9 [label = "0",color = "blue"];
+}

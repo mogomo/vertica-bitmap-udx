@@ -1,0 +1,6 @@
+area=vertica run=native-q4-socket-t20 folder=2026-11-13_native-q4-socket-t20 milestone=M5c engine=vertica
+duration_s=7.07 exit_status=0 repo_hash=b1c30ae062226a40
+engine_cpu_s=11.6 engine_memory_peak_sampled_bytes=938061824 engine_memory_peak_since_start_bytes=942993408
+client_cpus=20,21 client_cpu20_busy_pct=79.4 client_cpu21_busy_pct=4.3 client_saturated=no
+limits_ok=yes
+validity=valid

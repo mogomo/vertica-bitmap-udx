@@ -1,0 +1,6 @@
+live: op=load table=tag tenant=10 domain=person rows=253628541 s=91.74
+live: op=load table=event tenant=10 rows=100000000 s=19.14
+live: op=status projection=bitmap_index containers=1 rows=83691 bytes=395018702
+live: op=status projection=daily_bitmap containers=1 rows=18360 bytes=97217338
+live: op=status projection=event_super containers=1 rows=100000000 bytes=757256499
+live: op=status projection=tag_super containers=1 rows=253628541 bytes=1036154431

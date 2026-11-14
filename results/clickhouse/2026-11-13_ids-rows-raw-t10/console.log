@@ -1,0 +1,13 @@
+check: query=q1.ids.N answer=q1.ids rows=251683 hash=8204799bdbdae904 matches=yes ms=202.9
+check: query=q1.ids.C answer=q1.ids rows=251683 hash=8204799bdbdae904 matches=yes ms=58.3
+check: query=q4.N answer=q4 rows=19695 hash=418fbbab9d532966 matches=yes ms=14.9
+check: query=q4.C answer=q4 rows=19695 hash=418fbbab9d532966 matches=yes ms=15.9
+check: query=q8.N answer=q8 rows=530315 hash=384c2a5fd45796b7 matches=yes ms=203.9
+check: query=q8.C answer=q8 rows=530315 hash=384c2a5fd45796b7 matches=yes ms=45.5
+bench: query=q1.ids.C clients=1 n=15 p50_ms=54.38 p95_ms=56.34 p99_ms=56.45 mean_ms=54.69 engine_p50_ms=52.0 qps=17.04 errors=0 mismatches=0
+bench: query=q1.ids.C clients=32 n=64 p50_ms=369.53 p95_ms=540.26 p99_ms=547.24 mean_ms=382.27 engine_p50_ms=359.5 qps=68.36 errors=0 mismatches=0
+bench: query=q4.C clients=1 n=15 p50_ms=15.58 p95_ms=19.06 p99_ms=19.45 mean_ms=16.35 engine_p50_ms=14.0 qps=56.93 errors=0 mismatches=0
+bench: query=q4.C clients=32 n=64 p50_ms=76.41 p95_ms=120.17 p99_ms=129.90 mean_ms=81.15 engine_p50_ms=74.0 qps=257.10 errors=0 mismatches=0
+bench: query=q8.C clients=1 n=15 p50_ms=39.77 p95_ms=42.90 p99_ms=43.19 mean_ms=40.26 engine_p50_ms=36.0 qps=23.14 errors=0 mismatches=0
+bench: query=q8.C clients=32 n=64 p50_ms=241.70 p95_ms=379.02 p99_ms=428.75 mean_ms=251.83 engine_p50_ms=222.5 qps=105.22 errors=0 mismatches=0
+summary: mode=run engine=clickhouse queries=6 levels=1,32 check_ok=yes errors=0 mismatches=0 valid=yes

@@ -1,0 +1,6 @@
+area=vertica run=projection-bychunk folder=2026-11-13_projection-bychunk milestone=M5b engine=vertica
+duration_s=62.10 exit_status=0 repo_hash=82096cc9e0fea3dd
+engine_cpu_s=136.2 engine_memory_peak_sampled_bytes=23852806144 engine_memory_peak_since_start_bytes=60129542144
+client_cpus=20,21 client_cpu20_busy_pct=2.1 client_cpu21_busy_pct=2.2 client_saturated=no
+limits_ok=yes
+validity=valid

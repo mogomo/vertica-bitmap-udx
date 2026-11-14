@@ -1,0 +1,101 @@
+------------------------------ 
+QUERY PLAN DESCRIPTION: 
+------------------------------
+
+EXPLAIN SELECT o.predicate, o.inter AS intersection, o.size + s.n - o.inter AS union_size,
+       ROUND(o.inter / (o.size + s.n - o.inter)::FLOAT, 4) AS jaccard
+FROM (
+  SELECT k.predicate,
+         SUM(vbitmap.bm_cardinality(k.payload)) AS size,
+         SUM(COALESCE(vbitmap.bm_and_cardinality(k.payload, a.payload), 0)) AS inter
+  FROM bitmap_enc.index_auto k
+  LEFT JOIN (SELECT chunk_id, payload FROM bitmap_enc.index_auto
+             WHERE tenant_id = 20 AND snapshot_id = 1 AND domain = 'person'
+               AND predicate = 'topic_sports') a ON a.chunk_id = k.chunk_id
+  WHERE k.tenant_id = 20 AND k.snapshot_id = 1 AND k.domain = 'person'
+    AND k.predicate LIKE 'topic\_%' AND k.predicate <> 'topic_sports'
+  GROUP BY k.predicate
+) o CROSS JOIN (
+  SELECT SUM(vbitmap.bm_cardinality(payload)) AS n FROM bitmap_enc.index_auto
+  WHERE tenant_id = 20 AND snapshot_id = 1 AND domain = 'person' AND predicate = 'topic_sports'
+) s
+
+Access Path:
++-JOIN  (CROSS JOIN) [Cost: 801K, Rows: 149 (ROW COUNT ONLY)] (PATH ID: 1) Outer (LOCAL ROUND ROBIN)
+| +-- Outer -> SELECT [Cost: 776K, Rows: 149 (ROW COUNT ONLY)] (PATH ID: 2)
+| | +---> GROUPBY PIPELINED [Cost: 776K, Rows: 149 (ROW COUNT ONLY)] (PATH ID: 3)
+| | |      Aggregates: sum(vbitmap.bm_cardinality(k.payload)), sum(coalesce(vbitmap.bm_and_cardinality(k.payload, index_auto.payload), 0))
+| | |      Group By: k.predicate
+| | | +---> JOIN HASH [LeftOuter] [Cost: 287K, Rows: 609K (ROW COUNT ONLY)] (PATH ID: 4)
+| | | |      Join Cond: (index_auto.chunk_id = k.chunk_id)
+| | | |      Materialize at Output: k.predicate, k.payload
+| | | | +-- Outer -> STORAGE ACCESS for k [Cost: 9K, Rows: 609K] (PATH ID: 5)
+| | | | |      Projection: bitmap_enc.index_auto_super
+| | | | |      Materialize: k.chunk_id
+| | | | |      Filter: (k.tenant_id = 20)
+| | | | |      Filter: (k.snapshot_id = 1)
+| | | | |      Filter: (k.domain = 'person')
+| | | | |      Filter: ((k.predicate ~~ E'topic\\_%') AND (k.predicate <> 'topic_sports'))
+| | | | +-- Inner -> STORAGE ACCESS for index_auto [Cost: 25K, Rows: 4K (ROW COUNT ONLY)] (PATH ID: 6)
+| | | | |      Projection: bitmap_enc.index_auto_super
+| | | | |      Materialize: index_auto.chunk_id, index_auto.payload
+| | | | |      Filter: (index_auto.tenant_id = 20)
+| | | | |      Filter: (index_auto.snapshot_id = 1)
+| | | | |      Filter: (index_auto.domain = 'person')
+| | | | |      Filter: (index_auto.predicate = 'topic_sports')
+| +-- Inner -> SELECT [Cost: 25K, Rows: 1 (ROW COUNT ONLY)] (PATH ID: 7)
+| | +---> GROUPBY NOTHING [Cost: 25K, Rows: 1 (ROW COUNT ONLY)] (PATH ID: 8)
+| | |      Aggregates: sum(vbitmap.bm_cardinality(index_auto.payload))
+| | | +---> STORAGE ACCESS for index_auto [Cost: 23K, Rows: 4K (ROW COUNT ONLY)] (PATH ID: 9)
+| | | |      Projection: bitmap_enc.index_auto_super
+| | | |      Materialize: index_auto.payload
+| | | |      Filter: (index_auto.tenant_id = 20)
+| | | |      Filter: (index_auto.snapshot_id = 1)
+| | | |      Filter: (index_auto.domain = 'person')
+| | | |      Filter: (index_auto.predicate = 'topic_sports')
+
+
+------------------------------
+----------------------------------------------- 
+PLAN: BASE QUERY PLAN (GraphViz Format)
+----------------------------------------------- 
+digraph G {
+graph [rankdir=BT, label = "BASE QUERY PLAN\nQuery: EXPLAIN SELECT o.predicate, o.inter AS intersection, o.size + s.n - o.inter AS union_size,\n       ROUND(o.inter / (o.size + s.n - o.inter)::FLOAT, 4) AS jaccard\nFROM (\n  SELECT k.predicate,\n         SUM(vbitmap.bm_cardinality(k.payload)) AS size,\n         SUM(COALESCE(vbitmap.bm_and_cardinality(k.payload, a.payload), 0)) AS inter\n  FROM bitmap_enc.index_auto k\n  LEFT JOIN (SELECT chunk_id, payload FROM bitmap_enc.index_auto\n             WHERE tenant_id = 20 AND snapshot_id = 1 AND domain = \'person\'\n               AND predicate = \'topic_sports\') a ON a.chunk_id = k.chunk_id\n  WHERE k.tenant_id = 20 AND k.snapshot_id = 1 AND k.domain = \'person\'\n    AND k.predicate LIKE \'topic\_%\' AND k.predicate \<\> \'topic_sports\'\n  GROUP BY k.predicate\n) o CROSS JOIN (\n  SELECT SUM(vbitmap.bm_cardinality(payload)) AS n FROM bitmap_enc.index_auto\n  WHERE tenant_id = 20 AND snapshot_id = 1 AND domain = \'person\' AND predicate = \'topic_sports\'\n) s\n\nAll Nodes Vector: \n\n  node[0]=v_vdb_node0001 (initiator) Up\n", labelloc=t, labeljust=l ordering=out]
+0[label = "Root \nOutBlk=[UncTuple(4)]", color = "green", shape = "house"];
+1[label = "NewEENode \nOutBlk=[UncTuple(4)]", color = "green", shape = "box"];
+2[label = "ParallelUnionStep: \nCombine\nUnc: Varchar(80)\nUnc: Integer(8)\nUnc: Integer(8)\nUnc: Float(8)", color = "green", shape = "box"];
+3[label = "ExprEval: \n  o.predicate\n  o.inter\n  (SE[0] - o.inter)\n  round((o.inter / ((SE[0] - o.inter))::float), 4)\n  SE[0] = (o.size + s.n): 2 uses\nUnc: Varchar(80)\nUnc: Integer(8)\nUnc: Integer(8)\nUnc: Float(8)", color = "green", shape = "box"];
+4[label = "Join: Hash-Join: \n(bitmap_enc.index_auto x UNKNOWN) using subquery and subquery (PATH ID: 1)\n[CROSS JOIN]\n\nUnc: Varchar(80)\nUnc: Integer(8)\nUnc: Integer(8)\nUnc: Integer(8)", color = "green", shape = "box"];
+5[label = "ParallelUnionStep: \nRound Robin\nUnc: Varchar(80)\nUnc: Integer(8)\nUnc: Integer(8)", color = "green", shape = "box"];
+6[label = "GroupByPipe: 1 keys\nAggs:\n  sum(vbitmap.bm_cardinality(k.payload))\n  sum(coalesce(vbitmap.bm_and_cardinality(k.payload, index_auto.payload), 0))\nUnc: Varchar(80)\nUnc: Integer(8)\nUnc: Integer(8)", color = "green", shape = "box"];
+7[label = "StorageMergeStep[ee5]: index_auto_super; 1 sorted\nUnc: Varchar(80)\nUnc: Integer(8)\nUnc: Integer(8)", color = "purple", shape = "box"];
+8[label = "GroupByPipe: 1 keys\nAggs:\n  sum(vbitmap.bm_cardinality(k.payload))\n  sum(coalesce(vbitmap.bm_and_cardinality(k.payload, index_auto.payload), 0))\nUnc: Varchar(80)\nUnc: Integer(8)\nUnc: Integer(8)", color = "brown", shape = "box"];
+9[label = "ExprEval: \n  k.predicate\n  vbitmap.bm_cardinality(k.payload)\n  coalesce(vbitmap.bm_and_cardinality(k.payload, index_auto.payload), 0)\nUnc: Varchar(80)\nUnc: Integer(8)\nUnc: Integer(8)", color = "brown", shape = "box"];
+10[label = "Join: Hash-Join: \n(bitmap_enc.index_auto x bitmap_enc.index_auto) using index_auto_super and index_auto_super (PATH ID: 4)\n[LeftOuter]\n\nUnc: Varchar(80)\nUnc: Varbinary(16384)\nUnc: Varbinary(16384)", color = "brown", shape = "box"];
+11[label = "ScanStep: index_auto_super\n(k.tenant_id = 20)\n(k.snapshot_id = 1)\n(k.domain = \'person\')\n((k.predicate ~~ E\'topic\\_%\') AND (k.predicate \<\> \'topic_sports\'))\ntenant_id (not emitted)\nsnapshot_id (not emitted)\ndomain (not emitted)\npredicate (not emitted)\nchunk_id\nUnc: Integer(8)", color = "brown", shape = "box"];
+12[label = "StorageUnionStep: index_auto_super\nUnc: Integer(8)\nUnc: Varbinary(16384)", color = "purple", shape = "box"];
+13[label = "ScanStep: index_auto_super\n(index_auto.tenant_id = 20)\n(index_auto.snapshot_id = 1)\n(index_auto.domain = \'person\')\n(index_auto.predicate = \'topic_sports\')\ntenant_id (not emitted)\nsnapshot_id (not emitted)\ndomain (not emitted)\npredicate (not emitted)\nchunk_id\npayload\nUnc: Integer(8)\nUnc: Varbinary(16384)", color = "brown", shape = "box"];
+14[label = "GroupByPipe: 0 keys\nAggs:\n  sum(vbitmap.bm_cardinality(index_auto.payload))\nUnc: Integer(8)", color = "green", shape = "box"];
+15[label = "StorageUnionStep: index_auto_super\nUnc: Integer(8)", color = "purple", shape = "box"];
+16[label = "GroupByPipe: 0 keys\nAggs:\n  sum(vbitmap.bm_cardinality(index_auto.payload))\nUnc: Integer(8)", color = "brown", shape = "box"];
+17[label = "ExprEval: \n  vbitmap.bm_cardinality(index_auto.payload)\nUnc: Integer(8)", color = "brown", shape = "box"];
+18[label = "ScanStep: index_auto_super\n(index_auto.tenant_id = 20)\n(index_auto.snapshot_id = 1)\n(index_auto.domain = \'person\')\n(index_auto.predicate = \'topic_sports\')\ntenant_id (not emitted)\nsnapshot_id (not emitted)\ndomain (not emitted)\npredicate (not emitted)\npayload\nUnc: Varbinary(16384)", color = "brown", shape = "box"];
+1->0 [label = "V[0] C=4",color = "black",style="bold", arrowtail="inv"];
+2->1 [label = "0",color = "blue"];
+3->2 [label = "0",color = "blue"];
+4->3 [label = "0",color = "blue"];
+5->4 [label = "0",color = "blue"];
+6->5 [label = "0",color = "blue"];
+7->6 [label = "0",color = "blue"];
+8->7 [label = "0",color = "blue"];
+9->8 [label = "0",color = "blue"];
+10->9 [label = "0",color = "blue"];
+11->10 [label = "0",color = "blue"];
+12->10 [label = "1",color = "blue"];
+13->12 [label = "0",color = "blue"];
+14->4 [label = "1",color = "blue"];
+15->14 [label = "0",color = "blue"];
+16->15 [label = "0",color = "blue"];
+17->16 [label = "0",color = "blue"];
+18->17 [label = "0",color = "blue"];
+}

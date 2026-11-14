@@ -1,0 +1,5 @@
+command=scripts/generate.sh --tenant=14 --snapshot=1 --users=10000000 --events=100000000 --topic-skew=1.5 --id-order=signup --id-space=wide 
+cwd=~/vertica-bitmap-udx
+start_utc=2026-11-12T17:09:00Z
+end_utc=2026-11-12T17:11:55Z
+exit_status=0

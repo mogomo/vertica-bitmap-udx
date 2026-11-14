@@ -1,0 +1,63 @@
+------------------------------ 
+QUERY PLAN DESCRIPTION: 
+------------------------------
+
+EXPLAIN SELECT COALESCE(SUM(vbitmap.bm_cardinality(payload)), 0) AS users
+FROM (
+  SELECT vbitmap.bm_union(tenant_id, domain, chunk_id, payload)
+         OVER (PARTITION BY tenant_id, domain, chunk_id)
+  FROM bitmap_demo.daily_bitmap
+  WHERE tenant_id = 14 AND snapshot_id = 1 AND domain = 'person'
+    AND channel = 'web' AND day >= DATE '2026-10-15' AND day < DATE '2026-10-17'
+) merged;
+
+Access Path:
++-GROUPBY NOTHING [Cost: 5K, Rows: 1] (PATH ID: 1)
+|  Aggregates: sum(vbitmap.bm_cardinality(merged.payload))
+| +---> ANALYTICAL [Cost: 5K, Rows: 164] (PATH ID: 3)
+| |      Analytic Group
+| |       Functions: bm_union()
+| |       Group Local Resegment: daily_bitmap.chunk_id, daily_bitmap.tenant_id, daily_bitmap.domain
+| |       Group Sort: daily_bitmap.chunk_id ASC, daily_bitmap.tenant_id ASC, daily_bitmap.domain ASC
+| | +---> STORAGE ACCESS for daily_bitmap [Cost: 3K, Rows: 164] (PATH ID: 4)
+| | |      Projection: bitmap_demo.daily_bitmap_super
+| | |      Materialize: daily_bitmap.tenant_id, daily_bitmap.domain, daily_bitmap.chunk_id, daily_bitmap.payload
+| | |      Filter: (daily_bitmap.tenant_id = 14)
+| | |      Filter: (daily_bitmap.snapshot_id = 1)
+| | |      Filter: (daily_bitmap.domain = 'person')
+| | |      Filter: (daily_bitmap.channel = 'web')
+| | |      Filter: ((daily_bitmap.day >= '2026-10-15'::date) AND (daily_bitmap.day < '2026-10-17'::date))
+
+
+------------------------------
+----------------------------------------------- 
+PLAN: BASE QUERY PLAN (GraphViz Format)
+----------------------------------------------- 
+digraph G {
+graph [rankdir=BT, label = "BASE QUERY PLAN\nQuery: EXPLAIN SELECT COALESCE(SUM(vbitmap.bm_cardinality(payload)), 0) AS users\nFROM (\n  SELECT vbitmap.bm_union(tenant_id, domain, chunk_id, payload)\n         OVER (PARTITION BY tenant_id, domain, chunk_id)\n  FROM bitmap_demo.daily_bitmap\n  WHERE tenant_id = 14 AND snapshot_id = 1 AND domain = \'person\'\n    AND channel = \'web\' AND day \>= DATE \'2026-10-15\' AND day \< DATE \'2026-10-17\'\n) merged;\n\nAll Nodes Vector: \n\n  node[0]=v_vdb_node0001 (initiator) Up\n", labelloc=t, labeljust=l ordering=out]
+0[label = "Root \nOutBlk=[UncTuple]", color = "green", shape = "house"];
+1[label = "NewEENode \nOutBlk=[UncTuple]", color = "green", shape = "box"];
+2[label = "ExprEval: \n  coalesce(\<SVAR\>, 0)\nUnc: Integer(8)", color = "green", shape = "box"];
+3[label = "GroupByPipe: 0 keys\nAggs:\n  sum(vbitmap.bm_cardinality(merged.payload))\nUnc: Integer(8)", color = "green", shape = "box"];
+4[label = "ParallelUnionStep: \nCombine\nUnc: Integer(8)", color = "green", shape = "box"];
+5[label = "GroupByPipe: 0 keys\nAggs:\n  sum(vbitmap.bm_cardinality(merged.payload))\nUnc: Integer(8)", color = "green", shape = "box"];
+6[label = "ExprEval: \n  vbitmap.bm_cardinality(merged.payload)\nUnc: Integer(8)", color = "green", shape = "box"];
+7[label = "ExprEval: \n  \<SVAR\>\nUnc: Varbinary(16384)", color = "green", shape = "box"];
+8[label = "UserDefined:\nPartitionBy: daily_bitmap.chunk_id, daily_bitmap.tenant_id, daily_bitmap.domain\nOrderBy:<NONE>\nAnalytical Functions:\n  vbitmap.bm_union(daily_bitmap.tenant_id, daily_bitmap.domain, daily_bitmap.chunk_id, daily_bitmap.payload)\nUnc: Integer(8)\nUnc: Integer(8)\nUnc: Varchar(16)\nUnc: Integer(8)\nUnc: Varchar(16)\nUnc: Integer(8)\nUnc: Varbinary(16384)", color = "green", shape = "box"];
+9[label = "Sort: (keys = A,A,A,N)\nUnc: Integer(8)\nUnc: Integer(8)\nUnc: Varchar(16)\nUnc: Varbinary(16384)", color = "green", shape = "box"];
+10[label = "ExprEval: \n  daily_bitmap.chunk_id\n  daily_bitmap.tenant_id\n  daily_bitmap.domain\n  daily_bitmap.payload\nUnc: Integer(8)\nUnc: Integer(8)\nUnc: Varchar(16)\nUnc: Varbinary(16384)", color = "green", shape = "box"];
+11[label = "StorageUnionStep: daily_bitmap_super\nLocally Resegment\nUnc: Integer(8)\nUnc: Varchar(16)\nUnc: Integer(8)\nUnc: Varbinary(16384)", color = "purple", shape = "box"];
+12[label = "ScanStep: daily_bitmap_super\n(daily_bitmap.tenant_id = 14)\n(daily_bitmap.snapshot_id = 1)\n(daily_bitmap.domain = \'person\')\n(daily_bitmap.channel = \'web\')\n((daily_bitmap.day \>= \'2026-10-15\'::date) AND (daily_bitmap.day \< \'2026-10-17\'::date))\ntenant_id\nsnapshot_id (not emitted)\ndomain\nchannel (not emitted)\nday (not emitted)\nchunk_id\npayload\nUnc: Integer(8)\nUnc: Varchar(16)\nUnc: Integer(8)\nUnc: Varbinary(16384)", color = "brown", shape = "box"];
+1->0 [label = "V[0]",color = "black"];
+2->1 [label = "0",color = "blue"];
+3->2 [label = "0",color = "blue"];
+4->3 [label = "0",color = "blue"];
+5->4 [label = "0",color = "blue"];
+6->5 [label = "0",color = "blue"];
+7->6 [label = "0",color = "blue"];
+8->7 [label = "0",color = "blue"];
+9->8 [label = "0",color = "blue"];
+10->9 [label = "0",color = "blue"];
+11->10 [label = "0",color = "blue"];
+12->11 [label = "0",color = "blue"];
+}

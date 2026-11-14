@@ -1,0 +1,6 @@
+clickhouse version 26.8.36.3 (LTS)
+source: official apt repository, packages.clickhouse.com/deb lts main
+packages: clickhouse-common-static clickhouse-server clickhouse-client, version pinned
+service: clickhouse-server.service disabled (not started at boot); the benchmark runs its own
+         server instance (bench/engines/clickhouse/server.sh) under /data/xbench/clickhouse
+installed: 2026-11-12

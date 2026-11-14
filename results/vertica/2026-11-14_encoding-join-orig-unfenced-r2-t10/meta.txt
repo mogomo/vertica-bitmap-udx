@@ -1,0 +1,6 @@
+area=vertica run=encoding-join-orig-unfenced-r2-t10 folder=2026-11-14_encoding-join-orig-unfenced-r2-t10 milestone=M5e engine=vertica
+duration_s=12.59 exit_status=0 repo_hash=bf39e22df63d76dc
+engine_cpu_s=140.0 engine_memory_peak_sampled_bytes=22426226688 engine_memory_peak_since_start_bytes=23701831680
+client_cpus=20,21 client_cpu20_busy_pct=2.6 client_cpu21_busy_pct=3.4 client_saturated=no
+limits_ok=yes
+validity=valid

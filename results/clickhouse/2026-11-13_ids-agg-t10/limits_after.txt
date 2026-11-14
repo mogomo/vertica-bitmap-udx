@@ -1,0 +1,8 @@
+scope=vbitmap-engine.scope active=yes cgroup=/system.slice/vbitmap-engine.scope
+cpuset_cpus_effective=0-19 memory_max=60129542144 memory_swap_max=0
+memory_current=2288091136 memory_peak=2405371904 cpu_usage_usec=85781562 cpu_user_usec=77296136 cpu_system_usec=8485425 cpu_nice_usec=0 cpu_core_sched.force_idle_usec=0 cpu_nr_periods=0 cpu_nr_throttled=0 cpu_throttled_usec=0 cpu_nr_bursts=0 cpu_burst_usec=0 
+pid=2216127 comm=ClickHouseWatch cgroup=/system.slice/vbitmap-engine.scope cpus_allowed=0-19 threads=6
+pid=2216136 comm=clickhouse cgroup=/system.slice/vbitmap-engine.scope cpus_allowed=0-19 threads=298
+other_engine=vertica state=down
+clickhouse_version=26.8.36.3 max_server_memory_usage=53687091200 max_threads=20
+limits_ok=yes

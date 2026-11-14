@@ -1,0 +1,37 @@
+driver run started 2026-11-13T23:52:33+0200 args ['run', '--client', 'socket', '--workload', 'bench/workloads/vertica_ids.sql', '--var', 'tenant=10', '--out', '~/bitmap_record/vertica/2026-11-13_encoding-join-auto-unfenced-r2-t10/driver', '--clients', '1,32', '--iterations', '15', '--warmup', '1', '--statement-cap', '300', '--only', 'q8.join.Bplus,q8.join.Bpin', '--var', 'index=bitmap_enc.index_auto', '--expect', '~/bitmap_record/vertica/2026-11-13_ids-use-fenced-t10/driver/check.csv', '--skip-oracles']
+check q8.join.Bplus: answer 530315|519750|28073532
+check q8.join.Bpin: answer 530315|519750|28073532
+block 3 client 0: 16 executions, 32 engine times: not matched
+block 4 client 0: 5 executions, 10 engine times: not matched
+block 4 client 1: 4 executions, 8 engine times: not matched
+block 4 client 2: 4 executions, 8 engine times: not matched
+block 4 client 3: 4 executions, 8 engine times: not matched
+block 4 client 4: 4 executions, 8 engine times: not matched
+block 4 client 5: 4 executions, 8 engine times: not matched
+block 4 client 6: 4 executions, 8 engine times: not matched
+block 4 client 7: 4 executions, 8 engine times: not matched
+block 4 client 8: 4 executions, 8 engine times: not matched
+block 4 client 9: 4 executions, 8 engine times: not matched
+block 4 client 10: 4 executions, 8 engine times: not matched
+block 4 client 11: 4 executions, 8 engine times: not matched
+block 4 client 12: 4 executions, 8 engine times: not matched
+block 4 client 13: 4 executions, 8 engine times: not matched
+block 4 client 14: 5 executions, 10 engine times: not matched
+block 4 client 15: 5 executions, 10 engine times: not matched
+block 4 client 16: 4 executions, 8 engine times: not matched
+block 4 client 17: 4 executions, 8 engine times: not matched
+block 4 client 18: 5 executions, 10 engine times: not matched
+block 4 client 19: 4 executions, 8 engine times: not matched
+block 4 client 20: 4 executions, 8 engine times: not matched
+block 4 client 21: 3 executions, 6 engine times: not matched
+block 4 client 22: 4 executions, 8 engine times: not matched
+block 4 client 23: 4 executions, 8 engine times: not matched
+block 4 client 24: 4 executions, 8 engine times: not matched
+block 4 client 25: 4 executions, 8 engine times: not matched
+block 4 client 26: 4 executions, 8 engine times: not matched
+block 4 client 27: 5 executions, 10 engine times: not matched
+block 4 client 28: 4 executions, 8 engine times: not matched
+block 4 client 29: 4 executions, 8 engine times: not matched
+block 4 client 30: 4 executions, 8 engine times: not matched
+block 4 client 31: 4 executions, 8 engine times: not matched
+driver ended 2026-11-13T23:52:45+0200 status 0

@@ -1,0 +1,39 @@
+------------------------------ 
+QUERY PLAN DESCRIPTION: 
+------------------------------
+
+EXPLAIN SELECT SUM(CASE WHEN suspended IS TRUE THEN 0 ELSE 1 END) AS complement,
+       SUM(CASE WHEN suspended IS FALSE THEN 1 ELSE 0 END) AS explicit
+FROM bitmap_demo.user_profile
+WHERE tenant_id = 10 AND snapshot_id = 1;
+
+Access Path:
++-GROUPBY NOTHING [Cost: 54, Rows: 1] (PATH ID: 1)
+|  Aggregates: sum(CASE WHEN (user_profile.suspended IS TRUE) THEN 0 ELSE 1 END), sum(CASE WHEN (user_profile.suspended IS FALSE) THEN 1 ELSE 0 END)
+| +---> STORAGE ACCESS for user_profile [Cost: 53, Rows: 10M (243 RLE)] (PATH ID: 2)
+| |      Projection: bitmap_demo.user_profile_by_filter
+| |      Materialize: user_profile.suspended
+| |      Filter: (user_profile.tenant_id = 10)
+| |      Filter: (user_profile.snapshot_id = 1)
+
+
+------------------------------
+----------------------------------------------- 
+PLAN: BASE QUERY PLAN (GraphViz Format)
+----------------------------------------------- 
+digraph G {
+graph [rankdir=BT, label = "BASE QUERY PLAN\nQuery: EXPLAIN SELECT SUM(CASE WHEN suspended IS TRUE THEN 0 ELSE 1 END) AS complement,\n       SUM(CASE WHEN suspended IS FALSE THEN 1 ELSE 0 END) AS explicit\nFROM bitmap_demo.user_profile\nWHERE tenant_id = 10 AND snapshot_id = 1;\n\nAll Nodes Vector: \n\n  node[0]=v_vdb_node0001 (initiator) Up\n", labelloc=t, labeljust=l ordering=out]
+0[label = "Root \nOutBlk=[UncTuple(2)]", color = "green", shape = "house"];
+1[label = "NewEENode \nOutBlk=[UncTuple(2)]", color = "green", shape = "box"];
+2[label = "GroupByPipe: 0 keys\nAggs:\n  sum(CASE WHEN (user_profile.suspended IS TRUE) THEN 0 ELSE 1 END)\n  sum(CASE WHEN (user_profile.suspended IS FALSE) THEN 1 ELSE 0 END)\nUnc: Integer(8)\nUnc: Integer(8)", color = "green", shape = "box"];
+3[label = "StorageUnionStep: user_profile_by_filter\nUnc: Integer(8)\nUnc: Integer(8)", color = "purple", shape = "box"];
+4[label = "GroupByPipe: 0 keys\nAggs:\n  sum(CASE WHEN (user_profile.suspended IS TRUE) THEN 0 ELSE 1 END)\n  sum(CASE WHEN (user_profile.suspended IS FALSE) THEN 1 ELSE 0 END)\nUnc: Integer(8)\nUnc: Integer(8)", color = "brown", shape = "box"];
+5[label = "ExprEval: \n  CASE WHEN (user_profile.suspended IS TRUE) THEN 0 ELSE 1 END\n  CASE WHEN (user_profile.suspended IS FALSE) THEN 1 ELSE 0 END\nRLE: Integer(8)\nRLE: Integer(8)", color = "brown", shape = "box"];
+6[label = "ScanStep: user_profile_by_filter\n(user_profile.tenant_id = 10)\n(user_profile.snapshot_id = 1)\ntenant_id RLE (not emitted)\nsnapshot_id RLE (not emitted)\nsuspended RLE\nRLE: Boolean(1)", color = "brown", shape = "box"];
+1->0 [label = "V[0] C=2",color = "black",style="bold", arrowtail="inv"];
+2->1 [label = "0",color = "blue"];
+3->2 [label = "0",color = "blue"];
+4->3 [label = "0",color = "blue"];
+5->4 [label = "0",color = "blue"];
+6->5 [label = "0",color = "blue"];
+}

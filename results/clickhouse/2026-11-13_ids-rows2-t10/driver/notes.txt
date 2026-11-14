@@ -1,0 +1,2 @@
+driver run started 2026-11-13T18:42:45+0200 args ['run', '--workload', 'bench/workloads/clickhouse_ids.sql', '--var', 'tenant=10', '--out', '~/bitmap_record/clickhouse/2026-11-13_ids-rows2-t10/driver', '--clients', '1,32', '--iterations', '15', '--warmup', '1', '--statement-cap', '300', '--only', 'q1.ids.C,q4.C,q8.C', '--expect', '~/bitmap_record/vertica/2026-11-13_ids-rows-fenced-t10/driver/check.csv']
+driver ended 2026-11-13T18:43:25+0200 status 0

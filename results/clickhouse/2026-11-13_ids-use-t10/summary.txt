@@ -1,0 +1,20 @@
+check: query=q1.ids.sum.N answer=q1.ids.sum rows=1 hash=7b8cb33c0b7faae7 matches=yes ms=193.8
+check: query=q1.ids.sum.C answer=q1.ids.sum rows=1 hash=7b8cb33c0b7faae7 matches=yes ms=60.7
+check: query=q4.sum.N answer=q4.sum rows=1 hash=c352baac50e874fa matches=yes ms=14.0
+check: query=q4.sum.C answer=q4.sum rows=1 hash=c352baac50e874fa matches=yes ms=34.9
+check: query=q8.sum.N answer=q8.sum rows=1 hash=01cdc8b1596a149a matches=yes ms=208.7
+check: query=q8.sum.C answer=q8.sum rows=1 hash=01cdc8b1596a149a matches=yes ms=45.3
+check: query=q8.join.N answer=q8.join rows=1 hash=af0e074a71c652d7 matches=yes ms=235.3
+check: query=q8.join.C answer=q8.join rows=1 hash=af0e074a71c652d7 matches=yes ms=83.9
+check: query=q8.join.Cin answer=q8.join rows=1 hash=af0e074a71c652d7 matches=yes ms=71.5
+bench: query=q1.ids.sum.C clients=1 n=15 p50_ms=53.47 p95_ms=57.44 p99_ms=58.14 mean_ms=54.18 engine_p50_ms=52.0 qps=17.21 errors=0 mismatches=0
+bench: query=q1.ids.sum.C clients=32 n=64 p50_ms=405.03 p95_ms=544.71 p99_ms=578.69 mean_ms=408.85 engine_p50_ms=399.0 qps=55.04 errors=0 mismatches=0
+bench: query=q4.sum.C clients=1 n=15 p50_ms=15.08 p95_ms=15.99 p99_ms=16.49 mean_ms=15.12 engine_p50_ms=14.0 qps=61.52 errors=0 mismatches=0
+bench: query=q4.sum.C clients=32 n=64 p50_ms=78.28 p95_ms=121.21 p99_ms=147.16 mean_ms=83.52 engine_p50_ms=76.0 qps=331.33 errors=0 mismatches=0
+bench: query=q8.sum.C clients=1 n=15 p50_ms=33.34 p95_ms=35.20 p99_ms=35.48 mean_ms=33.57 engine_p50_ms=32.0 qps=27.76 errors=0 mismatches=0
+bench: query=q8.sum.C clients=32 n=64 p50_ms=244.13 p95_ms=342.72 p99_ms=394.49 mean_ms=240.68 engine_p50_ms=240.5 qps=95.53 errors=0 mismatches=0
+bench: query=q8.join.C clients=1 n=15 p50_ms=57.45 p95_ms=59.41 p99_ms=59.70 mean_ms=57.57 engine_p50_ms=57.0 qps=16.19 errors=0 mismatches=0
+bench: query=q8.join.C clients=32 n=64 p50_ms=516.53 p95_ms=776.61 p99_ms=870.28 mean_ms=547.63 engine_p50_ms=513.0 qps=27.06 errors=0 mismatches=0
+bench: query=q8.join.Cin clients=1 n=15 p50_ms=69.02 p95_ms=72.63 p99_ms=73.37 mean_ms=69.32 engine_p50_ms=68.0 qps=13.45 errors=0 mismatches=0
+bench: query=q8.join.Cin clients=32 n=64 p50_ms=912.14 p95_ms=1186.20 p99_ms=1216.69 mean_ms=906.38 engine_p50_ms=909.0 qps=16.18 errors=0 mismatches=0
+summary: mode=run engine=clickhouse queries=9 levels=1,32 check_ok=yes errors=0 mismatches=0 valid=yes

@@ -1,0 +1,26 @@
+storage: table=asset_source projection=asset_source_super rows=110008153 used_bytes=118530820 ros_containers=3
+storage: table=asset_state projection=asset_state_super rows=55000003 used_bytes=430944917 ros_containers=3
+storage: table=bitmap_change projection=bitmap_change_super rows=10 used_bytes=378 ros_containers=2
+storage: table=bitmap_family projection=bitmap_family_super rows=56 used_bytes=4916 ros_containers=4
+storage: table=bitmap_index projection=bitmap_index_by_chunk rows=935357 used_bytes=4429398311 ros_containers=1
+storage: table=bitmap_index projection=bitmap_index_super rows=935357 used_bytes=4418172043 ros_containers=13
+storage: table=bitmap_membership projection=bitmap_membership_super rows=21 used_bytes=287 ros_containers=1
+storage: table=bitmap_predicate projection=bitmap_predicate_super rows=1302 used_bytes=17711 ros_containers=11
+storage: table=bitmap_reader projection=bitmap_reader_super rows=3 used_bytes=72 ros_containers=1
+storage: table=bitmap_snapshot projection=bitmap_snapshot_super rows=11 used_bytes=2951 ros_containers=8
+storage: table=daily_bitmap projection=daily_bitmap_super rows=201489 used_bytes=1067595580 ros_containers=5
+storage: table=device_state projection=device_state_super rows=22000006 used_bytes=223333774 ros_containers=4
+storage: table=event_log projection=event_log_super rows=1100000006 used_bytes=9862905025 ros_containers=3
+storage: table=gen_person projection=gen_person_super rows=110000000 used_bytes=220241015 ros_containers=2
+storage: table=user_interest projection=user_interest_super rows=2200000029 used_bytes=2391782599 ros_containers=7
+storage: table=user_profile projection=user_profile_by_filter rows=110000024 used_bytes=245894892 ros_containers=2
+storage: table=user_profile projection=user_profile_super rows=110000024 used_bytes=488890140 ros_containers=6
+tenants: table=user_profile 1:21 2:3 10:10000000 20:100000000
+tenants: table=user_interest 1:26 2:3 10:200000000 20:2000000000
+tenants: table=event_log 1:5 2:1 10:100000000 20:1000000000
+tenants: table=device_state 1:6 10:2000000 20:20000000
+tenants: table=asset_state 1:3 10:5000000 20:50000000
+tenants: table=asset_source 1:3 10:10001085 20:100007065
+tenants: table=bitmap_index 1:69 2:9 10:93213 20:842066
+tenants: table=daily_bitmap 1:9 10:18360 20:183120
+summary: schema=bitmap_demo used_bytes=23897715431 rows=3819081851

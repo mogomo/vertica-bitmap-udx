@@ -1,0 +1,2 @@
+driver run started 2026-11-13T14:25:25+0200 args ['run', '--client', 'socket', '--workload', '~/bitmap_record/vertica/2026-11-13_native-ids-socket-t10/dbd_workload.sql', '--out', '~/bitmap_record/vertica/2026-11-13_native-ids-socket-t10/driver', '--clients', '1,32', '--iterations', '15', '--warmup', '1', '--statement-cap', '300', '--only', 'q1.ids.D,q4.A,q4.D,q8.D', '--expect', '~/bitmap_record/vertica/2026-11-12_check-headline-t10/driver/check.csv', '--skip-oracles']
+driver ended 2026-11-13T14:30:33+0200 status 0

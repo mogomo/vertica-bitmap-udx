@@ -1,0 +1,68 @@
+------------------------------ 
+QUERY PLAN DESCRIPTION: 
+------------------------------
+
+EXPLAIN INSERT INTO bitmap_bench.saved_set (audience, chunk_id, payload)
+SELECT 'q8', chunk_id, payload FROM (
+  SELECT vbitmap.bm_eval(chunk_id, predicate, payload USING PARAMETERS expr =
+           'country_IL & topic_sports - topic_finance')
+         OVER (PARTITION BY chunk_id)
+  FROM bitmap_demo.bitmap_index
+  WHERE tenant_id = 10 AND snapshot_id = 1 AND domain = 'person'
+    AND predicate IN ('country_IL', 'topic_sports', 'topic_finance')
+) t; COMMIT
+
+Access Path:
++-DML INSERT [Cost: 0, Rows: 0]
+|  Target Projection: bitmap_bench.saved_set_super (SORT BY PROJECTION SORT ORDER) (RESEGMENT)
+|  Target Prep:
+| +---> ANALYTICAL [Cost: 13K, Rows: 657] (PATH ID: 4)
+| |      Analytic Group
+| |       Functions: bm_eval()
+| | +---> STORAGE ACCESS for bitmap_index [Cost: 12K, Rows: 657] (PATH ID: 5)
+| | |      Projection: bitmap_demo.bitmap_index_by_chunk
+| | |      Materialize: bitmap_index.predicate, bitmap_index.chunk_id, bitmap_index.payload
+| | |      Filter: (bitmap_index.tenant_id = 10)
+| | |      Filter: (bitmap_index.snapshot_id = 1)
+| | |      Filter: (bitmap_index.domain = 'person')
+| | |      Filter: (bitmap_index.predicate = ANY (ARRAY['country_IL', 'topic_sports', 'topic_finance']))
+
+
+------------------------------
+----------------------------------------------- 
+PLAN: BASE QUERY PLAN (GraphViz Format)
+----------------------------------------------- 
+digraph G {
+graph [rankdir=BT, label = "BASE QUERY PLAN\nQuery: EXPLAIN INSERT INTO bitmap_bench.saved_set (audience, chunk_id, payload)\nSELECT \'q8\', chunk_id, payload FROM (\n  SELECT vbitmap.bm_eval(chunk_id, predicate, payload USING PARAMETERS expr =\n           \'country_IL & topic_sports - topic_finance\')\n         OVER (PARTITION BY chunk_id)\n  FROM bitmap_demo.bitmap_index\n  WHERE tenant_id = 10 AND snapshot_id = 1 AND domain = \'person\'\n    AND predicate IN (\'country_IL\', \'topic_sports\', \'topic_finance\')\n) t; COMMIT\n\nAll Nodes Vector: \n\n  node[0]=v_vdb_node0001 (initiator) Up\n", labelloc=t, labeljust=l ordering=out]
+0[label = "Root \nOutBlk=[UncTuple]", color = "green", shape = "house"];
+1[label = "NewEENode \nOutBlk=[UncTuple(2)]", color = "green", shape = "box"];
+2[label = "ExprEval: \n  (\"*SELECT*\".chunk_id)::int\n  (\"*SELECT*\".payload)::varbinary(16384)\nUnc: Integer(8)\nUnc: Varbinary(16384)", color = "green", shape = "box"];
+3[label = "ExprEval: \n  t.chunk_id\n  t.payload\nUnc: Integer(8)\nUnc: Varbinary(16384)", color = "green", shape = "box"];
+4[label = "ExprEval: \n  \<SVAR\>\n  \<SVAR\>\nUnc: Integer(8)\nUnc: Varbinary(16384)", color = "green", shape = "box"];
+5[label = "UserDefined:\nPartitionBy: chunk_id\nOrderBy:<NONE>\nAnalytical Functions:\n  vbitmap.bm_eval(bitmap_index.chunk_id, bitmap_index.predicate, bitmap_index.payload USING PARAMETERS expr=\'country_IL & topic_sports - topic_finance\')\nUnc: Integer(8)\nUnc: Integer(8)\nUnc: Varbinary(16384)", color = "green", shape = "box"];
+6[label = "StorageMergeStep[ee5]: bitmap_index_by_chunk; 2 sorted\nUnc: Integer(8)\nUnc: Varchar(80)\nUnc: Varbinary(16384)", color = "purple", shape = "box"];
+7[label = "ScanStep: bitmap_index_by_chunk\n(bitmap_index.tenant_id = 10)\n(bitmap_index.snapshot_id = 1)\n(bitmap_index.domain = \'person\')\n(bitmap_index.predicate = ANY (ARRAY[\'country_IL\', \'topic_sports\', \'topic_finance\']))\ntenant_id (not emitted)\nsnapshot_id (not emitted)\ndomain (not emitted)\nchunk_id\npredicate\npayload\nUnc: Integer(8)\nUnc: Varchar(80)\nUnc: Varbinary(16384)", color = "brown", shape = "box"];
+8[label = "DT(DIRECT)[saved_set_super]\n+Sort (keys = A,N)\n+ConstEval:\n0: 'q8'::varchar(40) \nOutBlk=[UncTuple]", color = "blue", shape = "ellipse"];
+9[label = "Segment() \nOutBlk=[UncTuple(2)]", color = "green", shape = "ellipse"];
+10[label = "ValExpNode \nOutBlk=[UncTuple(2)]", color = "green", shape = "ellipse"];
+11[label = "DIST-Union (#cols = 2,#strms = 1) \nOutBlk=[UncTuple(2)]", color = "green", shape = "ellipse"];
+12[label = "Basic-Union (#cols = 1,#strms = 1) \nOutBlk=[UncTuple]", color = "green", shape = "ellipse"];
+13[label = "GroupBy(NOTHING) \nOutBlk=[UncTuple]", color = "green", shape = "box"];
+1->9 [label = "V[0] C=2",color = "black",style="bold", arrowtail="inv"];
+2->1 [label = "0",color = "blue"];
+3->2 [label = "0",color = "blue"];
+4->3 [label = "0",color = "blue"];
+5->4 [label = "0",color = "blue"];
+6->5 [label = "0",color = "blue"];
+7->6 [label = "0",color = "blue"];
+8->12 [label = "V[0]",color = "black"];
+9->11 [label = "P+V[0] C=2",color = "black",style="bold", arrowtail="inv"];
+10->8 [label = "P+V[0] C=2",color = "black",style="bold", arrowtail="inv"];
+11->10 [label = "P+V[0] C=2",color = "black",style="bold", arrowtail="inv"];
+12->13 [label = "V[0]",color = "black"];
+13->0 [label = "V[0]",color = "black"];
+}
+Lock Map - Table (Mode)
+----------------------------------------------
+saved_set(I)
+----------------------------------------------

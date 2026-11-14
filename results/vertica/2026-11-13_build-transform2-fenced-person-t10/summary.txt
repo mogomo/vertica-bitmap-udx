@@ -1,0 +1,1 @@
+snapshot: op=build tenant=10 domain=person snapshot=2 chunk_bits=16 deep=no validate=full build_s=71.91 validate_s=43.09 publish_s=0.01 total_s=115.00 predicates=554 index_rows=84762 index_bytes=412180175 daily_rows=18360 daily_bytes=104539704

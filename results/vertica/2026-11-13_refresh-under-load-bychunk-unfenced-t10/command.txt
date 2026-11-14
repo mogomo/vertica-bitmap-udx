@@ -1,0 +1,5 @@
+command=bash -c python3\ bench/driver.py\ mixed\ --workload\ bench/workloads/vertica.sql\ --var\ tenant=10\ --out\ \$BENCH_RUN_DIR/driver\ --clients\ 32\ --duration\ 600\ --warmup-s\ 30\ --statement-cap\ 600\ --only\ q1.count.Bplus\,q2.daily.B\,q3.Bplus\,q4.Bplus\,q7.Bplus\,q8.Bplus\ --weights\ q1.count.Bplus=4\,q2.daily.B=2\,q3.Bplus=2\,q4.Bplus=1\,q7.Bplus=1\,q8.Bplus=1\ --expect\ ~/bitmap_record/vertica/2026-11-12_check-headline-t10/driver/check.csv\ --background\ \'bench/refresh.sh\ --tenant=10\ --fraction=0.01\ --spread=random\ --report=mixed\ --steps=apply\'\ --background-at\ 60 
+cwd=~/vertica-bitmap-udx
+start_utc=2026-11-13T02:14:07Z
+end_utc=2026-11-13T02:29:01Z
+exit_status=0

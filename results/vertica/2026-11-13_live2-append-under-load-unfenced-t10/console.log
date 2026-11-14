@@ -1,0 +1,8 @@
+check: query=q1.count.Bplus answer=q1.count rows=1 hash=b4498cf506a5f79c matches=yes ms=15.8
+check: query=q3.Bplus answer=q3 rows=500 hash=1a17b1531950cc32 matches=yes ms=322.0
+bench: mixed query=q1.count.Bplus clients=32 n=6416 p50_ms=308.78 p95_ms=920.09 p99_ms=1148.07 qps=21.39
+bench: mixed query=q1.count.Bplus during_background=yes clients=32 n=130 p50_ms=239.97 p95_ms=977.65 p99_ms=1063.30 qps=0.43
+bench: mixed query=q3.Bplus clients=32 n=3170 p50_ms=2405.91 p95_ms=3241.14 p99_ms=3611.24 qps=10.57
+bench: mixed query=q3.Bplus during_background=yes clients=32 n=72 p50_ms=1434.24 p95_ms=3153.71 p99_ms=3330.88 qps=0.24
+background: status=0 start_s=60.000 end_s=63.884 duration_s=3.884
+summary: mode=mixed engine=vertica queries=2 levels=32 check_ok=yes errors=0 mismatches=0 valid=yes

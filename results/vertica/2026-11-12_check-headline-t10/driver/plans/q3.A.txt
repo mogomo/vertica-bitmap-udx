@@ -1,0 +1,103 @@
+------------------------------ 
+QUERY PLAN DESCRIPTION: 
+------------------------------
+
+EXPLAIN SELECT 'topic_' || i.topic AS predicate, COUNT(DISTINCT i.entity_id) AS users
+FROM bitmap_demo.user_interest i
+WHERE i.tenant_id = 10 AND i.snapshot_id = 1
+  AND i.entity_id IN (
+    SELECT p.entity_id FROM bitmap_demo.user_profile p
+    WHERE p.tenant_id = 10 AND p.snapshot_id = 1
+      AND p.country = 'IL' AND p.age BETWEEN 25 AND 54
+      AND p.consent IS TRUE AND p.suspended IS FALSE
+      AND EXISTS (
+        SELECT 1 FROM bitmap_demo.user_interest j
+        WHERE j.tenant_id = p.tenant_id AND j.snapshot_id = p.snapshot_id
+          AND j.entity_id = p.entity_id AND j.topic IN ('sports', 'finance')))
+GROUP BY 1;
+
+Access Path:
++-GROUPBY HASH (LOCAL RESEGMENT GROUPS) [Cost: 2M, Rows: 10M] (PATH ID: 1)
+|  Aggregates: count(DISTINCT i.entity_id)
+|  Group By: <SVAR>
+| +---> GROUPBY HASH (LOCAL RESEGMENT GROUPS) [Cost: 2M, Rows: 10M] (PATH ID: 2)
+| |      Group By: ('topic_' || i.topic), i.entity_id
+| | +---> JOIN HASH [Semi] [Cost: 1M, Rows: 99M] (PATH ID: 3)
+| | |      Join Cond: (i.entity_id = VAL(2))
+| | |      Materialize at Output: i.topic
+| | | +-- Outer -> STORAGE ACCESS for i [Cost: 624K, Rows: 198M] (PATH ID: 4)
+| | | |      Projection: bitmap_demo.user_interest_super
+| | | |      Materialize: i.entity_id
+| | | |      Filter: (i.tenant_id = 10)
+| | | |      Filter: (i.snapshot_id = 1)
+| | | |      Runtime Filter: (SIP5(HashJoin): i.entity_id)
+| | | +-- Inner -> SELECT [Cost: 584K, Rows: 157K] (PUSHED GROUPING) (PATH ID: 5)
+| | | | +---> JOIN HASH [Semi] [Cost: 584K, Rows: 157K] (PATH ID: 6)
+| | | | |      Join Cond: (VAL(1) = p.tenant_id) AND (VAL(1) = p.snapshot_id) AND (VAL(1) = p.entity_id)
+| | | | | +-- Outer -> STORAGE ACCESS for p [Cost: 20K, Rows: 314K] (PATH ID: 7)
+| | | | | |      Projection: bitmap_demo.user_profile_by_filter
+| | | | | |      Materialize: p.tenant_id, p.snapshot_id, p.entity_id
+| | | | | |      Filter: (p.tenant_id = 10)
+| | | | | |      Filter: (p.snapshot_id = 1)
+| | | | | |      Filter: (p.country = 'IL')
+| | | | | |      Filter: (p.consent IS TRUE)
+| | | | | |      Filter: (p.suspended IS FALSE)
+| | | | | |      Filter: ((p.age >= 25) AND (p.age <= 54))
+| | | | | |      Runtime Filters: (SIP1(HashJoin): p.tenant_id), (SIP2(HashJoin): p.snapshot_id), (SIP3(HashJoin): p.entity_id), (SIP4(HashJoin): p.tenant_id, p.snapshot_id, p.entity_id)
+| | | | | +-- Inner -> SELECT [Cost: 555K, Rows: 3M] (PUSHED GROUPING) (PATH ID: 8)
+| | | | | | +---> STORAGE ACCESS for j [Cost: 555K, Rows: 3M] (PATH ID: 9)
+| | | | | | |      Projection: bitmap_demo.user_interest_super
+| | | | | | |      Materialize: j.tenant_id, j.snapshot_id, j.entity_id
+| | | | | | |      Filter: (j.topic = ANY (ARRAY['sports', 'finance']))
+
+
+------------------------------
+----------------------------------------------- 
+PLAN: BASE QUERY PLAN (GraphViz Format)
+----------------------------------------------- 
+digraph G {
+graph [rankdir=BT, label = "BASE QUERY PLAN\nQuery: EXPLAIN SELECT \'topic_\' || i.topic AS predicate, COUNT(DISTINCT i.entity_id) AS users\nFROM bitmap_demo.user_interest i\nWHERE i.tenant_id = 10 AND i.snapshot_id = 1\n  AND i.entity_id IN (\n    SELECT p.entity_id FROM bitmap_demo.user_profile p\n    WHERE p.tenant_id = 10 AND p.snapshot_id = 1\n      AND p.country = \'IL\' AND p.age BETWEEN 25 AND 54\n      AND p.consent IS TRUE AND p.suspended IS FALSE\n      AND EXISTS (\n        SELECT 1 FROM bitmap_demo.user_interest j\n        WHERE j.tenant_id = p.tenant_id AND j.snapshot_id = p.snapshot_id\n          AND j.entity_id = p.entity_id AND j.topic IN (\'sports\', \'finance\')))\nGROUP BY 1;\n\nAll Nodes Vector: \n\n  node[0]=v_vdb_node0001 (initiator) Up\n", labelloc=t, labeljust=l ordering=out]
+0[label = "Root \nOutBlk=[UncTuple(2)]", color = "green", shape = "house"];
+1[label = "NewEENode \nOutBlk=[UncTuple(2)]", color = "green", shape = "box"];
+2[label = "ParallelUnionStep: \nCombine\nUnc: Varchar(46)\nUnc: Integer(8)", color = "green", shape = "box"];
+3[label = "GroupByHash(Spill): 1 keys\nAggs:\n  count(DISTINCT i.entity_id)\nUnc: Varchar(46)\nUnc: Integer(8)", color = "green", shape = "box"];
+4[label = "ParallelUnionStep: \nLocally Resegment\nUnc: Varchar(46)\nUnc: Integer(8)", color = "green", shape = "box"];
+5[label = "GroupByPipe(HashPrepass): 1 keys\nAggs:\n  count(DISTINCT i.entity_id)\nUnc: Varchar(46)\nUnc: Integer(8)", color = "green", shape = "box"];
+6[label = "GroupByHash(Spill): 2 keys\nAggs:\nUnc: Varchar(46)\nUnc: Integer(8)", color = "green", shape = "box"];
+7[label = "StorageUnionStep: user_interest_super\nLocally Resegment\nUnc: Varchar(46)\nUnc: Integer(8)", color = "purple", shape = "box"];
+8[label = "GroupByPipe(HashPrepass): 2 keys\nAggs:\nUnc: Varchar(46)\nUnc: Integer(8)", color = "brown", shape = "box"];
+9[label = "ExprEval: \n  (\'topic_\' || i.topic)\n  i.entity_id\nUnc: Varchar(46)\nUnc: Integer(8)", color = "brown", shape = "box"];
+10[label = "Join: Hash-Join: \n(bitmap_demo.user_interest x bitmap_demo.user_profile) using user_interest_super and subquery (PATH ID: 3)\n[Semi]\n\nUnc: Integer(8)\nUnc: Varchar(40)", color = "brown", shape = "box"];
+11[label = "ScanStep: user_interest_super\n(i.tenant_id = 10)\n(i.snapshot_id = 1)\nSIP5(HashJoin): i.entity_id\ntenant_id (not emitted)\nsnapshot_id (not emitted)\nentity_id\nUnc: Integer(8)", color = "brown", shape = "box"];
+12[label = "GroupByHash(Cap Memory): 1 keys\nAggs:\nUnc: Integer(8)", color = "green", shape = "box"];
+13[label = "StorageUnionStep: user_profile_by_filter\nUnc: Integer(8)", color = "purple", shape = "box"];
+14[label = "GroupByPipe(HashPrepass): 1 keys\nAggs:\nUnc: Integer(8)", color = "brown", shape = "box"];
+15[label = "ExprEval: \n  p.entity_id\nUnc: Integer(8)", color = "brown", shape = "box"];
+16[label = "Join: Hash-Join: \n(bitmap_demo.user_profile x bitmap_demo.user_interest) using user_profile_by_filter and subquery (PATH ID: 6)\n[Semi]\n\nUnc: Integer(8)", color = "brown", shape = "box"];
+17[label = "ScanStep: user_profile_by_filter\n(p.tenant_id = 10)\n(p.snapshot_id = 1)\n(p.country = \'IL\')\n(p.consent IS TRUE)\n(p.suspended IS FALSE)\n((p.age \>= 25) AND (p.age \<= 54))\nSIP1(HashJoin): p.tenant_id\nSIP2(HashJoin): p.snapshot_id\nSIP3(HashJoin): p.entity_id\nSIP4(HashJoin): p.tenant_id, p.snapshot_id, p.entity_id\ntenant_id RLE\nsnapshot_id RLE\ncountry RLE (not emitted)\nconsent RLE (not emitted)\nsuspended RLE (not emitted)\nage RLE (not emitted)\nentity_id\nRLE: Integer(8)\nRLE: Integer(8)\nUnc: Integer(8)", color = "brown", shape = "box"];
+18[label = "GroupByHash(Cap Memory): 3 keys\nAggs:\nUnc: Integer(8)\nUnc: Integer(8)\nUnc: Integer(8)", color = "green", shape = "box"];
+19[label = "StorageUnionStep: user_interest_super\nUnc: Integer(8)\nUnc: Integer(8)\nUnc: Integer(8)", color = "purple", shape = "box"];
+20[label = "GroupByPipe(HashPrepass): 3 keys\nAggs:\nUnc: Integer(8)\nUnc: Integer(8)\nUnc: Integer(8)", color = "brown", shape = "box"];
+21[label = "ScanStep: user_interest_super\n(j.topic = ANY (ARRAY[\'sports\', \'finance\']))\ntenant_id\nsnapshot_id\ntopic (not emitted)\nentity_id\nUnc: Integer(8)\nUnc: Integer(8)\nUnc: Integer(8)", color = "brown", shape = "box"];
+1->0 [label = "V[0] C=2",color = "black",style="bold", arrowtail="inv"];
+2->1 [label = "0",color = "blue"];
+3->2 [label = "0",color = "blue"];
+4->3 [label = "0",color = "blue"];
+5->4 [label = "0",color = "blue"];
+6->5 [label = "0",color = "blue"];
+7->6 [label = "0",color = "blue"];
+8->7 [label = "0",color = "blue"];
+9->8 [label = "0",color = "blue"];
+10->9 [label = "0",color = "blue"];
+11->10 [label = "0",color = "blue"];
+12->10 [label = "1",color = "blue"];
+13->12 [label = "0",color = "blue"];
+14->13 [label = "0",color = "blue"];
+15->14 [label = "0",color = "blue"];
+16->15 [label = "0",color = "blue"];
+17->16 [label = "0",color = "blue"];
+18->16 [label = "1",color = "blue"];
+19->18 [label = "0",color = "blue"];
+20->19 [label = "0",color = "blue"];
+21->20 [label = "0",color = "blue"];
+}

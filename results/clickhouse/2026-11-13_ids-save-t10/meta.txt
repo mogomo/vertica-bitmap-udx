@@ -1,0 +1,6 @@
+area=clickhouse run=ids-save-t10 folder=2026-11-13_ids-save-t10 milestone=M5c engine=clickhouse
+duration_s=1.52 exit_status=0 repo_hash=d7920e89607da91e
+engine_cpu_s=2.2 engine_memory_peak_sampled_bytes=1195954176 engine_memory_peak_since_start_bytes=2844401664
+client_cpus=20,21 client_cpu20_busy_pct=5.8 client_cpu21_busy_pct=10.4 client_saturated=na_(run_shorter_than_5_s)
+limits_ok=yes
+validity=valid

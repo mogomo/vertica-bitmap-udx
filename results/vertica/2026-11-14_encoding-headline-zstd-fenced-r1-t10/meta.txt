@@ -1,0 +1,6 @@
+area=vertica run=encoding-headline-zstd-fenced-r1-t10 folder=2026-11-14_encoding-headline-zstd-fenced-r1-t10 milestone=M5e engine=vertica
+duration_s=322.09 exit_status=0 repo_hash=bf39e22df63d76dc
+engine_cpu_s=1197.7 engine_memory_peak_sampled_bytes=27669856256 engine_memory_peak_since_start_bytes=27690201088
+client_cpus=20,21 client_cpu20_busy_pct=26.1 client_cpu21_busy_pct=39.1 client_saturated=no
+limits_ok=yes
+validity=valid

@@ -1,0 +1,111 @@
+------------------------------ 
+QUERY PLAN DESCRIPTION: 
+------------------------------
+
+EXPLAIN SELECT (SELECT COALESCE(SUM(cnt), 0) FROM (
+          SELECT vbitmap.bm_count(chunk_id, predicate, payload USING PARAMETERS expr = 'all - suspended_true')
+                 OVER (PARTITION BY chunk_id)
+          FROM bitmap_demo.bitmap_index
+          WHERE tenant_id = 14 AND snapshot_id = 1 AND domain = 'person'
+            AND predicate IN ('all', 'suspended_true')) a) AS complement,
+       (SELECT COALESCE(SUM(cnt), 0) FROM (
+          SELECT vbitmap.bm_count(chunk_id, predicate, payload USING PARAMETERS expr = 'suspended_false')
+                 OVER (PARTITION BY chunk_id)
+          FROM bitmap_demo.bitmap_index
+          WHERE tenant_id = 14 AND snapshot_id = 1 AND domain = 'person'
+            AND predicate IN ('suspended_false')) b) AS explicit;
+
+Access Path:
++-JOIN  (CROSS JOIN) [Cost: 24K, Rows: 1] (PATH ID: 1)
+| +-- Outer -> JOIN  (CROSS JOIN) [Cost: 16K, Rows: 1] (PATH ID: 2)
+| | +-- Outer -> STORAGE ACCESS for dual [Cost: 10, Rows: 1] (PATH ID: 3)
+| | |      Projection: v_catalog.dual_p
+| | |      Materialize: dual.dummy
+| | +-- Inner -> SELECT [Cost: 16K, Rows: 1] (PATH ID: 4)
+| | | +---> GROUPBY NOTHING [Cost: 16K, Rows: 1] (PATH ID: 5)
+| | | |      Aggregates: sum(a.cnt)
+| | | | +---> ANALYTICAL [Cost: 16K, Rows: 812] (PATH ID: 7)
+| | | | |      Analytic Group
+| | | | |       Functions: bm_count()
+| | | | |       Group Local Resegment: bitmap_index.chunk_id
+| | | | |       Group Sort: bitmap_index.chunk_id ASC
+| | | | | +---> STORAGE ACCESS for bitmap_index [Cost: 15K, Rows: 812] (PATH ID: 8)
+| | | | | |      Projection: bitmap_demo.bitmap_index_super
+| | | | | |      Materialize: bitmap_index.predicate, bitmap_index.chunk_id, bitmap_index.payload
+| | | | | |      Filter: (bitmap_index.tenant_id = 14)
+| | | | | |      Filter: (bitmap_index.snapshot_id = 1)
+| | | | | |      Filter: (bitmap_index.domain = 'person')
+| | | | | |      Filter: (bitmap_index.predicate = ANY (ARRAY['all', 'suspended_true']))
+| +-- Inner -> SELECT [Cost: 8K, Rows: 1] (PATH ID: 9)
+| | +---> GROUPBY NOTHING [Cost: 8K, Rows: 1] (PATH ID: 10)
+| | |      Aggregates: sum(b.cnt)
+| | | +---> ANALYTICAL [Cost: 8K, Rows: 404] (PATH ID: 12)
+| | | |      Analytic Group
+| | | |       Functions: bm_count()
+| | | | +---> STORAGE ACCESS for bitmap_index [Cost: 8K, Rows: 404] (PATH ID: 13)
+| | | | |      Projection: bitmap_demo.bitmap_index_super
+| | | | |      Materialize: bitmap_index.predicate, bitmap_index.chunk_id, bitmap_index.payload
+| | | | |      Filter: (bitmap_index.tenant_id = 14)
+| | | | |      Filter: (bitmap_index.snapshot_id = 1)
+| | | | |      Filter: (bitmap_index.domain = 'person')
+| | | | |      Filter: (bitmap_index.predicate = 'suspended_false')
+
+
+------------------------------
+----------------------------------------------- 
+PLAN: BASE QUERY PLAN (GraphViz Format)
+----------------------------------------------- 
+digraph G {
+graph [rankdir=BT, label = "BASE QUERY PLAN\nQuery: EXPLAIN SELECT (SELECT COALESCE(SUM(cnt), 0) FROM (\n          SELECT vbitmap.bm_count(chunk_id, predicate, payload USING PARAMETERS expr = \'all - suspended_true\')\n                 OVER (PARTITION BY chunk_id)\n          FROM bitmap_demo.bitmap_index\n          WHERE tenant_id = 14 AND snapshot_id = 1 AND domain = \'person\'\n            AND predicate IN (\'all\', \'suspended_true\')) a) AS complement,\n       (SELECT COALESCE(SUM(cnt), 0) FROM (\n          SELECT vbitmap.bm_count(chunk_id, predicate, payload USING PARAMETERS expr = \'suspended_false\')\n                 OVER (PARTITION BY chunk_id)\n          FROM bitmap_demo.bitmap_index\n          WHERE tenant_id = 14 AND snapshot_id = 1 AND domain = \'person\'\n            AND predicate IN (\'suspended_false\')) b) AS explicit;\n\nAll Nodes Vector: \n\n  node[0]=v_vdb_node0001 (initiator) Up\n", labelloc=t, labeljust=l ordering=out]
+0[label = "Root \nOutBlk=[UncTuple(2)]", color = "green", shape = "house"];
+1[label = "NewEENode \nOutBlk=[UncTuple(2)]", color = "green", shape = "box"];
+2[label = "StorageUnionStep: dual_p\nUnc: Integer(8)\nUnc: Integer(8)", color = "purple", shape = "box"];
+3[label = "ExprEval: \n  VAL(2)\n  VAL(3)\nUnc: Integer(8)\nUnc: Integer(8)", color = "brown", shape = "box"];
+4[label = "Join: Hash-Join: \n(v_catalog.dual x UNKNOWN) using previous join and subquery (PATH ID: 1)\n[CROSS JOIN]\n\nUnc: Integer(8)\nUnc: Integer(8)", color = "brown", shape = "box"];
+5[label = "Join: Hash-Join: \n(v_catalog.dual x UNKNOWN) using dual_p and subquery (PATH ID: 2)\n[CROSS JOIN]\n\nUnc: Integer(8)", color = "brown", shape = "box"];
+6[label = "ScanStep: dual_p\ndummy\nepoch (not emitted)\nUnc: Varchar(128)", color = "brown", shape = "box"];
+7[label = "ExprEval: \n  coalesce(\<SVAR\>, 0)\nUnc: Integer(8)", color = "green", shape = "box"];
+8[label = "GroupByPipe: 0 keys\nAggs:\n  sum(a.cnt)\nUnc: Integer(8)", color = "green", shape = "box"];
+9[label = "ParallelUnionStep: \nCombine\nUnc: Integer(8)", color = "green", shape = "box"];
+10[label = "GroupByPipe: 0 keys\nAggs:\n  sum(a.cnt)\nUnc: Integer(8)", color = "green", shape = "box"];
+11[label = "ExprEval: \n  a.cnt\nUnc: Integer(8)", color = "green", shape = "box"];
+12[label = "ExprEval: \n  \<SVAR\>\nUnc: Integer(8)", color = "green", shape = "box"];
+13[label = "UserDefined:\nPartitionBy: bitmap_index.chunk_id\nOrderBy:<NONE>\nAnalytical Functions:\n  vbitmap.bm_count(bitmap_index.chunk_id, bitmap_index.predicate, bitmap_index.payload USING PARAMETERS expr=\'all - suspended_true\')\nUnc: Integer(8)\nUnc: Integer(8)\nUnc: Integer(8)", color = "green", shape = "box"];
+14[label = "Sort: (keys = A,N,N)\nUnc: Integer(8)\nUnc: Varchar(80)\nUnc: Varbinary(16384)", color = "green", shape = "box"];
+15[label = "ExprEval: \n  bitmap_index.chunk_id\n  bitmap_index.predicate\n  bitmap_index.payload\nUnc: Integer(8)\nUnc: Varchar(80)\nUnc: Varbinary(16384)", color = "green", shape = "box"];
+16[label = "StorageUnionStep: bitmap_index_super\nLocally Resegment\nUnc: Varchar(80)\nUnc: Integer(8)\nUnc: Varbinary(16384)", color = "purple", shape = "box"];
+17[label = "ScanStep: bitmap_index_super\n(bitmap_index.tenant_id = 14)\n(bitmap_index.snapshot_id = 1)\n(bitmap_index.domain = \'person\')\n(bitmap_index.predicate = ANY (ARRAY[\'all\', \'suspended_true\']))\ntenant_id (not emitted)\nsnapshot_id (not emitted)\ndomain (not emitted)\npredicate\nchunk_id\npayload\nUnc: Varchar(80)\nUnc: Integer(8)\nUnc: Varbinary(16384)", color = "brown", shape = "box"];
+18[label = "ExprEval: \n  coalesce(\<SVAR\>, 0)\nUnc: Integer(8)", color = "green", shape = "box"];
+19[label = "GroupByPipe: 0 keys\nAggs:\n  sum(b.cnt)\nUnc: Integer(8)", color = "green", shape = "box"];
+20[label = "ExprEval: \n  b.cnt\nUnc: Integer(8)", color = "green", shape = "box"];
+21[label = "ExprEval: \n  \<SVAR\>\nUnc: Integer(8)", color = "green", shape = "box"];
+22[label = "UserDefined:\nPartitionBy: bitmap_index.chunk_id\nOrderBy:<NONE>\nAnalytical Functions:\n  vbitmap.bm_count(bitmap_index.chunk_id, bitmap_index.predicate, bitmap_index.payload USING PARAMETERS expr=\'suspended_false\')\nUnc: Integer(8)\nUnc: Integer(8)\nUnc: Integer(8)", color = "green", shape = "box"];
+23[label = "ExprEval: \n  bitmap_index.chunk_id\n  bitmap_index.predicate\n  bitmap_index.payload\nUnc: Integer(8)\nUnc: Varchar(80)\nUnc: Varbinary(16384)", color = "green", shape = "box"];
+24[label = "StorageMergeStep[ee5]: bitmap_index_super; 2 sorted\nUnc: Varchar(80)\nUnc: Integer(8)\nUnc: Varbinary(16384)", color = "purple", shape = "box"];
+25[label = "ScanStep: bitmap_index_super\n(bitmap_index.tenant_id = 14)\n(bitmap_index.snapshot_id = 1)\n(bitmap_index.domain = \'person\')\n(bitmap_index.predicate = \'suspended_false\')\ntenant_id (not emitted)\nsnapshot_id (not emitted)\ndomain (not emitted)\npredicate\nchunk_id\npayload\nUnc: Varchar(80)\nUnc: Integer(8)\nUnc: Varbinary(16384)", color = "brown", shape = "box"];
+1->0 [label = "V[0] C=2",color = "black",style="bold", arrowtail="inv"];
+2->1 [label = "0",color = "blue"];
+3->2 [label = "0",color = "blue"];
+4->3 [label = "0",color = "blue"];
+5->4 [label = "0",color = "blue"];
+6->5 [label = "0",color = "blue"];
+7->5 [label = "1",color = "blue"];
+8->7 [label = "0",color = "blue"];
+9->8 [label = "0",color = "blue"];
+10->9 [label = "0",color = "blue"];
+11->10 [label = "0",color = "blue"];
+12->11 [label = "0",color = "blue"];
+13->12 [label = "0",color = "blue"];
+14->13 [label = "0",color = "blue"];
+15->14 [label = "0",color = "blue"];
+16->15 [label = "0",color = "blue"];
+17->16 [label = "0",color = "blue"];
+18->4 [label = "1",color = "blue"];
+19->18 [label = "0",color = "blue"];
+20->19 [label = "0",color = "blue"];
+21->20 [label = "0",color = "blue"];
+22->21 [label = "0",color = "blue"];
+23->22 [label = "0",color = "blue"];
+24->23 [label = "0",color = "blue"];
+25->24 [label = "0",color = "blue"];
+}

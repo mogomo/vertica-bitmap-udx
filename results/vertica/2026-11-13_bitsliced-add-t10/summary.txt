@@ -1,0 +1,3 @@
+bitsliced: op=add tenant=10 snapshot=1 source_snapshot=1 sets=7 payloads=1071 bytes=8790768 build_s=5.08 weighted_sum=529172320 native_sum=529172320 equal=yes
+bitsliced: op=containers projection=bitmap_index_by_chunk containers=2 rows=936428
+bitsliced: op=containers projection=bitmap_index_super containers=14 rows=936428

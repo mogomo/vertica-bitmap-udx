@@ -1,0 +1,55 @@
+------------------------------ 
+QUERY PLAN DESCRIPTION: 
+------------------------------
+
+EXPLAIN SELECT a.asset_id
+FROM bitmap_demo.asset_state a
+WHERE a.tenant_id = 10 AND a.snapshot_id = 1
+  AND a.contains_pii IS TRUE AND a.deleted IS FALSE
+  AND a.refreshed_at < TIMESTAMP '2026-10-25 00:00:00'
+  AND EXISTS (
+    SELECT 1 FROM bitmap_demo.asset_source s
+    WHERE s.tenant_id = a.tenant_id AND s.snapshot_id = a.snapshot_id
+      AND s.asset_id = a.asset_id AND s.source = 'ERP_A');
+
+Access Path:
++-JOIN MERGEJOIN(inputs presorted) [Semi] [Cost: 62K, Rows: 184K] (PATH ID: 1)
+|  Join Cond: (VAL(1) = a.tenant_id) AND (VAL(1) = a.snapshot_id) AND (VAL(1) = a.asset_id)
+| +-- Outer -> STORAGE ACCESS for a [Cost: 33K, Rows: 369K] (PATH ID: 2)
+| |      Projection: bitmap_demo.asset_state_super
+| |      Materialize: a.tenant_id, a.snapshot_id, a.asset_id
+| |      Filter: (a.tenant_id = 10)
+| |      Filter: (a.snapshot_id = 1)
+| |      Filter: (a.contains_pii IS TRUE)
+| |      Filter: (a.refreshed_at < '2026-10-25 00:00:00'::timestamp)
+| |      Filter: (a.deleted IS FALSE)
+| |      Runtime Filters: (SIP1(MergeJoin): a.tenant_id), (SIP2(MergeJoin): a.snapshot_id), (SIP3(MergeJoin): a.asset_id), (SIP4(MergeJoin): a.tenant_id, a.snapshot_id, a.asset_id)
+| +-- Inner -> SELECT [Cost: 28K, Rows: 202K] (PATH ID: 3)
+| | +---> STORAGE ACCESS for s [Cost: 28K, Rows: 202K] (PATH ID: 4)
+| | |      Projection: bitmap_demo.asset_source_super
+| | |      Materialize: s.tenant_id, s.snapshot_id, s.asset_id
+| | |      Filter: (s.source = 'ERP_A')
+
+
+------------------------------
+----------------------------------------------- 
+PLAN: BASE QUERY PLAN (GraphViz Format)
+----------------------------------------------- 
+digraph G {
+graph [rankdir=BT, label = "BASE QUERY PLAN\nQuery: EXPLAIN SELECT a.asset_id\nFROM bitmap_demo.asset_state a\nWHERE a.tenant_id = 10 AND a.snapshot_id = 1\n  AND a.contains_pii IS TRUE AND a.deleted IS FALSE\n  AND a.refreshed_at \< TIMESTAMP \'2026-10-25 00:00:00\'\n  AND EXISTS (\n    SELECT 1 FROM bitmap_demo.asset_source s\n    WHERE s.tenant_id = a.tenant_id AND s.snapshot_id = a.snapshot_id\n      AND s.asset_id = a.asset_id AND s.source = \'ERP_A\');\n\nAll Nodes Vector: \n\n  node[0]=v_vdb_node0001 (initiator) Up\n", labelloc=t, labeljust=l ordering=out]
+0[label = "Root \nOutBlk=[UncTuple]", color = "green", shape = "house"];
+1[label = "NewEENode \nOutBlk=[UncTuple]", color = "green", shape = "box"];
+2[label = "StorageUnionStep: asset_state_super\nUnc: Integer(8)", color = "purple", shape = "box"];
+3[label = "ExprEval: \n  a.asset_id\nUnc: Integer(8)", color = "brown", shape = "box"];
+4[label = "Join: Merge-Join: \n(bitmap_demo.asset_state x bitmap_demo.asset_source) using asset_state_super and subquery (PATH ID: 1)\n[Semi]\n\nUnc: Integer(8)", color = "brown", shape = "box"];
+5[label = "ScanStep: asset_state_super\n(a.tenant_id = 10)\n(a.snapshot_id = 1)\n(a.contains_pii IS TRUE)\n(a.refreshed_at \< \'2026-10-25 00:00:00\'::timestamp)\n(a.deleted IS FALSE)\nSIP1(MergeJoin): a.tenant_id\nSIP2(MergeJoin): a.snapshot_id\nSIP3(MergeJoin): a.asset_id\nSIP4(MergeJoin): a.tenant_id, a.snapshot_id, a.asset_id\ntenant_id\nsnapshot_id\nasset_id\ncontains_pii (not emitted)\ndeleted (not emitted)\nrefreshed_at (not emitted)\nUnc: Integer(8)\nUnc: Integer(8)\nUnc: Integer(8)", color = "brown", shape = "box"];
+6[label = "StorageMergeStep[ee5]: asset_source_super; 3 sorted\nUnc: Integer(8)\nUnc: Integer(8)\nUnc: Integer(8)", color = "purple", shape = "box"];
+7[label = "ScanStep: asset_source_super\n(s.source = \'ERP_A\')\ntenant_id\nsnapshot_id\nsource (not emitted)\nasset_id\nUnc: Integer(8)\nUnc: Integer(8)\nUnc: Integer(8)", color = "brown", shape = "box"];
+1->0 [label = "V[0]",color = "black"];
+2->1 [label = "0",color = "blue"];
+3->2 [label = "0",color = "blue"];
+4->3 [label = "0",color = "blue"];
+5->4 [label = "0",color = "blue"];
+6->4 [label = "1",color = "blue"];
+7->6 [label = "0",color = "blue"];
+}

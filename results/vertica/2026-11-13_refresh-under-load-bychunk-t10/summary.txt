@@ -1,0 +1,14 @@
+check: query=q1.count.A answer=q1.count rows=1 hash=b4498cf506a5f79c matches=yes ms=9960.1
+check: query=q1.count.Bplus answer=q1.count rows=1 hash=b4498cf506a5f79c matches=yes ms=109.1
+check: query=q2.daily.A answer=q2.daily rows=2 hash=ce7279e17bf8b689 matches=yes ms=176.0
+check: query=q2.daily.B answer=q2.daily rows=2 hash=ce7279e17bf8b689 matches=yes ms=23.9
+check: query=q3.A answer=q3 rows=500 hash=1a17b1531950cc32 matches=yes ms=10717.5
+check: query=q3.Bplus answer=q3 rows=500 hash=1a17b1531950cc32 matches=yes ms=1445.5
+check: query=q4.A answer=q4 rows=19695 hash=418fbbab9d532966 matches=yes ms=62.6
+check: query=q4.Bplus answer=q4 rows=19695 hash=418fbbab9d532966 matches=yes ms=26.8
+check: query=q7.A answer=q7 rows=499 hash=8d89f06ae62b8c25 matches=yes ms=50469.6
+check: query=q7.Bplus answer=q7 rows=499 hash=8d89f06ae62b8c25 matches=yes ms=932.8
+check: query=q8.A answer=q8 rows=530315 hash=384c2a5fd45796b7 matches=yes ms=34275.9
+check: query=q8.Bplus answer=q8 rows=530315 hash=384c2a5fd45796b7 matches=yes ms=113.0
+background: status=0 start_s=60.150 end_s=641.649 duration_s=581.499
+summary: mode=mixed engine=vertica queries=12 levels=32 check_ok=yes errors=0 mismatches=0 valid=yes

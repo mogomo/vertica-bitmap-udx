@@ -1,0 +1,5 @@
+command=bash -c python3\ bench/driver.py\ mixed\ --workload\ bench/workloads/clickhouse.sql\ --var\ tenant=10\ --out\ \$BENCH_RUN_DIR/driver\ --clients\ 32\ --duration\ 600\ --warmup-s\ 30\ --statement-cap\ 600\ --only\ q1.count.C\,q2.daily.C\,q3.C\,q4.C\,q7.C\,q8.C\ --weights\ q1.count.C=4\,q2.daily.C=2\,q3.C=2\,q4.C=1\,q7.C=1\,q8.C=1\ --expect\ ~/bitmap_record/vertica/2026-11-12_check-headline-t10/driver/check.csv\ --background\ \'bench/ch.sh\ build\ --tenant=10\ --snapshot=2\ --source-snapshot=1\ --only=person\,daily\'\ --background-at\ 60 
+cwd=~/vertica-bitmap-udx
+start_utc=2026-11-13T02:53:01Z
+end_utc=2026-11-13T03:07:45Z
+exit_status=0

@@ -1,0 +1,9 @@
+ch: op=load table=user_profile rows=10000000 load_s=4.57 optimize_s=1.73
+ch: op=load table=user_interest rows=200000000 load_s=46.85 optimize_s=10.77
+ch: op=load table=event_log rows=100000000 load_s=27.61 optimize_s=7.48
+ch: op=load table=device_state rows=2000000 load_s=1.34 optimize_s=0.26
+ch: op=load tenant=10 total_s=100.90
+storage: engine=clickhouse table=device_state rows=2000000 bytes_on_disk=27836090 compressed_bytes=27819496 uncompressed_bytes=58004714 parts=1
+storage: engine=clickhouse table=event_log rows=100000000 bytes_on_disk=993735096 compressed_bytes=993513407 uncompressed_bytes=2100301637 parts=1
+storage: engine=clickhouse table=user_interest rows=200000000 bytes_on_disk=812406271 compressed_bytes=812109542 uncompressed_bytes=2692818737 parts=1
+storage: engine=clickhouse table=user_profile rows=10000000 bytes_on_disk=79205501 compressed_bytes=79173889 uncompressed_bytes=220019674 parts=1

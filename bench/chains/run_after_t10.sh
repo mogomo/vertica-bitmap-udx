@@ -1,0 +1,12 @@
+set -u
+until grep -q ALL_DONE ~/bitmap_record/last_run.log; do sleep 20; done
+cd ~/vertica-bitmap-udx
+export PATH=/opt/vertica/bin:$PATH VSQL_DATABASE=VDB
+R="bench/record.sh --area=vertica"
+$R --run=floor-long --purpose="latency floor and client headroom (V17), long enough to judge client CPU: SELECT 1" --scale="none" --path="vsql session per client" -- bash -c "python3 bench/driver.py run --workload bench/workloads/floor.sql --out \$BENCH_RUN_DIR/driver --clients 1,8,32 --iterations 40000 --warmup 5"
+$R --run=build-families-t10 --purpose="build time and size per predicate family, one family at a time" --scale="default (tenant 10)" --path="build_index.sh --families=F" -- bash -c "bench/build_report.sh --tenant=10 --source-snapshot=1 --domain=person --watermark=\"2026-11-01 00:00:00\" --daily && bench/build_report.sh --tenant=10 --source-snapshot=1 --domain=device --watermark=\"2026-11-01 12:00:00\" && bench/build_report.sh --tenant=10 --source-snapshot=1 --domain=asset --watermark=\"2026-11-01 00:00:00\""
+$R --run=projections-tuned-t10 --purpose="create and refresh the tuned native projection (profiles by filter columns)" --scale="10 M profiles" --path="bench/vertica_projections.sql" -- bash -c "vsql -X -v ON_ERROR_STOP=1 -e -f bench/vertica_projections.sql && echo summary: projection=user_profile_by_filter created=yes"
+$R --run=storage-tuned-t10 --purpose="storage after the tuned projection" --scale="default (tenant 10) + fixture tenants" --path="projection_storage" -- bench/storage.sh
+$R --run=latency-native-tuned-c1-t10 --purpose="latency, 1 client, native paths A and At with the tuned projection" --scale="default (tenant 10)" --path="A, At" -- bash -c "python3 bench/driver.py run --workload bench/workloads/vertica.sql --var tenant=10 --out \$BENCH_RUN_DIR/driver --clients 1 --iterations 30 --warmup 1 --only q1.count.A,q1.ids.A,q2.A,q2.daily.A,q2b.A,q3.A,q3d.A,q4.A,q5.A,q6.A,q6.At,q7.At,q8.A,q8trap.A"
+$R --run=latency-native-tuned-c8c32-t10 --purpose="latency, 8 and 32 clients, native paths A and At except q7.A, tuned projection" --scale="default (tenant 10)" --path="A, At" -- bash -c "python3 bench/driver.py run --workload bench/workloads/vertica.sql --var tenant=10 --out \$BENCH_RUN_DIR/driver --clients 8,32 --iterations 30 --min-per-client 1 --warmup 1 --only q1.count.A,q1.ids.A,q2.A,q2.daily.A,q2b.A,q3.A,q3d.A,q4.A,q5.A,q6.A,q6.At,q7.At,q8.A,q8trap.A"
+echo ALL_DONE

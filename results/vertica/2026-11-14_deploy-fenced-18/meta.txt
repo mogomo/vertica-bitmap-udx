@@ -1,0 +1,6 @@
+area=vertica run=deploy-fenced-18 folder=2026-11-14_deploy-fenced-18 milestone=M5e engine=vertica
+duration_s=0.29 exit_status=0 repo_hash=bf39e22df63d76dc
+engine_cpu_s=0.3 engine_memory_peak_sampled_bytes=0 engine_memory_peak_since_start_bytes=26998915072
+client_cpus=20,21 client_cpu20_busy_pct=19.4 client_cpu21_busy_pct=10.0 client_saturated=na_(run_shorter_than_5_s)
+limits_ok=yes
+validity=valid

@@ -1,0 +1,4 @@
+driver run started 2026-11-13T23:34:15+0200 args ['run', '--client', 'socket', '--workload', 'bench/workloads/vertica.sql', '--var', 'tenant=10', '--out', '~/bitmap_record/vertica/2026-11-13_encoding-headline-zstd-unfenced-r2-t10/driver', '--clients', '1,32', '--iterations', '15', '--warmup', '1', '--statement-cap', '300', '--only', 'q1.count.Bplus,q1.ids.Bplus,q2.daily.B,q3.Bplus,q4.Bplus,q7.Bj,q7.Bplus,q8.Bplus', '--var', 'index=bitmap_enc.index_zstd', '--var', 'daily=bitmap_enc.daily_zstd', '--expect', '~/bitmap_record/vertica/2026-11-12_check-headline-t10/driver/check.csv', '--skip-oracles']
+check q1.count.Bplus: answer 251683
+check q2.daily.B: answer 2026-10-15|1551213 ; 2026-10-16|1553098
+driver ended 2026-11-13T23:38:39+0200 status 0

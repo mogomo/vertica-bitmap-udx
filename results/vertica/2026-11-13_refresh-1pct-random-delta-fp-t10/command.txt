@@ -1,0 +1,5 @@
+command=bench/refresh.sh --tenant=10 --fraction=0.01 --spread=random --report=delta 
+cwd=~/vertica-bitmap-udx
+start_utc=2026-11-13T00:41:39Z
+end_utc=2026-11-13T00:50:21Z
+exit_status=0

@@ -1,0 +1,6 @@
+area=vertica run=build-person-t20 folder=2026-11-12_build-person-t20 milestone=M5b engine=vertica
+duration_s=1286.61 exit_status=0 repo_hash=fb28aaf3f0dcf5cf
+engine_cpu_s=10855.6 engine_memory_peak_sampled_bytes=40279453696 engine_memory_peak_since_start_bytes=55415398400
+client_cpus=20,21 client_cpu20_busy_pct=2.0 client_cpu21_busy_pct=1.9 client_saturated=no
+limits_ok=yes
+validity=valid

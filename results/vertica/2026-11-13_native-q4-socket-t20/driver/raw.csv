@@ -1,0 +1,17 @@
+block,query,clients,client,seq,phase,start_s,latency_ms,rows,answer_ok,error,engine_ms,session_id
+1,q4.A,1,0,0,warmup,-0.039943,39.707,197436,yes,,39,v_vdb_node0001-2217735:0xc2
+1,q4.A,1,0,1,measured,-0.000155,39.419,197436,yes,,38,v_vdb_node0001-2217735:0xc2
+1,q4.A,1,0,2,measured,0.039289,41.037,197436,yes,,39,v_vdb_node0001-2217735:0xc2
+1,q4.A,1,0,3,measured,0.080341,39.544,197436,yes,,39,v_vdb_node0001-2217735:0xc2
+1,q4.A,1,0,4,measured,0.119897,43.112,197436,yes,,42,v_vdb_node0001-2217735:0xc2
+1,q4.A,1,0,5,measured,0.163021,39.647,197436,yes,,38,v_vdb_node0001-2217735:0xc2
+1,q4.A,1,0,6,measured,0.202681,40.390,197436,yes,,39,v_vdb_node0001-2217735:0xc2
+1,q4.A,1,0,7,measured,0.243083,39.585,197436,yes,,38,v_vdb_node0001-2217735:0xc2
+1,q4.A,1,0,8,measured,0.282679,38.981,197436,yes,,36,v_vdb_node0001-2217735:0xc2
+1,q4.A,1,0,9,measured,0.321672,41.950,197436,yes,,40,v_vdb_node0001-2217735:0xc2
+1,q4.A,1,0,10,measured,0.363639,45.228,197436,yes,,43,v_vdb_node0001-2217735:0xc2
+1,q4.A,1,0,11,measured,0.408881,41.979,197436,yes,,40,v_vdb_node0001-2217735:0xc2
+1,q4.A,1,0,12,measured,0.450873,41.587,197436,yes,,40,v_vdb_node0001-2217735:0xc2
+1,q4.A,1,0,13,measured,0.492475,42.984,197436,yes,,41,v_vdb_node0001-2217735:0xc2
+1,q4.A,1,0,14,measured,0.535483,41.558,197436,yes,,40,v_vdb_node0001-2217735:0xc2
+1,q4.A,1,0,15,measured,0.577059,40.748,197436,yes,,40,v_vdb_node0001-2217735:0xc2

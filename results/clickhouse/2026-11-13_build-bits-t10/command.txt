@@ -1,0 +1,5 @@
+command=bench/ch.sh build-bits --tenant=10 
+cwd=~/vertica-bitmap-udx
+start_utc=2026-11-13T13:20:05Z
+end_utc=2026-11-13T13:20:06Z
+exit_status=0

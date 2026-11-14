@@ -1,0 +1,5 @@
+command=bash -c bench/live_append.sh\ batch\ --tenant=10\ --residue=5\ \&\&\ bench/live_append.sh\ append\ --tenant=10\ \&\&\ scripts/live_index.sh\ status 
+cwd=~/vertica-bitmap-udx
+start_utc=2026-11-13T11:14:14Z
+end_utc=2026-11-13T11:14:17Z
+exit_status=0

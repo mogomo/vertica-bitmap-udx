@@ -1,0 +1,6 @@
+area=clickhouse run=ids-rows2-t10 folder=2026-11-13_ids-rows2-t10 milestone=M5d engine=clickhouse
+duration_s=40.88 exit_status=0 repo_hash=cbbc6e5a6787f0b8
+engine_cpu_s=62.4 engine_memory_peak_sampled_bytes=2482667520 engine_memory_peak_since_start_bytes=2651652096
+client_cpus=20,21 client_cpu20_busy_pct=39.3 client_cpu21_busy_pct=54.7 client_saturated=no
+limits_ok=yes
+validity=valid

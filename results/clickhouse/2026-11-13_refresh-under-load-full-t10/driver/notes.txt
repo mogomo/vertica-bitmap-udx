@@ -1,0 +1,7 @@
+driver mixed started 2026-11-13T04:53:02+0200 args ['mixed', '--workload', 'bench/workloads/clickhouse.sql', '--var', 'tenant=10', '--out', '~/bitmap_record/clickhouse/2026-11-13_refresh-under-load-full-t10/driver', '--clients', '32', '--duration', '600', '--warmup-s', '30', '--statement-cap', '600', '--only', 'q1.count.C,q2.daily.C,q3.C,q4.C,q7.C,q8.C', '--weights', 'q1.count.C=4,q2.daily.C=2,q3.C=2,q4.C=1,q7.C=1,q8.C=1', '--expect', '~/bitmap_record/vertica/2026-11-12_check-headline-t10/driver/check.csv', '--background', 'bench/ch.sh build --tenant=10 --snapshot=2 --source-snapshot=1 --only=person,daily', '--background-at', '60']
+check q1.count.N: answer 251683
+check q1.count.C: answer 251683
+check q2.daily.N: answer 2026-10-15|1551213 ; 2026-10-16|1553098
+check q2.daily.C: answer 2026-10-15|1551213 ; 2026-10-16|1553098
+background: status=0 start_s=60.010 end_s=73.057 duration_s=13.047
+driver ended 2026-11-13T05:07:45+0200 status 0

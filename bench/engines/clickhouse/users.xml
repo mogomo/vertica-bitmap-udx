@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<!-- One user, loopback only, no password: the instance listens on ::1 only (config.xml). -->
+<clickhouse>
+    <profiles>
+        <default>
+            <log_queries>1</log_queries>
+        </default>
+    </profiles>
+    <users>
+        <default>
+            <password></password>
+            <networks><ip>::1</ip></networks>
+            <profile>default</profile>
+            <quota>default</quota>
+        </default>
+    </users>
+    <quotas>
+        <default></default>
+    </quotas>
+</clickhouse>

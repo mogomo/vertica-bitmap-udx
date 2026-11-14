@@ -1,0 +1,5 @@
+command=bash -c python3\ bench/driver.py\ run\ --workload\ bench/workloads/clickhouse_ids.sql\ --var\ tenant=10\ --out\ \$BENCH_RUN_DIR/driver\ --clients\ 1\ --iterations\ 15\ --warmup\ 1\ --statement-cap\ 300\ --only\ q8.save.set.C\,q8.save.ids.C\  
+cwd=~/vertica-bitmap-udx
+start_utc=2026-11-13T09:28:12Z
+end_utc=2026-11-13T09:28:13Z
+exit_status=0

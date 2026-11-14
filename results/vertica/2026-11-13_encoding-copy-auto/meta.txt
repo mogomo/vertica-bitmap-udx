@@ -1,0 +1,6 @@
+area=vertica run=encoding-copy-auto folder=2026-11-13_encoding-copy-auto milestone=M5e engine=vertica
+duration_s=121.49 exit_status=0 repo_hash=bf39e22df63d76dc
+engine_cpu_s=252.6 engine_memory_peak_sampled_bytes=15080951808 engine_memory_peak_since_start_bytes=15152517120
+client_cpus=20,21 client_cpu20_busy_pct=1.8 client_cpu21_busy_pct=1.7 client_saturated=no
+limits_ok=yes
+validity=valid

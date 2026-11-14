@@ -1,0 +1,85 @@
+------------------------------ 
+QUERY PLAN DESCRIPTION: 
+------------------------------
+
+EXPLAIN WITH s AS (
+  SELECT day, chunk_id, payload FROM bitmap_demo.daily_bitmap
+  WHERE tenant_id = 14 AND snapshot_id = 1 AND domain = 'person' AND channel = 'web'
+    AND day >= DATE '2026-10-15' AND day < DATE '2026-10-22'
+)
+SELECT a.day || ' ' || b.day AS days, SUM(vbitmap.bm_and_cardinality(a.payload, b.payload)) AS users
+FROM s a JOIN s b ON b.chunk_id = a.chunk_id AND b.day >= a.day
+GROUP BY a.day, b.day
+HAVING SUM(vbitmap.bm_and_cardinality(a.payload, b.payload)) > 0;
+
+Access Path:
++-GROUPBY HASH (LOCAL RESEGMENT GROUPS) [Cost: 23K, Rows: 625] (PATH ID: 1)
+|  Aggregates: sum(vbitmap.bm_and_cardinality(a.payload, b.payload))
+|  Group By: a.day, b.day
+|  Filter: (<SVAR> > 0)
+| +---> JOIN HASH [Cost: 23K, Rows: 625] (PATH ID: 2) Outer (LOCAL ROUND ROBIN)
+| |      Join Cond: (b.chunk_id = a.chunk_id)
+| |      Join Filter: (b.day >= a.day)
+| | +-- Outer -> TEMP RELATION ACCESS for TREL29 [Cost: 11K, Rows: 625] (PATH ID: 3)
+| | |      Runtime Filter: (SIP1(HashJoin): b.chunk_id)
+| | |      Path to compute TREL29 (printed once):
+| | | +---> SELECT (TREL29) [Cost: 11K, Rows: 625] (PATH ID: 4)
+| | | | +---> STORAGE ACCESS for daily_bitmap [Cost: 11K, Rows: 625] (PATH ID: 5)
+| | | | |      Projection: bitmap_demo.daily_bitmap_super
+| | | | |      Materialize: daily_bitmap.day, daily_bitmap.chunk_id, daily_bitmap.payload
+| | | | |      Filter: (daily_bitmap.tenant_id = 14)
+| | | | |      Filter: (daily_bitmap.snapshot_id = 1)
+| | | | |      Filter: (daily_bitmap.domain = 'person')
+| | | | |      Filter: (daily_bitmap.channel = 'web')
+| | | | |      Filter: ((daily_bitmap.day >= '2026-10-15'::date) AND (daily_bitmap.day < '2026-10-22'::date))
+| | +-- Inner -> TEMP RELATION ACCESS for TREL29 [Cost: 11K, Rows: 625] (PATH ID: 6)
+
+
+------------------------------
+----------------------------------------------- 
+PLAN: BASE QUERY PLAN (GraphViz Format)
+----------------------------------------------- 
+digraph G {
+graph [rankdir=BT, label = "Plan Sections", labelloc=t, labeljust=l ordering=out]
+0[label = "Section 0: Inputs[1]", color = "black", shape = "box"];
+1[label = "Section 1", color = "black", shape = "box"];
+1->0 [label = "Req",color = "black"];
+}
+digraph G {
+graph [rankdir=BT, label = "BASE QUERY PLAN\nQuery: EXPLAIN WITH s AS (\n  SELECT day, chunk_id, payload FROM bitmap_demo.daily_bitmap\n  WHERE tenant_id = 14 AND snapshot_id = 1 AND domain = \'person\' AND channel = \'web\'\n    AND day \>= DATE \'2026-10-15\' AND day \< DATE \'2026-10-22\'\n)\nSELECT a.day || \' \' || b.day AS days, SUM(vbitmap.bm_and_cardinality(a.payload, b.payload)) AS users\nFROM s a JOIN s b ON b.chunk_id = a.chunk_id AND b.day \>= a.day\nGROUP BY a.day, b.day\nHAVING SUM(vbitmap.bm_and_cardinality(a.payload, b.payload)) \> 0;\n\nAll Nodes Vector: \n\n  node[0]=v_vdb_node0001 (initiator) Up\n\nSection 0: Inputs[1]", labelloc=t, labeljust=l ordering=out]
+0[label = "Root \nOutBlk=[UncTuple(2)]", color = "green", shape = "house"];
+1[label = "NewEENode \nOutBlk=[UncTuple(2)]", color = "green", shape = "box"];
+2[label = "ParallelUnionStep: \nCombine\nUnc: Varchar(127)\nUnc: Integer(8)", color = "green", shape = "box"];
+3[label = "ExprEval: \n  concat(concat((a.day)::varchar, \' \'), (b.day)::varchar)\n  \<SVAR\>\nUnc: Varchar(127)\nUnc: Integer(8)", color = "green", shape = "box"];
+4[label = "FilterStep: \n(\<SVAR\> \> 0)\nUnc: Date(8)\nUnc: Date(8)\nUnc: Integer(8)", color = "green", shape = "box"];
+5[label = "GroupByHash(Spill): 2 keys\nAggs:\n  sum(vbitmap.bm_and_cardinality(a.payload, b.payload))\nUnc: Date(8)\nUnc: Date(8)\nUnc: Integer(8)", color = "green", shape = "box"];
+6[label = "ParallelUnionStep: \nLocally Resegment\nUnc: Date(8)\nUnc: Date(8)\nUnc: Integer(8)", color = "green", shape = "box"];
+7[label = "GroupByPipe(HashPrepass): 2 keys\nAggs:\n  sum(vbitmap.bm_and_cardinality(a.payload, b.payload))\nUnc: Date(8)\nUnc: Date(8)\nUnc: Integer(8)", color = "green", shape = "box"];
+8[label = "ExprEval: \n  a.day\n  b.day\n  vbitmap.bm_and_cardinality(a.payload, b.payload)\nUnc: Date(8)\nUnc: Date(8)\nUnc: Integer(8)", color = "green", shape = "box"];
+9[label = "Join: Hash-Join: \n(Temp Relation 29 x Temp Relation 29) using TempRel access and TempRel access (PATH ID: 2)\n (b.chunk_id = a.chunk_id)\n\nUnc: Date(8)\nUnc: Varbinary(16384)\nUnc: Date(8)\nUnc: Varbinary(16384)", color = "green", shape = "box"];
+10[label = "ParallelUnionStep: \nRound Robin\nUnc: Date(8)\nUnc: Integer(8)\nUnc: Varbinary(16384)", color = "green", shape = "box"];
+11[label = "TempRelAccess 29\n\nUnc: Date(8)\nUnc: Integer(8)\nUnc: Varbinary(16384)", color = "green", shape = "box"];
+12[label = "TempRelAccess 29\n\nUnc: Date(8)\nUnc: Integer(8)\nUnc: Varbinary(16384)", color = "green", shape = "box"];
+1->0 [label = "V[0] C=2",color = "black",style="bold", arrowtail="inv"];
+2->1 [label = "0",color = "blue"];
+3->2 [label = "0",color = "blue"];
+4->3 [label = "0",color = "blue"];
+5->4 [label = "0",color = "blue"];
+6->5 [label = "0",color = "blue"];
+7->6 [label = "0",color = "blue"];
+8->7 [label = "0",color = "blue"];
+9->8 [label = "0",color = "blue"];
+10->9 [label = "0",color = "blue"];
+11->10 [label = "0",color = "blue"];
+12->9 [label = "1",color = "blue"];
+}
+digraph G {
+graph [rankdir=BT, label = "BASE QUERY PLAN\nQuery: EXPLAIN WITH s AS (\n  SELECT day, chunk_id, payload FROM bitmap_demo.daily_bitmap\n  WHERE tenant_id = 14 AND snapshot_id = 1 AND domain = \'person\' AND channel = \'web\'\n    AND day \>= DATE \'2026-10-15\' AND day \< DATE \'2026-10-22\'\n)\nSELECT a.day || \' \' || b.day AS days, SUM(vbitmap.bm_and_cardinality(a.payload, b.payload)) AS users\nFROM s a JOIN s b ON b.chunk_id = a.chunk_id AND b.day \>= a.day\nGROUP BY a.day, b.day\nHAVING SUM(vbitmap.bm_and_cardinality(a.payload, b.payload)) \> 0;\n\nAll Nodes Vector: \n\n  node[0]=v_vdb_node0001 (initiator) Up\n\nSection 1", labelloc=t, labeljust=l ordering=out]
+0[label = "NewEENode \nOutBlk=[UncTuple(3)]", color = "green", shape = "box"];
+1[label = "TempRelWrite 29\n\nUnc: Date(8)\nUnc: Integer(8)\nUnc: Varbinary(16384)", color = "green", shape = "box"];
+2[label = "StorageUnionStep: daily_bitmap_super\nUnc: Date(8)\nUnc: Integer(8)\nUnc: Varbinary(16384)", color = "purple", shape = "box"];
+3[label = "ScanStep: daily_bitmap_super\n(daily_bitmap.tenant_id = 14)\n(daily_bitmap.snapshot_id = 1)\n(daily_bitmap.domain = \'person\')\n(daily_bitmap.channel = \'web\')\n((daily_bitmap.day \>= \'2026-10-15\'::date) AND (daily_bitmap.day \< \'2026-10-22\'::date))\ntenant_id (not emitted)\nsnapshot_id (not emitted)\ndomain (not emitted)\nchannel (not emitted)\nday\nchunk_id\npayload\nUnc: Date(8)\nUnc: Integer(8)\nUnc: Varbinary(16384)", color = "brown", shape = "box"];
+1->0 [label = "0",color = "blue"];
+2->1 [label = "0",color = "blue"];
+3->2 [label = "0",color = "blue"];
+}

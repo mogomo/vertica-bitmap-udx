@@ -1,0 +1,6 @@
+area=vertica run=latency-q2q4-bychunk-t10 folder=2026-11-13_latency-q2q4-bychunk-t10 milestone=M5b engine=vertica
+duration_s=5.93 exit_status=0 repo_hash=82096cc9e0fea3dd
+engine_cpu_s=10.9 engine_memory_peak_sampled_bytes=618967040 engine_memory_peak_since_start_bytes=650407936
+client_cpus=20,21 client_cpu20_busy_pct=39.0 client_cpu21_busy_pct=30.4 client_saturated=no
+limits_ok=yes
+validity=valid

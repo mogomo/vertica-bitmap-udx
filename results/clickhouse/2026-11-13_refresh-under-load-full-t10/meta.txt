@@ -1,0 +1,6 @@
+area=clickhouse run=refresh-under-load-full-t10 folder=2026-11-13_refresh-under-load-full-t10 milestone=M5b engine=clickhouse
+duration_s=884.03 exit_status=0 repo_hash=d0118086631d1fba
+engine_cpu_s=11972.6 engine_memory_peak_sampled_bytes=9768071168 engine_memory_peak_since_start_bytes=9856356352
+client_cpus=20,21 client_cpu20_busy_pct=32.1 client_cpu21_busy_pct=30.7 client_saturated=no
+limits_ok=yes
+validity=valid

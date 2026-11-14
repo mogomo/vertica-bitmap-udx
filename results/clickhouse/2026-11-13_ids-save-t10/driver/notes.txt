@@ -1,0 +1,4 @@
+driver run started 2026-11-13T11:28:12+0200 args ['run', '--workload', 'bench/workloads/clickhouse_ids.sql', '--var', 'tenant=10', '--out', '~/bitmap_record/clickhouse/2026-11-13_ids-save-t10/driver', '--clients', '1', '--iterations', '15', '--warmup', '1', '--statement-cap', '300', '--only', 'q8.save.set.C,q8.save.ids.C']
+check q8.save.set.C: answer 
+check q8.save.ids.C: answer 
+driver ended 2026-11-13T11:28:13+0200 status 0

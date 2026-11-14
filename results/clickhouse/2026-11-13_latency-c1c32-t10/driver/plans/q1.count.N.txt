@@ -1,0 +1,13 @@
+Output: count()
+
+CreatingSets (Create sets before main query execution)
+└──Aggregating
+   │  Keys:
+   │  Aggregates: count()
+   │  Skip merging: 0
+   └──ReadFromMergeTree (xbench.user_profile)
+         Read type: Default
+         Parts: 1 | Granules: 279
+         Output: Empty
+         Prewhere filter
+         Prewhere filter column:  tenant_id = 10 AND snapshot_id = 1 AND country = \'IL\' AND entity_id IN subquery1 AND age <= 54 AND age >= 25 AND consent = 1 AND suspended = 0

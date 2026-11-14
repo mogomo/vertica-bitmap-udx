@@ -1,0 +1,5 @@
+command=bash -c python3\ bench/driver.py\ mixed\ --client\ socket\ --workload\ bench/workloads/vertica.sql\ --var\ tenant=10\ --var\ index=bitmap_live.bitmap_index\ --out\ \$BENCH_RUN_DIR/driver\ --clients\ 32\ --duration\ 300\ --warmup-s\ 30\ --statement-cap\ 300\ --only\ q1.count.Bplus\,q3.Bplus\ --weights\ q1.count.Bplus=4\,q3.Bplus=2\ --expect\ ~/bitmap_record/vertica/2026-11-12_check-headline-t10/driver/check.csv\ --skip-oracles\ --background\ \'bench/live_append.sh\ append\ --tenant=10\'\ --background-at\ 60 
+cwd=~/vertica-bitmap-udx
+start_utc=2026-11-13T11:05:37Z
+end_utc=2026-11-13T11:11:15Z
+exit_status=0

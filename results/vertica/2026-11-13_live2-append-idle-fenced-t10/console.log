@@ -1,0 +1,7 @@
+append: op=batch tenant=10 residue=5 rows=2004540 people=100227 topics=20 chunks=153
+append: op=append engine=vertica tenant=10 rows=2004540 s=0.72 check_set=topic_t106 live=543089 native=543089 equal=yes
+live: op=status projection=batch_tag_super containers=1 rows=2004540 bytes=4011222
+live: op=status projection=bitmap_index containers=3 rows=89811 bytes=395446653
+live: op=status projection=daily_bitmap containers=1 rows=18360 bytes=97217338
+live: op=status projection=event_super containers=1 rows=100000000 bytes=757256499
+live: op=status projection=tag_super containers=3 rows=257633541 bytes=1056215337

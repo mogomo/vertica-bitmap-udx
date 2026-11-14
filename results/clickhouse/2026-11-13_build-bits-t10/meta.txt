@@ -1,0 +1,6 @@
+area=clickhouse run=build-bits-t10 folder=2026-11-13_build-bits-t10 milestone=M5c engine=clickhouse
+duration_s=0.79 exit_status=0 repo_hash=92a8ad21f8cb4443
+engine_cpu_s=2.4 engine_memory_peak_sampled_bytes=0 engine_memory_peak_since_start_bytes=364990464
+client_cpus=20,21 client_cpu20_busy_pct=46.9 client_cpu21_busy_pct=38.8 client_saturated=na_(run_shorter_than_5_s)
+limits_ok=yes
+validity=valid

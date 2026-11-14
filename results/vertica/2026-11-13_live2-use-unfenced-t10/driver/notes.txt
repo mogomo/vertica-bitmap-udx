@@ -1,0 +1,4 @@
+driver run started 2026-11-13T13:05:17+0200 args ['run', '--client', 'socket', '--workload', 'bench/workloads/vertica_ids.sql', '--var', 'tenant=10', '--out', '~/bitmap_record/vertica/2026-11-13_live2-use-unfenced-t10/driver', '--clients', '1,32', '--iterations', '15', '--warmup', '1', '--statement-cap', '300', '--only', 'q8.sum.Bplus,q8.join.Bplus', '--var', 'index=bitmap_live.bitmap_index', '--expect', '~/bitmap_record/vertica/2026-11-13_ids-use-fenced-t10/driver/check.csv', '--skip-oracles']
+check q8.sum.Bplus: answer 530315|2654247326083
+check q8.join.Bplus: answer 530315|519750|28073532
+driver ended 2026-11-13T13:05:28+0200 status 0

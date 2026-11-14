@@ -1,0 +1,6 @@
+area=vertica run=latency-bitmap-c1c32-t20b folder=2026-11-13_latency-bitmap-c1c32-t20b milestone=M5b engine=vertica
+duration_s=5558.56 exit_status=1 repo_hash=26eca3cf5577d46a
+engine_cpu_s=31158.1 engine_memory_peak_sampled_bytes=60129542144 engine_memory_peak_since_start_bytes=60129542144
+client_cpus=20,21 client_cpu20_busy_pct=12.5 client_cpu21_busy_pct=12.2 client_saturated=no
+limits_ok=yes
+validity=invalid: exit status 1

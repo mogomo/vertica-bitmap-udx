@@ -1,0 +1,3 @@
+query,answer,oracle,rows,hash,oracle_hash,matches,error,ms
+q8.join.Bplus,q8.join,,1,cb1834dc5649b3d3,/expect=cb1834dc5649b3d3,yes,,1017.17
+q8.join.Bpin,q8.join,,1,cb1834dc5649b3d3,/expect=cb1834dc5649b3d3,yes,,229.25

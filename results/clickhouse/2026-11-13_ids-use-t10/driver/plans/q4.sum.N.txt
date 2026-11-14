@@ -1,0 +1,12 @@
+Output: count(), sum(device_id)
+
+Aggregating
+│  Keys:
+│  Aggregates: count(), sum(device_id)
+│  Skip merging: 0
+└──ReadFromMergeTree (xbench.device_state)
+      Read type: Default
+      Parts: 1 | Granules: 245
+      Output: device_id
+      Prewhere filter
+      Prewhere filter column:  tenant_id = 10 AND snapshot_id = 1 AND changes_10m > 3 AND temp_tenths >= 800 AND observed_at <= \'2026-11-01 12:00:00\' AND observed_at > \'2026-11-01 11:30:00\' AND zone = \'A\' AND online = 1

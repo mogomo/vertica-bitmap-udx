@@ -1,0 +1,5 @@
+command=bash -c vsql\ -X\ -v\ ON_ERROR_STOP=1\ -e\ -f\ bench/vertica_projection_bychunk.sql 
+cwd=~/vertica-bitmap-udx
+start_utc=2026-11-13T01:18:53Z
+end_utc=2026-11-13T01:19:55Z
+exit_status=0

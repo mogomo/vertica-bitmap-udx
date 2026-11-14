@@ -1,0 +1,15 @@
+query,answer,oracle,rows,hash,oracle_hash,matches,error,ms
+sw.n2.A,sw.n2,yes,1,e3b9712ed0b56dd8,e3b9712ed0b56dd8,yes,,407.66
+sw.n2.Bplus,sw.n2,,1,e3b9712ed0b56dd8,e3b9712ed0b56dd8,yes,,51.75
+sw.n8.A,sw.n8,yes,1,68a050ed30158ca2,68a050ed30158ca2,yes,,626.97
+sw.n8.Bplus,sw.n8,,1,68a050ed30158ca2,68a050ed30158ca2,yes,,91.74
+sw.n32.A,sw.n32,yes,1,f351bd15f2ce7a45,f351bd15f2ce7a45,yes,,1165.27
+sw.n32.Bplus,sw.n32,,1,f351bd15f2ce7a45,f351bd15f2ce7a45,yes,,194.11
+sw.s0.01.A,sw.s0.01,yes,1,6aa04fd93c3dd989,6aa04fd93c3dd989,yes,,506.27
+sw.s0.01.Bplus,sw.s0.01,,1,6aa04fd93c3dd989,6aa04fd93c3dd989,yes,,51.23
+sw.s1.A,sw.s1,yes,1,158d610063fba8e0,158d610063fba8e0,yes,,734.39
+sw.s1.Bplus,sw.s1,,1,158d610063fba8e0,158d610063fba8e0,yes,,50.13
+sw.s10.A,sw.s10,yes,1,198ec19db6871c00,198ec19db6871c00,yes,,490.32
+sw.s10.Bplus,sw.s10,,1,198ec19db6871c00,198ec19db6871c00,yes,,51.70
+sw.s50.A,sw.s50,yes,1,3f53c7e9bfc2e426,3f53c7e9bfc2e426,yes,,535.15
+sw.s50.Bplus,sw.s50,,1,3f53c7e9bfc2e426,3f53c7e9bfc2e426,yes,,53.10

@@ -1,0 +1,5 @@
+command=bash -c python3\ bench/make_sweep.py\ --tenant=10\ --out\ \$BENCH_RUN_DIR/sweep.sql\ \&\&\ python3\ bench/driver.py\ run\ --workload\ \$BENCH_RUN_DIR/sweep.sql\ --out\ \$BENCH_RUN_DIR/driver\ --clients\ 1\,8\,32\ --iterations\ 30\ --min-per-client\ 1\ --warmup\ 1 
+cwd=~/vertica-bitmap-udx
+start_utc=2026-11-12T10:58:16Z
+end_utc=2026-11-12T11:08:19Z
+exit_status=0

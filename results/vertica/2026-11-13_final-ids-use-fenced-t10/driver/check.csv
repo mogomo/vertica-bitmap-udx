@@ -1,0 +1,5 @@
+query,answer,oracle,rows,hash,oracle_hash,matches,error,ms
+q1.ids.sum.Bplus,q1.ids.sum,,1,7b8cb33c0b7faae7,/expect=7b8cb33c0b7faae7,yes,,34.84
+q4.sum.Bplus,q4.sum,,1,c352baac50e874fa,/expect=c352baac50e874fa,yes,,19.25
+q8.sum.Bplus,q8.sum,,1,01cdc8b1596a149a,/expect=01cdc8b1596a149a,yes,,38.56
+q8.join.Bplus,q8.join,,1,af0e074a71c652d7,/expect=af0e074a71c652d7,yes,,147.63

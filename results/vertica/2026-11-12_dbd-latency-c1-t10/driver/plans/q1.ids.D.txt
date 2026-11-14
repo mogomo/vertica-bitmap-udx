@@ -1,0 +1,56 @@
+------------------------------ 
+QUERY PLAN DESCRIPTION: 
+------------------------------
+
+EXPLAIN SELECT p.entity_id
+FROM bitmap_dbd.user_profile p
+WHERE p.tenant_id = 10 AND p.snapshot_id = 1
+  AND p.country = 'IL' AND p.age BETWEEN 25 AND 54
+  AND p.consent IS TRUE AND p.suspended IS FALSE
+  AND EXISTS (
+    SELECT 1 FROM bitmap_dbd.user_interest i
+    WHERE i.tenant_id = p.tenant_id AND i.snapshot_id = p.snapshot_id
+      AND i.entity_id = p.entity_id AND i.topic IN ('sports', 'finance'));
+
+Access Path:
++-JOIN HASH [Semi] [Cost: 36K, Rows: 158K] (PATH ID: 1)
+|  Join Cond: (VAL(1) = p.tenant_id) AND (VAL(1) = p.snapshot_id) AND (VAL(1) = p.entity_id)
+| +-- Outer -> STORAGE ACCESS for p [Cost: 20K, Rows: 317K] (PATH ID: 2)
+| |      Projection: bitmap_dbd.user_profile_DBD_1_rep_vbitmap_dbd
+| |      Materialize: p.tenant_id, p.snapshot_id, p.entity_id
+| |      Filter: (p.tenant_id = 10)
+| |      Filter: (p.country = 'IL')
+| |      Filter: (p.snapshot_id = 1)
+| |      Filter: (p.consent IS TRUE)
+| |      Filter: (p.suspended IS FALSE)
+| |      Filter: ((p.age >= 25) AND (p.age <= 54))
+| |      Runtime Filters: (SIP1(HashJoin): p.tenant_id), (SIP2(HashJoin): p.snapshot_id), (SIP3(HashJoin): p.entity_id), (SIP4(HashJoin): p.tenant_id, p.snapshot_id, p.entity_id)
+| +-- Inner -> SELECT [Cost: 7K, Rows: 3M] (PATH ID: 3)
+| | +---> STORAGE ACCESS for i [Cost: 7K, Rows: 3M] (PATH ID: 4)
+| | |      Projection: bitmap_dbd.user_interest_DBD_2_rep_vbitmap_dbd
+| | |      Materialize: i.tenant_id, i.snapshot_id, i.entity_id
+| | |      Filter: (i.topic = ANY (ARRAY['sports', 'finance']))
+
+
+------------------------------
+----------------------------------------------- 
+PLAN: BASE QUERY PLAN (GraphViz Format)
+----------------------------------------------- 
+digraph G {
+graph [rankdir=BT, label = "BASE QUERY PLAN\nQuery: EXPLAIN SELECT p.entity_id\nFROM bitmap_dbd.user_profile p\nWHERE p.tenant_id = 10 AND p.snapshot_id = 1\n  AND p.country = \'IL\' AND p.age BETWEEN 25 AND 54\n  AND p.consent IS TRUE AND p.suspended IS FALSE\n  AND EXISTS (\n    SELECT 1 FROM bitmap_dbd.user_interest i\n    WHERE i.tenant_id = p.tenant_id AND i.snapshot_id = p.snapshot_id\n      AND i.entity_id = p.entity_id AND i.topic IN (\'sports\', \'finance\'));\n\nAll Nodes Vector: \n\n  node[0]=v_vdb_node0001 (initiator) Up\n", labelloc=t, labeljust=l ordering=out]
+0[label = "Root \nOutBlk=[UncTuple]", color = "green", shape = "house"];
+1[label = "NewEENode \nOutBlk=[UncTuple]", color = "green", shape = "box"];
+2[label = "StorageUnionStep: user_profile_DBD_1_rep_vbitmap_dbd\nUnc: Integer(8)", color = "purple", shape = "box"];
+3[label = "ExprEval: \n  p.entity_id\nUnc: Integer(8)", color = "brown", shape = "box"];
+4[label = "Join: Hash-Join: \n(bitmap_dbd.user_profile x bitmap_dbd.user_interest) using user_profile_DBD_1_rep_vbitmap_dbd and subquery (PATH ID: 1)\n[Semi]\n\nUnc: Integer(8)", color = "brown", shape = "box"];
+5[label = "ScanStep: user_profile_DBD_1_rep_vbitmap_dbd\n(p.tenant_id = 10)\n(p.country = \'IL\')\n(p.snapshot_id = 1)\n(p.consent IS TRUE)\n(p.suspended IS FALSE)\n((p.age \>= 25) AND (p.age \<= 54))\nSIP1(HashJoin): p.tenant_id\nSIP2(HashJoin): p.snapshot_id\nSIP3(HashJoin): p.entity_id\nSIP4(HashJoin): p.tenant_id, p.snapshot_id, p.entity_id\ntenant_id RLE\ncountry RLE (not emitted)\nsnapshot_id RLE\nconsent RLE (not emitted)\nsuspended RLE (not emitted)\nage RLE (not emitted)\nentity_id\nRLE: Integer(8)\nRLE: Integer(8)\nUnc: Integer(8)", color = "brown", shape = "box"];
+6[label = "StorageUnionStep: user_interest_DBD_2_rep_vbitmap_dbd\nRLE: Integer(8)\nRLE: Integer(8)\nUnc: Integer(8)", color = "purple", shape = "box"];
+7[label = "ScanStep: user_interest_DBD_2_rep_vbitmap_dbd\n(i.topic = ANY (ARRAY[\'sports\', \'finance\']))\ntopic RLE (not emitted)\ntenant_id RLE\nsnapshot_id RLE\nentity_id\nRLE: Integer(8)\nRLE: Integer(8)\nUnc: Integer(8)", color = "brown", shape = "box"];
+1->0 [label = "V[0]",color = "black"];
+2->1 [label = "0",color = "blue"];
+3->2 [label = "0",color = "blue"];
+4->3 [label = "0",color = "blue"];
+5->4 [label = "0",color = "blue"];
+6->4 [label = "1",color = "blue"];
+7->6 [label = "0",color = "blue"];
+}

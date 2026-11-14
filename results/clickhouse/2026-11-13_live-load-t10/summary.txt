@@ -1,0 +1,12 @@
+ch: op=live-load tenant=10 rows=253628541 load_s=21.14 optimize_s=3.46 sets=547
+storage: engine=clickhouse table=daily_bitmap rows=120 bytes_on_disk=97691440 compressed_bytes=97689811 uncompressed_bytes=104248581 parts=1
+storage: engine=clickhouse table=device_bitmap rows=24 bytes_on_disk=4787732 compressed_bytes=4786556 uncompressed_bytes=4821161 parts=1
+storage: engine=clickhouse table=device_state rows=2000000 bytes_on_disk=27836090 compressed_bytes=27819496 uncompressed_bytes=58004714 parts=1
+storage: engine=clickhouse table=event_log rows=100000000 bytes_on_disk=993735096 compressed_bytes=993513407 uncompressed_bytes=2100301637 parts=1
+storage: engine=clickhouse table=live_bitmap rows=547 bytes_on_disk=392179461 compressed_bytes=392176114 uncompressed_bytes=401509309 parts=1
+storage: engine=clickhouse table=person_bitmap rows=547 bytes_on_disk=392182695 compressed_bytes=392179579 uncompressed_bytes=401509644 parts=1
+storage: engine=clickhouse table=saved_ids rows=9015355 bytes_on_disk=7038915 compressed_bytes=7021051 uncompressed_bytes=45097027 parts=3
+storage: engine=clickhouse table=saved_set rows=17 bytes_on_disk=18125937 compressed_bytes=18123337 uncompressed_bytes=18051919 parts=5
+storage: engine=clickhouse table=tag rows=253628541 bytes_on_disk=1030157321 compressed_bytes=1029788008 uncompressed_bytes=3407298616 parts=1
+storage: engine=clickhouse table=user_interest rows=200000000 bytes_on_disk=812406271 compressed_bytes=812109542 uncompressed_bytes=2692818737 parts=1
+storage: engine=clickhouse table=user_profile rows=10000000 bytes_on_disk=79205501 compressed_bytes=79173889 uncompressed_bytes=220019674 parts=1

@@ -1,0 +1,5 @@
+query,answer,oracle,rows,hash,oracle_hash,matches,error,ms
+q2.daily.A,q2.daily,yes,2,ce7279e17bf8b689,ce7279e17bf8b689,yes,,195.44
+q2.daily.B,q2.daily,,2,ce7279e17bf8b689,ce7279e17bf8b689,yes,,28.28
+q4.A,q4,yes,19695,418fbbab9d532966,418fbbab9d532966,yes,,70.97
+q4.Bplus,q4,,19695,418fbbab9d532966,418fbbab9d532966,yes,,30.34

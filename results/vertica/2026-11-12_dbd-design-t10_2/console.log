@@ -1,0 +1,16 @@
+dbd-workload: native_queries=15 schema=bitmap_dbd workload=~/bitmap_record/vertica/2026-11-12_dbd-design-t10_2/dbd_workload.sql design_queries=~/bitmap_record/vertica/2026-11-12_dbd-design-t10_2/dbd_queries.sql
+dbd: op=design step=tables added=6
+dbd: op=design step=queries Number of accepted queries =15
+dbd: op=design step=queries  Number of queries referencing non-design tables =0
+dbd: op=design step=queries  Number of unsupported queries =0
+dbd: op=design step=queries  Number of illegal queries =0
+dbd: op=design step=queries 
+dbd: op=design step=queries accepted=15 listed=~/bitmap_record/vertica/2026-11-12_dbd-design-t10_2/dbd/design_queries.txt
+dbd: op=design populate_deploy_s=43.02 statistics_s=1.37 total_s=45.38 deployed=12 design_sql=~/bitmap_record/vertica/2026-11-12_dbd-design-t10_2/dbd/design.sql deploy_sql=~/bitmap_record/vertica/2026-11-12_dbd-design-t10_2/dbd/deploy.sql
+storage: table=asset_source projection=asset_source_DBD_6_rep_vbitmap_dbd rows=10001085 used_bytes=8173092
+storage: table=asset_state projection=asset_state_DBD_5_rep_vbitmap_dbd rows=5000000 used_bytes=15491991
+storage: table=device_state projection=device_state_DBD_4_rep_vbitmap_dbd rows=2000000 used_bytes=10621777
+storage: table=event_log projection=event_log_DBD_3_rep_vbitmap_dbd rows=100000000 used_bytes=693030665
+storage: table=user_interest projection=user_interest_DBD_2_rep_vbitmap_dbd rows=200000000 used_bytes=160109076
+storage: table=user_profile projection=user_profile_DBD_1_rep_vbitmap_dbd rows=10000000 used_bytes=18739032
+dbd: op=storage schema=bitmap_dbd projections=6 used_bytes=906165633

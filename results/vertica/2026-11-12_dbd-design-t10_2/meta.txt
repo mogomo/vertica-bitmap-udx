@@ -1,0 +1,6 @@
+area=vertica run=dbd-design-t10 folder=2026-11-12_dbd-design-t10_2 milestone=M5a engine=vertica
+duration_s=45.59 exit_status=0 repo_hash=05fe868f6384414d
+engine_cpu_s=240.8 engine_memory_peak_sampled_bytes=10794135552 engine_memory_peak_since_start_bytes=10865176576
+client_cpus=20,21 client_cpu20_busy_pct=2.4 client_cpu21_busy_pct=2.1 client_saturated=no
+limits_ok=yes
+validity=valid

@@ -1,0 +1,5 @@
+check: query=q8.save.set.Bplus answer=q8.save.set rows=0 hash=e3b0c44298fc1c14 matches=yes ms=55.8
+check: query=q8.save.ids.Bplus answer=q8.save.ids rows=0 hash=e3b0c44298fc1c14 matches=yes ms=59.9
+bench: query=q8.save.set.Bplus clients=1 n=15 p50_ms=50.86 p95_ms=56.89 p99_ms=61.45 mean_ms=51.32 engine_p50_ms=45.0 qps=18.17 errors=0 mismatches=0
+bench: query=q8.save.ids.Bplus clients=1 n=15 p50_ms=72.09 p95_ms=83.42 p99_ms=85.87 mean_ms=72.80 engine_p50_ms=66.0 qps=12.81 errors=0 mismatches=0
+summary: mode=run engine=vertica queries=2 levels=1 check_ok=yes errors=0 mismatches=0 valid=yes

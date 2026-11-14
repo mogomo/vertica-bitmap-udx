@@ -1,0 +1,8 @@
+ch: op=build tenant=10 snapshot=2 source_snapshot=1 person_s=10.66 person_sets=547 daily_s=1.32 daily_sets=120 device_s=- device_sets=0 total_s=12.04
+storage: engine=clickhouse table=daily_bitmap rows=240 bytes_on_disk=195382880 compressed_bytes=195379622 uncompressed_bytes=208497162 parts=2
+storage: engine=clickhouse table=device_bitmap rows=24 bytes_on_disk=4787732 compressed_bytes=4786556 uncompressed_bytes=4821161 parts=1
+storage: engine=clickhouse table=device_state rows=2000000 bytes_on_disk=27836090 compressed_bytes=27819496 uncompressed_bytes=58004714 parts=1
+storage: engine=clickhouse table=event_log rows=100000000 bytes_on_disk=993735096 compressed_bytes=993513407 uncompressed_bytes=2100301637 parts=1
+storage: engine=clickhouse table=person_bitmap rows=1094 bytes_on_disk=784365393 compressed_bytes=784359158 uncompressed_bytes=803019288 parts=2
+storage: engine=clickhouse table=user_interest rows=200000000 bytes_on_disk=812406271 compressed_bytes=812109542 uncompressed_bytes=2692818737 parts=1
+storage: engine=clickhouse table=user_profile rows=10000000 bytes_on_disk=79205501 compressed_bytes=79173889 uncompressed_bytes=220019674 parts=1

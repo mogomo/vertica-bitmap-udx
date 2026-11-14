@@ -1,0 +1,7 @@
+live: op=projections projection=bitmap_index type=UDT up_to_date=t
+live: op=projections projection=daily_bitmap type=UDT up_to_date=t
+live: op=projections create_s=0.05 refresh_s=61.71
+live: op=status projection=bitmap_index containers=1 rows=83691 bytes=395022503
+live: op=status projection=daily_bitmap containers=1 rows=18360 bytes=97217338
+live: op=status projection=event_super containers=1 rows=100000000 bytes=756670215
+live: op=status projection=tag_super containers=1 rows=253628541 bytes=527009825

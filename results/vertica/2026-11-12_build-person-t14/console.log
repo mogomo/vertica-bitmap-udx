@@ -1,0 +1,14 @@
+snapshot 1 of tenant 14 domain person: building from source snapshot 1 at 2026-11-01 00:00:00
+  built in 74.3 s
+validate snapshot 1 of tenant 14 domain person (source snapshot 1, watermark 2026-11-01 00:00:00, state building)
+  ok    families complete: age_band,consent,country,suspended,topic,universe,daily
+  ok    one row per index key
+  ok    every name in exactly one certified family
+  ok    predicate list = index (family, chunks, cardinality, bytes)
+  ok    chunk width 16 in every payload header
+  ok    cardinality of every (predicate, chunk) = native SQL
+  ok    one row per daily key
+  ok    cardinality of every (day, channel, chunk) = native SQL
+snapshot 1 of tenant 14 domain person: verified (547 predicates, 83691 index rows, 403389407 bytes; daily: 18360 rows, 104539704 bytes)
+snapshot 1 of tenant 14 domain person: active
+snapshot: op=build tenant=14 domain=person snapshot=1 chunk_bits=16 deep=no validate=full build_s=74.33 validate_s=45.31 publish_s=0.04 total_s=119.68 predicates=547 index_rows=83691 index_bytes=403389407 daily_rows=18360 daily_bytes=104539704

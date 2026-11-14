@@ -1,0 +1,26 @@
+check: query=q1.count.A answer=q1.count rows=1 hash=b4498cf506a5f79c matches=yes ms=9960.1
+check: query=q1.count.Bplus answer=q1.count rows=1 hash=b4498cf506a5f79c matches=yes ms=109.1
+check: query=q2.daily.A answer=q2.daily rows=2 hash=ce7279e17bf8b689 matches=yes ms=176.0
+check: query=q2.daily.B answer=q2.daily rows=2 hash=ce7279e17bf8b689 matches=yes ms=23.9
+check: query=q3.A answer=q3 rows=500 hash=1a17b1531950cc32 matches=yes ms=10717.5
+check: query=q3.Bplus answer=q3 rows=500 hash=1a17b1531950cc32 matches=yes ms=1445.5
+check: query=q4.A answer=q4 rows=19695 hash=418fbbab9d532966 matches=yes ms=62.6
+check: query=q4.Bplus answer=q4 rows=19695 hash=418fbbab9d532966 matches=yes ms=26.8
+check: query=q7.A answer=q7 rows=499 hash=8d89f06ae62b8c25 matches=yes ms=50469.6
+check: query=q7.Bplus answer=q7 rows=499 hash=8d89f06ae62b8c25 matches=yes ms=932.8
+check: query=q8.A answer=q8 rows=530315 hash=384c2a5fd45796b7 matches=yes ms=34275.9
+check: query=q8.Bplus answer=q8 rows=530315 hash=384c2a5fd45796b7 matches=yes ms=113.0
+bench: mixed query=q1.count.Bplus clients=32 n=688 p50_ms=118.60 p95_ms=288.63 p99_ms=463.48 qps=1.15
+bench: mixed query=q1.count.Bplus during_background=yes clients=32 n=4809 p50_ms=216.37 p95_ms=876.51 p99_ms=1323.05 qps=8.02
+bench: mixed query=q2.daily.B clients=32 n=335 p50_ms=83.19 p95_ms=269.07 p99_ms=357.09 qps=0.56
+bench: mixed query=q2.daily.B during_background=yes clients=32 n=2401 p50_ms=188.43 p95_ms=875.10 p99_ms=1218.35 qps=4.00
+bench: mixed query=q3.Bplus clients=32 n=282 p50_ms=2111.76 p95_ms=3001.48 p99_ms=3117.96 qps=0.47
+bench: mixed query=q3.Bplus during_background=yes clients=32 n=2435 p50_ms=2738.47 p95_ms=3978.62 p99_ms=5104.78 qps=4.06
+bench: mixed query=q4.Bplus clients=32 n=155 p50_ms=160.70 p95_ms=401.92 p99_ms=500.51 qps=0.26
+bench: mixed query=q4.Bplus during_background=yes clients=32 n=1263 p50_ms=246.44 p95_ms=864.36 p99_ms=1152.24 qps=2.10
+bench: mixed query=q7.Bplus clients=32 n=149 p50_ms=2128.16 p95_ms=2947.16 p99_ms=3106.66 qps=0.25
+bench: mixed query=q7.Bplus during_background=yes clients=32 n=1246 p50_ms=2828.44 p95_ms=4079.89 p99_ms=5821.84 qps=2.08
+bench: mixed query=q8.Bplus clients=32 n=148 p50_ms=2844.38 p95_ms=4000.33 p99_ms=4402.55 qps=0.25
+bench: mixed query=q8.Bplus during_background=yes clients=32 n=1176 p50_ms=1808.68 p95_ms=3989.37 p99_ms=5265.04 qps=1.96
+background: status=0 start_s=60.150 end_s=641.649 duration_s=581.499
+summary: mode=mixed engine=vertica queries=12 levels=32 check_ok=yes errors=0 mismatches=0 valid=yes

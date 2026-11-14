@@ -1,0 +1,6 @@
+area=vertica run=dbd-copy-t10 folder=2026-11-12_dbd-copy-t10_3 milestone=M5a engine=vertica
+duration_s=21.54 exit_status=0 repo_hash=05fe868f6384414d
+engine_cpu_s=64.2 engine_memory_peak_sampled_bytes=5391454208 engine_memory_peak_since_start_bytes=10762948608
+client_cpus=20,21 client_cpu20_busy_pct=2.1 client_cpu21_busy_pct=2.2 client_saturated=no
+limits_ok=yes
+validity=valid

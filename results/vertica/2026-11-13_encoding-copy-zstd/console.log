@@ -1,0 +1,15 @@
+NOTICE 4214:  Object "bitmap_enc" already exists; nothing was done
+Refresh completed with the following outcomes:
+Projection Name: [Anchor Table] [Status] [Refresh Method] [Error Count] [Duration (sec)]
+----------------------------------------------------------------------------------------
+
+summary: step=insert_index_zstd_two_projections seconds=52.93
+summary: step=insert_daily_zstd_one_projection seconds=6.10
+summary: projection=daily_zstd_super payload_encoding=ZSTD_FAST_COMP up_to_date=t
+summary: projection=index_zstd_by_chunk payload_encoding=ZSTD_FAST_COMP up_to_date=t
+summary: projection=index_zstd_super payload_encoding=ZSTD_FAST_COMP up_to_date=t
+summary: stored_projection=daily_zstd_super containers=1 rows=201480 mb=786.3
+summary: stored_projection=index_zstd_by_chunk containers=1 rows=947032 mb=4490.8
+summary: stored_projection=index_zstd_super containers=1 rows=947032 mb=4327.5
+summary: table=index_zstd copy_rows=947032 source_rows=947032 same_content=t
+summary: table=daily_zstd copy_rows=201480 source_rows=201480 same_content=t

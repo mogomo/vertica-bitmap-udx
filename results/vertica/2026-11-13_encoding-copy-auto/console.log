@@ -1,0 +1,15 @@
+NOTICE 4214:  Object "bitmap_enc" already exists; nothing was done
+Refresh completed with the following outcomes:
+Projection Name: [Anchor Table] [Status] [Refresh Method] [Error Count] [Duration (sec)]
+----------------------------------------------------------------------------------------
+
+summary: step=insert_index_auto_two_projections seconds=70.55
+summary: step=insert_daily_auto_one_projection seconds=16.07
+summary: projection=daily_auto_super payload_encoding=AUTO up_to_date=t
+summary: projection=index_auto_by_chunk payload_encoding=AUTO up_to_date=t
+summary: projection=index_auto_super payload_encoding=AUTO up_to_date=t
+summary: stored_projection=daily_auto_super containers=1 rows=201480 mb=1067.6
+summary: stored_projection=index_auto_by_chunk containers=1 rows=947032 mb=4526.4
+summary: stored_projection=index_auto_super containers=1 rows=947032 mb=4515.1
+summary: table=index_auto copy_rows=947032 source_rows=947032 same_content=t
+summary: table=daily_auto copy_rows=201480 source_rows=201480 same_content=t

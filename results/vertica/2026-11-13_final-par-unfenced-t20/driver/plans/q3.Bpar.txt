@@ -1,0 +1,87 @@
+------------------------------ 
+QUERY PLAN DESCRIPTION: 
+------------------------------
+
+EXPLAIN SELECT name AS predicate, SUM(cnt) AS users
+FROM (
+  SELECT vbitmap.bm_pair_count(f.predicate, a.payload, f.payload) OVER (PARTITION BEST)
+  FROM bitmap_demo.bitmap_index f
+  JOIN (SELECT chunk_id, payload FROM (
+          SELECT vbitmap.bm_eval(chunk_id, predicate, payload USING PARAMETERS expr =
+                   'country_IL & age_25_54 & consent_true & suspended_false & (topic_sports | topic_finance)')
+                 OVER (PARTITION BY chunk_id)
+          FROM bitmap_demo.bitmap_index
+          WHERE tenant_id = 20 AND snapshot_id = 1 AND domain = 'person'
+            AND predicate IN ('country_IL', 'age_25_54', 'consent_true', 'suspended_false', 'topic_sports', 'topic_finance')) e) a
+    ON a.chunk_id = f.chunk_id
+  WHERE f.tenant_id = 20 AND f.snapshot_id = 1 AND f.domain = 'person' AND f.predicate LIKE 'topic\_%'
+) t
+GROUP BY name
+
+Access Path:
++-GROUPBY HASH (LOCAL RESEGMENT GROUPS) [Cost: 2M, Rows: 1] (PATH ID: 1)
+|  Aggregates: sum(t.cnt)
+|  Group By: t.name
+| +---> ANALYTICAL [Cost: 2M, Rows: 600K] (PATH ID: 3)
+| |      Analytic Group
+| |       Functions: bm_pair_count()
+| | +---> JOIN HASH [Cost: 1M, Rows: 600K] (PATH ID: 4)
+| | |      Join Cond: (e.chunk_id = f.chunk_id)
+| | |      Materialize at Output: f.predicate, f.payload
+| | | +-- Outer -> STORAGE ACCESS for f [Cost: 11K, Rows: 600K] (PATH ID: 5)
+| | | |      Projection: bitmap_demo.bitmap_index_by_chunk
+| | | |      Materialize: f.chunk_id
+| | | |      Filter: (f.tenant_id = 20)
+| | | |      Filter: (f.snapshot_id = 1)
+| | | |      Filter: (f.domain = 'person')
+| | | |      Filter: (f.predicate ~~ E'topic\\_%')
+| | | |      Runtime Filter: (SIP1(HashJoin): f.chunk_id)
+| | | +-- Inner -> SELECT [Cost: 371K, Rows: 19K] (PATH ID: 6)
+| | | | +---> ANALYTICAL [Cost: 371K, Rows: 19K] (PATH ID: 7)
+| | | | |      Analytic Group
+| | | | |       Functions: bm_eval()
+| | | | | +---> STORAGE ACCESS for bitmap_index [Cost: 325K, Rows: 19K] (PATH ID: 8)
+| | | | | |      Projection: bitmap_demo.bitmap_index_by_chunk
+| | | | | |      Materialize: bitmap_index.predicate, bitmap_index.chunk_id, bitmap_index.payload
+| | | | | |      Filter: (bitmap_index.tenant_id = 20)
+| | | | | |      Filter: (bitmap_index.snapshot_id = 1)
+| | | | | |      Filter: (bitmap_index.domain = 'person')
+| | | | | |      Filter: (bitmap_index.predicate = ANY (ARRAY['country_IL', 'age_25_54', 'consent_true', 'suspended_false', 'topic_sports', 'topic_finance']))
+
+
+------------------------------
+----------------------------------------------- 
+PLAN: BASE QUERY PLAN (GraphViz Format)
+----------------------------------------------- 
+digraph G {
+graph [rankdir=BT, label = "BASE QUERY PLAN\nQuery: EXPLAIN SELECT name AS predicate, SUM(cnt) AS users\nFROM (\n  SELECT vbitmap.bm_pair_count(f.predicate, a.payload, f.payload) OVER (PARTITION BEST)\n  FROM bitmap_demo.bitmap_index f\n  JOIN (SELECT chunk_id, payload FROM (\n          SELECT vbitmap.bm_eval(chunk_id, predicate, payload USING PARAMETERS expr =\n                   \'country_IL & age_25_54 & consent_true & suspended_false & (topic_sports | topic_finance)\')\n                 OVER (PARTITION BY chunk_id)\n          FROM bitmap_demo.bitmap_index\n          WHERE tenant_id = 20 AND snapshot_id = 1 AND domain = \'person\'\n            AND predicate IN (\'country_IL\', \'age_25_54\', \'consent_true\', \'suspended_false\', \'topic_sports\', \'topic_finance\')) e) a\n    ON a.chunk_id = f.chunk_id\n  WHERE f.tenant_id = 20 AND f.snapshot_id = 1 AND f.domain = \'person\' AND f.predicate LIKE \'topic\_%\'\n) t\nGROUP BY name\n\nAll Nodes Vector: \n\n  node[0]=v_vdb_node0001 (initiator) Up\n", labelloc=t, labeljust=l ordering=out]
+0[label = "Root \nOutBlk=[UncTuple(2)]", color = "green", shape = "house"];
+1[label = "NewEENode \nOutBlk=[UncTuple(2)]", color = "green", shape = "box"];
+2[label = "ParallelUnionStep: \nCombine\nUnc: Varchar(80)\nUnc: Integer(8)", color = "green", shape = "box"];
+3[label = "GroupByHash(Spill): 1 keys\nAggs:\n  sum(t.cnt)\nUnc: Varchar(80)\nUnc: Integer(8)", color = "green", shape = "box"];
+4[label = "ParallelUnionStep: \nLocally Resegment\nUnc: Varchar(80)\nUnc: Integer(8)", color = "green", shape = "box"];
+5[label = "ParallelUnionStep: \nCombine\nUnc: Varchar(80)\nUnc: Integer(8)", color = "green", shape = "box"];
+6[label = "UserDefined:\nPartitionBy:<NONE>\nOrderBy:<NONE>\nAnalytical Functions:\n  vbitmap.bm_pair_count(f.predicate, e.payload, f.payload)\nUnc: Varchar(80)\nUnc: Integer(8)", color = "green", shape = "box"];
+7[label = "ParallelUnionStep: \nRound Robin\nUnc: Varchar(80)\nUnc: Varbinary(16384)\nUnc: Varbinary(16384)", color = "green", shape = "box"];
+8[label = "StorageUnionStep: bitmap_index_by_chunk\nRound Robin\nUnc: Varchar(80)\nUnc: Varbinary(16384)\nUnc: Varbinary(16384)", color = "purple", shape = "box"];
+9[label = "Join: Hash-Join: \n(bitmap_demo.bitmap_index x bitmap_demo.bitmap_index) using bitmap_index_by_chunk and subquery (PATH ID: 4)\n\nUnc: Varchar(80)\nUnc: Varbinary(16384)\nUnc: Varbinary(16384)", color = "brown", shape = "box"];
+10[label = "ScanStep: bitmap_index_by_chunk\n(f.tenant_id = 20)\n(f.snapshot_id = 1)\n(f.domain = \'person\')\n(f.predicate ~~ E\'topic\\_%\')\nSIP1(HashJoin): f.chunk_id\ntenant_id (not emitted)\nsnapshot_id (not emitted)\ndomain (not emitted)\nchunk_id\npredicate (not emitted)\nUnc: Integer(8)", color = "brown", shape = "box"];
+11[label = "ExprEval: \n  \<SVAR\>\n  \<SVAR\>\nUnc: Integer(8)\nUnc: Varbinary(16384)", color = "green", shape = "box"];
+12[label = "UserDefined:\nPartitionBy: chunk_id\nOrderBy:<NONE>\nAnalytical Functions:\n  vbitmap.bm_eval(bitmap_index.chunk_id, bitmap_index.predicate, bitmap_index.payload USING PARAMETERS expr=\'country_IL & age_25_54 & consent_true & suspended_false & (topic_sports | topic_finance)\')\nUnc: Integer(8)\nUnc: Integer(8)\nUnc: Varbinary(16384)", color = "green", shape = "box"];
+13[label = "StorageMergeStep[ee5]: bitmap_index_by_chunk; 2 sorted\nUnc: Integer(8)\nUnc: Varchar(80)\nUnc: Varbinary(16384)", color = "purple", shape = "box"];
+14[label = "ScanStep: bitmap_index_by_chunk\n(bitmap_index.tenant_id = 20)\n(bitmap_index.snapshot_id = 1)\n(bitmap_index.domain = \'person\')\n(bitmap_index.predicate = ANY (ARRAY[\'country_IL\', \'age_25_54\', \'consent_true\', \'suspended_false\', \'topic_sports\', \'topic_finance\']))\ntenant_id (not emitted)\nsnapshot_id (not emitted)\ndomain (not emitted)\nchunk_id\npredicate\npayload\nUnc: Integer(8)\nUnc: Varchar(80)\nUnc: Varbinary(16384)", color = "brown", shape = "box"];
+1->0 [label = "V[0] C=2",color = "black",style="bold", arrowtail="inv"];
+2->1 [label = "0",color = "blue"];
+3->2 [label = "0",color = "blue"];
+4->3 [label = "0",color = "blue"];
+5->4 [label = "0",color = "blue"];
+6->5 [label = "0",color = "blue"];
+7->6 [label = "0",color = "blue"];
+8->7 [label = "0",color = "blue"];
+9->8 [label = "0",color = "blue"];
+10->9 [label = "0",color = "blue"];
+11->9 [label = "1",color = "blue"];
+12->11 [label = "0",color = "blue"];
+13->12 [label = "0",color = "blue"];
+14->13 [label = "0",color = "blue"];
+}

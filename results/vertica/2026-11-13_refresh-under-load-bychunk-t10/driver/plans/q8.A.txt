@@ -1,0 +1,67 @@
+------------------------------ 
+QUERY PLAN DESCRIPTION: 
+------------------------------
+
+EXPLAIN SELECT p.entity_id
+FROM bitmap_demo.user_profile p
+WHERE p.tenant_id = 10 AND p.snapshot_id = 1 AND p.country = 'IL'
+  AND EXISTS (SELECT 1 FROM bitmap_demo.user_interest i
+              WHERE i.tenant_id = p.tenant_id AND i.snapshot_id = p.snapshot_id
+                AND i.entity_id = p.entity_id AND i.topic = 'sports')
+  AND NOT EXISTS (SELECT 1 FROM bitmap_demo.user_interest i
+                  WHERE i.tenant_id = p.tenant_id AND i.snapshot_id = p.snapshot_id
+                    AND i.entity_id = p.entity_id AND i.topic = 'finance');
+
+Access Path:
++-JOIN MERGEJOIN(inputs presorted) [Anti] [Cost: 12M, Rows: 175K] (PATH ID: 1)
+|  Join Cond: (VAL(1) = p.tenant_id) AND (VAL(1) = p.snapshot_id) AND (VAL(1) = p.entity_id)
+|  Materialize at Input: p.tenant_id, p.snapshot_id, p.entity_id
+| +-- Outer -> JOIN MERGEJOIN(inputs presorted) [Semi] [Cost: 6M, Rows: 350K] (PATH ID: 2)
+| |      Join Cond: (VAL(1) = p.tenant_id) AND (VAL(1) = p.snapshot_id) AND (VAL(1) = p.entity_id)
+| | +-- Outer -> STORAGE ACCESS for p [Cost: 28K, Rows: 700K] (PATH ID: 3)
+| | |      Projection: bitmap_demo.user_profile_super
+| | |      Materialize: p.tenant_id, p.snapshot_id, p.entity_id
+| | |      Filter: (p.tenant_id = 10)
+| | |      Filter: (p.snapshot_id = 1)
+| | |      Filter: (p.country = 'IL')
+| | |      Runtime Filters: (SIP1(MergeJoin): p.tenant_id), (SIP2(MergeJoin): p.snapshot_id), (SIP3(MergeJoin): p.entity_id), (SIP4(MergeJoin): p.tenant_id, p.snapshot_id, p.entity_id)
+| | +-- Inner -> SELECT [Cost: 6M, Rows: 34M] (PATH ID: 4)
+| | | +---> STORAGE ACCESS for i [Cost: 6M, Rows: 34M] (PATH ID: 5)
+| | | |      Projection: bitmap_demo.user_interest_super
+| | | |      Materialize: i.tenant_id, i.snapshot_id, i.entity_id
+| | | |      Filter: (i.topic = 'sports')
+| +-- Inner -> SELECT [Cost: 6M, Rows: 34M] (PATH ID: 6)
+| | +---> STORAGE ACCESS for i [Cost: 6M, Rows: 34M] (PATH ID: 7)
+| | |      Projection: bitmap_demo.user_interest_super
+| | |      Materialize: i.tenant_id, i.snapshot_id, i.entity_id
+| | |      Filter: (i.topic = 'finance')
+
+
+------------------------------
+----------------------------------------------- 
+PLAN: BASE QUERY PLAN (GraphViz Format)
+----------------------------------------------- 
+digraph G {
+graph [rankdir=BT, label = "BASE QUERY PLAN\nQuery: EXPLAIN SELECT p.entity_id\nFROM bitmap_demo.user_profile p\nWHERE p.tenant_id = 10 AND p.snapshot_id = 1 AND p.country = \'IL\'\n  AND EXISTS (SELECT 1 FROM bitmap_demo.user_interest i\n              WHERE i.tenant_id = p.tenant_id AND i.snapshot_id = p.snapshot_id\n                AND i.entity_id = p.entity_id AND i.topic = \'sports\')\n  AND NOT EXISTS (SELECT 1 FROM bitmap_demo.user_interest i\n                  WHERE i.tenant_id = p.tenant_id AND i.snapshot_id = p.snapshot_id\n                    AND i.entity_id = p.entity_id AND i.topic = \'finance\');\n\nAll Nodes Vector: \n\n  node[0]=v_vdb_node0001 (initiator) Up\n", labelloc=t, labeljust=l ordering=out]
+0[label = "Root \nOutBlk=[UncTuple]", color = "green", shape = "house"];
+1[label = "NewEENode \nOutBlk=[UncTuple]", color = "green", shape = "box"];
+2[label = "StorageUnionStep: user_profile_super\nUnc: Integer(8)", color = "purple", shape = "box"];
+3[label = "ExprEval: \n  p.entity_id\nUnc: Integer(8)", color = "brown", shape = "box"];
+4[label = "Join: Merge-Join: \n(bitmap_demo.user_profile x bitmap_demo.user_interest) using previous join and subquery (PATH ID: 1)\n[Anti]\n\nUnc: Integer(8)", color = "brown", shape = "box"];
+5[label = "Join: Merge-Join: \n(bitmap_demo.user_profile x bitmap_demo.user_interest) using user_profile_super and subquery (PATH ID: 2)\n[Semi]\n\nUnc: Integer(8)\nUnc: Integer(8)\nUnc: Integer(8)", color = "brown", shape = "box"];
+6[label = "ScanStep: user_profile_super\n(p.tenant_id = 10)\n(p.snapshot_id = 1)\n(p.country = \'IL\')\nSIP1(MergeJoin): p.tenant_id\nSIP2(MergeJoin): p.snapshot_id\nSIP3(MergeJoin): p.entity_id\nSIP4(MergeJoin): p.tenant_id, p.snapshot_id, p.entity_id\ntenant_id\nsnapshot_id\nentity_id\ncountry (not emitted)\nUnc: Integer(8)\nUnc: Integer(8)\nUnc: Integer(8)", color = "brown", shape = "box"];
+7[label = "StorageMergeStep[ee5]: user_interest_super; 3 sorted\nUnc: Integer(8)\nUnc: Integer(8)\nUnc: Integer(8)", color = "purple", shape = "box"];
+8[label = "ScanStep: user_interest_super\n(i.topic = \'sports\')\ntenant_id\nsnapshot_id\ntopic (not emitted)\nentity_id\nUnc: Integer(8)\nUnc: Integer(8)\nUnc: Integer(8)", color = "brown", shape = "box"];
+9[label = "StorageMergeStep[ee5]: user_interest_super; 3 sorted\nUnc: Integer(8)\nUnc: Integer(8)\nUnc: Integer(8)", color = "purple", shape = "box"];
+10[label = "ScanStep: user_interest_super\n(i.topic = \'finance\')\ntenant_id\nsnapshot_id\ntopic (not emitted)\nentity_id\nUnc: Integer(8)\nUnc: Integer(8)\nUnc: Integer(8)", color = "brown", shape = "box"];
+1->0 [label = "V[0]",color = "black"];
+2->1 [label = "0",color = "blue"];
+3->2 [label = "0",color = "blue"];
+4->3 [label = "0",color = "blue"];
+5->4 [label = "0",color = "blue"];
+6->5 [label = "0",color = "blue"];
+7->5 [label = "1",color = "blue"];
+8->7 [label = "0",color = "blue"];
+9->4 [label = "1",color = "blue"];
+10->9 [label = "0",color = "blue"];
+}

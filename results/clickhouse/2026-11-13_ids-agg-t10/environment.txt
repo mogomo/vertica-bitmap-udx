@@ -1,0 +1,9 @@
+kernel=7.0.0-34-generic machine=x86_64
+os=Ubuntu 26.04.1 LTS
+cpu=Intel(R) Core(TM) Ultra 7 165H logical_cpus=22
+memory_total_kb=63964068 swap_total_kb=8388604
+cpu0=powersave/4700000 cpu1=powersave/5000000 cpu10=powersave/4700000 cpu11=powersave/4700000 cpu12=powersave/3800000 cpu13=powersave/3800000 cpu14=powersave/3800000 cpu15=powersave/3800000 cpu16=powersave/3800000 cpu17=powersave/3800000 cpu18=powersave/3800000 cpu19=powersave/3800000 cpu2=powersave/5000000 cpu20=powersave/2500000 cpu21=powersave/2500000 cpu3=powersave/5000000 cpu4=powersave/5000000 cpu5=powersave/4700000 cpu6=powersave/4700000 cpu7=powersave/4700000 cpu8=powersave/4700000 cpu9=powersave/4700000 
+load_before=5.74 4.80 3.00
+python=3.14.4 bash=5.3.9(1)-release
+clickhouse_binary=ClickHouse local version 26.8.36.3 (official build).
+clickhouse=26.8.36.3 max_threads=20

@@ -1,0 +1,33 @@
+<?xml version="1.0"?>
+<!-- Server configuration of the benchmark's ClickHouse instance. server.sh replaces @CH_HOME@ and
+     writes the result to @CH_HOME@/config/config.xml. Loopback only, no password (local benchmark).
+     Limits (memory, threads) are added by bench/limits.sh as config.d / users.d files. -->
+<clickhouse>
+    <logger>
+        <level>warning</level>
+        <log>@CH_HOME@/log/server.log</log>
+        <errorlog>@CH_HOME@/log/error.log</errorlog>
+        <size>100M</size>
+        <count>3</count>
+    </logger>
+    <listen_host>::1</listen_host>
+    <http_port>8123</http_port>
+    <tcp_port>9000</tcp_port>
+    <timezone>UTC</timezone>
+    <!-- the driver keeps one HTTP connection per client; idle ones must not be closed between blocks -->
+    <keep_alive_timeout>3600</keep_alive_timeout>
+    <path>@CH_HOME@/data/</path>
+    <tmp_path>@CH_HOME@/tmp/</tmp_path>
+    <user_files_path>@CH_HOME@/user_files/</user_files_path>
+    <user_directories>
+        <users_xml><path>users.xml</path></users_xml>
+    </user_directories>
+    <default_profile>default</default_profile>
+    <default_database>default</default_database>
+    <!-- engine times for the driver (query_start_time_microseconds, query_duration_ms) -->
+    <query_log>
+        <database>system</database>
+        <table>query_log</table>
+        <flush_interval_milliseconds>1000</flush_interval_milliseconds>
+    </query_log>
+</clickhouse>

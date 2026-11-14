@@ -1,0 +1,1 @@
+summary: table=bitmap_index_parts rows=83691 containers=16 bytes=395020820

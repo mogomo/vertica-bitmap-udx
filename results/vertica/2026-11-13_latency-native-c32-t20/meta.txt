@@ -1,0 +1,6 @@
+area=vertica run=latency-native-c32-t20 folder=2026-11-13_latency-native-c32-t20 milestone=M5b engine=vertica
+duration_s=923.93 exit_status=0 repo_hash=82096cc9e0fea3dd
+engine_cpu_s=13972.7 engine_memory_peak_sampled_bytes=39793123328 engine_memory_peak_since_start_bytes=60129542144
+client_cpus=20,21 client_cpu20_busy_pct=22.5 client_cpu21_busy_pct=25.0 client_saturated=no
+limits_ok=yes
+validity=valid

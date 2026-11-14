@@ -1,0 +1,7 @@
+check: query=q8.Bplus answer=q8 rows=530315 hash=384c2a5fd45796b7 matches=yes ms=44.8
+check: query=q8.rowtext.Bplus answer=q8 rows=530315 hash=384c2a5fd45796b7 matches=yes ms=37.5
+bench: query=q8.Bplus clients=1 n=15 p50_ms=45.55 p95_ms=48.57 p99_ms=49.41 mean_ms=45.01 engine_p50_ms=45.0 qps=20.73 errors=0 mismatches=0
+bench: query=q8.Bplus clients=32 n=64 p50_ms=284.34 p95_ms=420.72 p99_ms=485.41 mean_ms=292.94 engine_p50_ms=130.0 qps=94.60 errors=0 mismatches=0
+bench: query=q8.rowtext.Bplus clients=1 n=15 p50_ms=34.21 p95_ms=40.00 p99_ms=41.87 mean_ms=35.08 engine_p50_ms=33.0 qps=26.64 errors=0 mismatches=0
+bench: query=q8.rowtext.Bplus clients=32 n=64 p50_ms=266.48 p95_ms=388.92 p99_ms=424.60 mean_ms=268.36 engine_p50_ms=103.5 qps=90.84 errors=0 mismatches=0
+summary: mode=run engine=vertica queries=2 levels=1,32 check_ok=yes errors=0 mismatches=0 valid=yes

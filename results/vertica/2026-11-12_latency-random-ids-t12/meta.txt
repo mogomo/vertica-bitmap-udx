@@ -1,0 +1,6 @@
+area=vertica run=latency-random-ids-t12 folder=2026-11-12_latency-random-ids-t12 milestone=M5a engine=vertica
+duration_s=1087.38 exit_status=0 repo_hash=84ed9343c15ed4ac
+engine_cpu_s=6741.5 engine_memory_peak_sampled_bytes=32071938048 engine_memory_peak_since_start_bytes=38449909760
+client_cpus=20,21 client_cpu20_busy_pct=4.4 client_cpu21_busy_pct=4.6 client_saturated=no
+limits_ok=yes
+validity=valid

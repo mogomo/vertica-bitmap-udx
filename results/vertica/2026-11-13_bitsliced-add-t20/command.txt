@@ -1,0 +1,5 @@
+command=bench/bitsliced.sh add --tenant=20 
+cwd=~/vertica-bitmap-udx
+start_utc=2026-11-13T13:15:33Z
+end_utc=2026-11-13T13:16:49Z
+exit_status=0

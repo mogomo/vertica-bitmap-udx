@@ -1,0 +1,6 @@
+driver check started 2026-11-12T20:49:09+0200 args ['check', '--workload', 'bench/workloads/clickhouse.sql', '--var', 'tenant=10', '--out', '~/bitmap_record/clickhouse/2026-11-12_check-t10/driver', '--expect', '~/bitmap_record/vertica/2026-11-12_check-headline-t10/driver/check.csv']
+check q1.count.N: answer 251683
+check q1.count.C: answer 251683
+check q2.daily.N: answer 2026-10-15|1551213 ; 2026-10-16|1553098
+check q2.daily.C: answer 2026-10-15|1551213 ; 2026-10-16|1553098
+driver ended 2026-11-12T20:49:14+0200 status 0

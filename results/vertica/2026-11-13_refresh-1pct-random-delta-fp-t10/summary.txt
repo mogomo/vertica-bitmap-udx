@@ -1,0 +1,7 @@
+refresh: step=start tenant=10 base_snapshot=1 source=1 watermark='2026-11-01 00:00:00' batch=1 people=10000000 fraction=0.01 changed=100000 spread=random report=delta seed=1
+refresh: step=changes profile_changes=50120 topics_removed=50287 topics_added=48188 change_rows=198219 touched_people=0 touched_chunks=0 chunks=153
+refresh: step=source_and_batch s=91.57 (copy of the source with the changes; not index work)
+refresh: step=build_full snapshot: op=build tenant=10 domain=person snapshot=2 chunk_bits=16 deep=no validate=full build_s=72.06 validate_s=38.70 publish_s=0.01 total_s=110.77 predicates=547 index_rows=83691 index_bytes=403432209 daily_rows=18360 daily_bytes=104539704
+refresh: step=apply_touched snapshot: op=apply tenant=10 domain=person snapshot=3 chunk_bits=16 deep=no validate=touched build_s=15.36 validate_s=87.17 publish_s=0.01 total_s=102.54 predicates=547 index_rows=83691 index_bytes=403432209 daily_rows=18360 daily_bytes=104539704
+refresh: step=apply_full snapshot: op=apply tenant=10 domain=person snapshot=3 chunk_bits=16 deep=no validate=full build_s=15.30 validate_s=36.01 publish_s=0.01 total_s=51.31 predicates=547 index_rows=83691 index_bytes=403432209 daily_rows=18360 daily_bytes=104539704
+refresh: step=done tenant=10 fraction=0.01 spread=random report=delta batch=1 snapshots_full_touched_incremental=2,3,3 differing_rows_touched=0 differing_rows_incremental=0 equal=yes

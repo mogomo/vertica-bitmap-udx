@@ -1,0 +1,1 @@
+append: op=append engine=vertica tenant=10 rows=2000460 s=1.46 check_set=topic_t100 live=551569 native=551569 equal=yes

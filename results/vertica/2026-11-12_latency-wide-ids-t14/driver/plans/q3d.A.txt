@@ -1,0 +1,78 @@
+------------------------------ 
+QUERY PLAN DESCRIPTION: 
+------------------------------
+
+EXPLAIN SELECT 'topic_' || i.topic AS predicate, COUNT(DISTINCT i.entity_id) AS users
+FROM bitmap_demo.user_interest i
+JOIN bitmap_demo.user_profile p
+  ON p.tenant_id = i.tenant_id AND p.snapshot_id = i.snapshot_id AND p.entity_id = i.entity_id
+WHERE i.tenant_id = 14 AND i.snapshot_id = 1
+  AND p.country = 'IL' AND p.age BETWEEN 25 AND 54 AND p.consent IS TRUE AND p.suspended IS FALSE
+GROUP BY 1;
+
+Access Path:
++-GROUPBY HASH (LOCAL RESEGMENT GROUPS) [Cost: 883K, Rows: 244K] (PATH ID: 1)
+|  Aggregates: count(DISTINCT i.entity_id)
+|  Group By: <SVAR>
+| +---> GROUPBY HASH (LOCAL RESEGMENT GROUPS) [Cost: 881K, Rows: 244K] (PATH ID: 2)
+| |      Group By: ('topic_' || i.topic), i.entity_id
+| | +---> JOIN HASH [Cost: 879K, Rows: 244K] (PATH ID: 3)
+| | |      Join Cond: (p.tenant_id = i.tenant_id) AND (p.snapshot_id = i.snapshot_id) AND (p.entity_id = i.entity_id)
+| | |      Materialize at Output: i.topic
+| | | +-- Outer -> STORAGE ACCESS for i [Cost: 702K, Rows: 198M] (PATH ID: 4)
+| | | |      Projection: bitmap_demo.user_interest_super
+| | | |      Materialize: i.snapshot_id, i.tenant_id, i.entity_id
+| | | |      Filter: (i.tenant_id = 14)
+| | | |      Filter: (i.snapshot_id = 1)
+| | | |      Runtime Filters: (SIP1(HashJoin): i.tenant_id), (SIP2(HashJoin): i.snapshot_id), (SIP3(HashJoin): i.entity_id), (SIP4(HashJoin): i.tenant_id, i.snapshot_id, i.entity_id)
+| | | +-- Inner -> STORAGE ACCESS for p [Cost: 21K, Rows: 308K] (PUSHED GROUPING) (PATH ID: 5)
+| | | |      Projection: bitmap_demo.user_profile_by_filter
+| | | |      Materialize: p.tenant_id, p.snapshot_id, p.entity_id
+| | | |      Filter: (p.tenant_id = 14)
+| | | |      Filter: (p.snapshot_id = 1)
+| | | |      Filter: (p.country = 'IL')
+| | | |      Filter: (p.consent IS TRUE)
+| | | |      Filter: (p.suspended IS FALSE)
+| | | |      Filter: ((p.age >= 25) AND (p.age <= 54))
+
+
+------------------------------
+----------------------------------------------- 
+PLAN: BASE QUERY PLAN (GraphViz Format)
+----------------------------------------------- 
+digraph G {
+graph [rankdir=BT, label = "BASE QUERY PLAN\nQuery: EXPLAIN SELECT \'topic_\' || i.topic AS predicate, COUNT(DISTINCT i.entity_id) AS users\nFROM bitmap_demo.user_interest i\nJOIN bitmap_demo.user_profile p\n  ON p.tenant_id = i.tenant_id AND p.snapshot_id = i.snapshot_id AND p.entity_id = i.entity_id\nWHERE i.tenant_id = 14 AND i.snapshot_id = 1\n  AND p.country = \'IL\' AND p.age BETWEEN 25 AND 54 AND p.consent IS TRUE AND p.suspended IS FALSE\nGROUP BY 1;\n\nAll Nodes Vector: \n\n  node[0]=v_vdb_node0001 (initiator) Up\n", labelloc=t, labeljust=l ordering=out]
+0[label = "Root \nOutBlk=[UncTuple(2)]", color = "green", shape = "house"];
+1[label = "NewEENode \nOutBlk=[UncTuple(2)]", color = "green", shape = "box"];
+2[label = "ParallelUnionStep: \nCombine\nUnc: Varchar(46)\nUnc: Integer(8)", color = "green", shape = "box"];
+3[label = "GroupByHash(Spill): 1 keys\nAggs:\n  count(DISTINCT i.entity_id)\nUnc: Varchar(46)\nUnc: Integer(8)", color = "green", shape = "box"];
+4[label = "ParallelUnionStep: \nLocally Resegment\nUnc: Varchar(46)\nUnc: Integer(8)", color = "green", shape = "box"];
+5[label = "GroupByPipe(HashPrepass): 1 keys\nAggs:\n  count(DISTINCT i.entity_id)\nUnc: Varchar(46)\nUnc: Integer(8)", color = "green", shape = "box"];
+6[label = "GroupByHash(Spill): 2 keys\nAggs:\nUnc: Varchar(46)\nUnc: Integer(8)", color = "green", shape = "box"];
+7[label = "StorageUnionStep: user_interest_super\nLocally Resegment\nUnc: Varchar(46)\nUnc: Integer(8)", color = "purple", shape = "box"];
+8[label = "GroupByPipe(HashPrepass): 2 keys\nAggs:\nUnc: Varchar(46)\nUnc: Integer(8)", color = "brown", shape = "box"];
+9[label = "ExprEval: \n  (\'topic_\' || i.topic)\n  i.entity_id\nUnc: Varchar(46)\nUnc: Integer(8)", color = "brown", shape = "box"];
+10[label = "Join: Hash-Join: \n(bitmap_demo.user_interest x bitmap_demo.user_profile) using user_interest_super and user_profile_by_filter (PATH ID: 3)\n\nUnc: Integer(8)\nUnc: Varchar(40)", color = "brown", shape = "box"];
+11[label = "ScanStep: user_interest_super\n(i.tenant_id = 14)\n(i.snapshot_id = 1)\nSIP1(HashJoin): i.tenant_id\nSIP2(HashJoin): i.snapshot_id\nSIP3(HashJoin): i.entity_id\nSIP4(HashJoin): i.tenant_id, i.snapshot_id, i.entity_id\ntenant_id\nsnapshot_id\nentity_id\nUnc: Integer(8)\nUnc: Integer(8)\nUnc: Integer(8)", color = "brown", shape = "box"];
+12[label = "GroupByHash(Cap Memory): 3 keys\nAggs:\nUnc: Integer(8)\nUnc: Integer(8)\nUnc: Integer(8)", color = "green", shape = "box"];
+13[label = "StorageUnionStep: user_profile_by_filter\nUnc: Integer(8)\nUnc: Integer(8)\nUnc: Integer(8)", color = "purple", shape = "box"];
+14[label = "GroupByPipe(HashPrepass): 3 keys\nAggs:\nUnc: Integer(8)\nUnc: Integer(8)\nUnc: Integer(8)", color = "brown", shape = "box"];
+15[label = "ExprEval: \n  p.entity_id\n  p.tenant_id\n  p.snapshot_id\nUnc: Integer(8)\nRLE: Integer(8)\nRLE: Integer(8)", color = "brown", shape = "box"];
+16[label = "ScanStep: user_profile_by_filter\n(p.tenant_id = 14)\n(p.snapshot_id = 1)\n(p.country = \'IL\')\n(p.consent IS TRUE)\n(p.suspended IS FALSE)\n((p.age \>= 25) AND (p.age \<= 54))\ntenant_id RLE\nsnapshot_id RLE\ncountry RLE (not emitted)\nconsent RLE (not emitted)\nsuspended RLE (not emitted)\nage RLE (not emitted)\nentity_id\nRLE: Integer(8)\nRLE: Integer(8)\nUnc: Integer(8)", color = "brown", shape = "box"];
+1->0 [label = "V[0] C=2",color = "black",style="bold", arrowtail="inv"];
+2->1 [label = "0",color = "blue"];
+3->2 [label = "0",color = "blue"];
+4->3 [label = "0",color = "blue"];
+5->4 [label = "0",color = "blue"];
+6->5 [label = "0",color = "blue"];
+7->6 [label = "0",color = "blue"];
+8->7 [label = "0",color = "blue"];
+9->8 [label = "0",color = "blue"];
+10->9 [label = "0",color = "blue"];
+11->10 [label = "0",color = "blue"];
+12->10 [label = "1",color = "blue"];
+13->12 [label = "0",color = "blue"];
+14->13 [label = "0",color = "blue"];
+15->14 [label = "0",color = "blue"];
+16->15 [label = "0",color = "blue"];
+}

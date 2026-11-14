@@ -1,0 +1,9 @@
+refresh: step=start tenant=10 base_snapshot=1 source=1 watermark='2026-11-01 00:00:00' batch=1 people=10000000 fraction=0.01 changed=100000 spread=random report=mixed seed=1
+10000000
+199997901
+148595
+refresh: step=changes profile_changes=50120 topics_removed=50287 topics_added=48188 change_rows=148595 touched_people=50120 touched_chunks=153 chunks=153
+refresh: step=source_and_batch s=272.28 (copy of the source with the changes; not index work)
+refresh: step=apply_full snapshot: op=apply tenant=10 domain=person snapshot=2 chunk_bits=16 deep=no validate=full build_s=197.91 validate_s=87.01 publish_s=0.01 total_s=284.92 predicates=547 index_rows=83691 index_bytes=403432209 daily_rows=18360 daily_bytes=104539704
+refresh: batch: 153 touched chunks, 98475 resolved add/remove changes; 0 (predicate, chunk) sets changed by delta;
+refresh: step=done tenant=10 fraction=0.01 spread=random report=mixed batch=1 steps=apply apply_s=285.11

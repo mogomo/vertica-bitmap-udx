@@ -1,0 +1,5 @@
+command=scripts/snapshot.sh build --tenant=14 --domain=person --snapshot=1 --source-snapshot=1 --watermark=2026-11-01\ 00:00:00 --daily --publish 
+cwd=~/vertica-bitmap-udx
+start_utc=2026-11-12T17:11:58Z
+end_utc=2026-11-12T17:13:58Z
+exit_status=0

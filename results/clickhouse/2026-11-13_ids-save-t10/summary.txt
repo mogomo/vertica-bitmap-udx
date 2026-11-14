@@ -1,0 +1,5 @@
+check: query=q8.save.set.C answer=q8.save.set rows=0 hash=e3b0c44298fc1c14 matches=yes ms=34.0
+check: query=q8.save.ids.C answer=q8.save.ids rows=0 hash=e3b0c44298fc1c14 matches=yes ms=45.4
+bench: query=q8.save.set.C clients=1 n=15 p50_ms=34.75 p95_ms=37.68 p99_ms=37.88 mean_ms=34.42 engine_p50_ms=34.0 qps=27.09 errors=0 mismatches=0
+bench: query=q8.save.ids.C clients=1 n=15 p50_ms=44.23 p95_ms=47.47 p99_ms=48.37 mean_ms=44.02 engine_p50_ms=43.0 qps=21.18 errors=0 mismatches=0
+summary: mode=run engine=clickhouse queries=2 levels=1 check_ok=yes errors=0 mismatches=0 valid=yes

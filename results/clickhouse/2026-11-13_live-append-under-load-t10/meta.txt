@@ -1,0 +1,6 @@
+area=clickhouse run=live-append-under-load-t10 folder=2026-11-13_live-append-under-load-t10 milestone=M5c engine=clickhouse
+duration_s=332.90 exit_status=0 repo_hash=d7920e89607da91e
+engine_cpu_s=6598.3 engine_memory_peak_sampled_bytes=14540369920 engine_memory_peak_since_start_bytes=14724825088
+client_cpus=20,21 client_cpu20_busy_pct=5.5 client_cpu21_busy_pct=5.7 client_saturated=no
+limits_ok=yes
+validity=valid

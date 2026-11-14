@@ -1,0 +1,6 @@
+area=vertica run=join-pin-unfenced-t10 folder=2026-11-13_join-pin-unfenced-t10 milestone=M5d engine=vertica
+duration_s=12.71 exit_status=0 repo_hash=cbbc6e5a6787f0b8
+engine_cpu_s=141.5 engine_memory_peak_sampled_bytes=2239688704 engine_memory_peak_since_start_bytes=2549075968
+client_cpus=20,21 client_cpu20_busy_pct=3.3 client_cpu21_busy_pct=2.6 client_saturated=no
+limits_ok=yes
+validity=valid

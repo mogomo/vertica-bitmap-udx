@@ -1,0 +1,45 @@
+------------------------------ 
+QUERY PLAN DESCRIPTION: 
+------------------------------
+
+EXPLAIN SELECT entity_id
+FROM (
+  SELECT vbitmap.bm_ids(chunk_id, predicate, payload USING PARAMETERS expr =
+           'country_IL & topic_sports - topic_finance')
+         OVER (PARTITION BY chunk_id)
+  FROM bitmap_enc.index_auto
+  WHERE tenant_id = 20 AND snapshot_id = 1 AND domain = 'person'
+    AND predicate IN ('country_IL', 'topic_sports', 'topic_finance')
+) t
+
+Access Path:
++-ANALYTICAL [Cost: 49K, Rows: 8K (ROW COUNT ONLY)] (PATH ID: 2)
+|  Analytic Group
+|   Functions: bm_ids()
+| +---> STORAGE ACCESS for index_auto [Cost: 46K, Rows: 8K (ROW COUNT ONLY)] (PATH ID: 3)
+| |      Projection: bitmap_enc.index_auto_by_chunk
+| |      Materialize: index_auto.predicate, index_auto.chunk_id, index_auto.payload
+| |      Filter: (index_auto.tenant_id = 20)
+| |      Filter: (index_auto.snapshot_id = 1)
+| |      Filter: (index_auto.domain = 'person')
+| |      Filter: (index_auto.predicate = ANY (ARRAY['country_IL', 'topic_sports', 'topic_finance']))
+
+
+------------------------------
+----------------------------------------------- 
+PLAN: BASE QUERY PLAN (GraphViz Format)
+----------------------------------------------- 
+digraph G {
+graph [rankdir=BT, label = "BASE QUERY PLAN\nQuery: EXPLAIN SELECT entity_id\nFROM (\n  SELECT vbitmap.bm_ids(chunk_id, predicate, payload USING PARAMETERS expr =\n           \'country_IL & topic_sports - topic_finance\')\n         OVER (PARTITION BY chunk_id)\n  FROM bitmap_enc.index_auto\n  WHERE tenant_id = 20 AND snapshot_id = 1 AND domain = \'person\'\n    AND predicate IN (\'country_IL\', \'topic_sports\', \'topic_finance\')\n) t\n\nAll Nodes Vector: \n\n  node[0]=v_vdb_node0001 (initiator) Up\n", labelloc=t, labeljust=l ordering=out]
+0[label = "Root \nOutBlk=[UncTuple]", color = "green", shape = "house"];
+1[label = "NewEENode \nOutBlk=[UncTuple]", color = "green", shape = "box"];
+2[label = "ExprEval: \n  \<SVAR\>\nUnc: Integer(8)", color = "green", shape = "box"];
+3[label = "UserDefined:\nPartitionBy: chunk_id\nOrderBy:<NONE>\nAnalytical Functions:\n  vbitmap.bm_ids(index_auto.chunk_id, index_auto.predicate, index_auto.payload USING PARAMETERS expr=\'country_IL & topic_sports - topic_finance\')\nUnc: Integer(8)\nUnc: Integer(8)", color = "green", shape = "box"];
+4[label = "StorageMergeStep[ee5]: index_auto_by_chunk; 2 sorted\nUnc: Integer(8)\nUnc: Varchar(80)\nUnc: Varbinary(16384)", color = "purple", shape = "box"];
+5[label = "ScanStep: index_auto_by_chunk\n(index_auto.tenant_id = 20)\n(index_auto.snapshot_id = 1)\n(index_auto.domain = \'person\')\n(index_auto.predicate = ANY (ARRAY[\'country_IL\', \'topic_sports\', \'topic_finance\']))\ntenant_id (not emitted)\nsnapshot_id (not emitted)\ndomain (not emitted)\nchunk_id\npredicate\npayload\nUnc: Integer(8)\nUnc: Varchar(80)\nUnc: Varbinary(16384)", color = "brown", shape = "box"];
+1->0 [label = "V[0]",color = "black"];
+2->1 [label = "0",color = "blue"];
+3->2 [label = "0",color = "blue"];
+4->3 [label = "0",color = "blue"];
+5->4 [label = "0",color = "blue"];
+}

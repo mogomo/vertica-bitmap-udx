@@ -1,0 +1,60 @@
+------------------------------ 
+QUERY PLAN DESCRIPTION: 
+------------------------------
+
+EXPLAIN SELECT COUNT(*) AS cnt FROM bitmap_demo.user_profile p
+WHERE p.tenant_id = 10 AND p.snapshot_id = 1
+  AND ((EXISTS (SELECT 1 FROM bitmap_demo.user_interest i WHERE i.tenant_id = 10 AND i.snapshot_id = 1 AND i.entity_id = p.entity_id AND i.topic = 'finance') OR p.age BETWEEN 25 AND 54) AND p.suspended IS FALSE);
+
+Access Path:
++-GROUPBY NOTHING [Cost: 586K, Rows: 1] (PATH ID: 1)
+|  Aggregates: count(*)
+| +---> JOIN HASH [Semi] [Cost: 584K, Rows: 5M] (PATH ID: 2)
+| |      Join Cond: (VAL(1) = p.entity_id)
+| |      Materialize at Output: p.age
+| |      Filter: (VAL(2) OR ((p.age >= 25) AND (p.age <= 54)))
+| | +-- Outer -> STORAGE ACCESS for p [Cost: 23K, Rows: 10M] (PATH ID: 3)
+| | |      Projection: bitmap_demo.user_profile_by_filter
+| | |      Materialize: p.entity_id
+| | |      Filter: (p.tenant_id = 10)
+| | |      Filter: (p.snapshot_id = 1)
+| | |      Filter: (p.suspended IS FALSE)
+| | +-- Inner -> SELECT [Cost: 551K, Rows: 2M] (PATH ID: 4)
+| | | +---> STORAGE ACCESS for i [Cost: 551K, Rows: 2M] (PATH ID: 5)
+| | | |      Projection: bitmap_demo.user_interest_super
+| | | |      Materialize: i.entity_id
+| | | |      Filter: (i.tenant_id = 10)
+| | | |      Filter: (i.snapshot_id = 1)
+| | | |      Filter: (i.topic = 'finance')
+
+
+------------------------------
+----------------------------------------------- 
+PLAN: BASE QUERY PLAN (GraphViz Format)
+----------------------------------------------- 
+digraph G {
+graph [rankdir=BT, label = "BASE QUERY PLAN\nQuery: EXPLAIN SELECT COUNT(*) AS cnt FROM bitmap_demo.user_profile p\nWHERE p.tenant_id = 10 AND p.snapshot_id = 1\n  AND ((EXISTS (SELECT 1 FROM bitmap_demo.user_interest i WHERE i.tenant_id = 10 AND i.snapshot_id = 1 AND i.entity_id = p.entity_id AND i.topic = \'finance\') OR p.age BETWEEN 25 AND 54) AND p.suspended IS FALSE);\n\nAll Nodes Vector: \n\n  node[0]=v_vdb_node0001 (initiator) Up\n", labelloc=t, labeljust=l ordering=out]
+0[label = "Root \nOutBlk=[UncTuple]", color = "green", shape = "house"];
+1[label = "NewEENode \nOutBlk=[UncTuple]", color = "green", shape = "box"];
+2[label = "GroupByPipe: 0 keys\nAggs:\n  count(*)\nUnc: Integer(8)", color = "green", shape = "box"];
+3[label = "StorageUnionStep: user_profile_by_filter\nUnc: Integer(8)", color = "purple", shape = "box"];
+4[label = "GroupByPipe: 0 keys\nAggs:\n  count(*)\nUnc: Integer(8)", color = "brown", shape = "box"];
+5[label = "ExprEval: \n  1\nUnc: Integer(8)", color = "brown", shape = "box"];
+6[label = "FilterStep: \n(VAL(2) OR ((p.age \>= 25) AND (p.age \<= 54)))\nUnc: Integer(8)\nUnc: Boolean(1)", color = "brown", shape = "box"];
+7[label = "Join: Hash-Join: \n(bitmap_demo.user_profile x bitmap_demo.user_interest) using user_profile_by_filter and subquery (PATH ID: 2)\n[Semi]\n\nUnc: Integer(8)\nUnc: Boolean(1)", color = "brown", shape = "box"];
+8[label = "ScanStep: user_profile_by_filter\n(p.tenant_id = 10)\n(p.snapshot_id = 1)\n(p.suspended IS FALSE)\ntenant_id RLE (not emitted)\nsnapshot_id RLE (not emitted)\nsuspended RLE (not emitted)\nentity_id\nUnc: Integer(8)", color = "brown", shape = "box"];
+9[label = "StorageUnionStep: user_interest_super\nUnc: Integer(8)\nUnc: Boolean(1)", color = "purple", shape = "box"];
+10[label = "ExprEval: \n  i.entity_id\n  false\nUnc: Integer(8)\nUnc: Boolean(1)", color = "brown", shape = "box"];
+11[label = "ScanStep: user_interest_super\n(i.tenant_id = 10)\n(i.snapshot_id = 1)\n(i.topic = \'finance\')\ntenant_id (not emitted)\nsnapshot_id (not emitted)\ntopic (not emitted)\nentity_id\nUnc: Integer(8)", color = "brown", shape = "box"];
+1->0 [label = "V[0]",color = "black"];
+2->1 [label = "0",color = "blue"];
+3->2 [label = "0",color = "blue"];
+4->3 [label = "0",color = "blue"];
+5->4 [label = "0",color = "blue"];
+6->5 [label = "0",color = "blue"];
+7->6 [label = "0",color = "blue"];
+8->7 [label = "0",color = "blue"];
+9->7 [label = "1",color = "blue"];
+10->9 [label = "0",color = "blue"];
+11->10 [label = "0",color = "blue"];
+}

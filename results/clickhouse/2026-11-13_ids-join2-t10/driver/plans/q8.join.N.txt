@@ -1,0 +1,13 @@
+Output: count(), count(age), sum(age)
+
+CreatingSets (Create sets before main query execution)
+└──Aggregating
+   │  Keys:
+   │  Aggregates: count(), count(age), sum(age)
+   │  Skip merging: 0
+   └──ReadFromMergeTree (xbench.user_profile)
+         Read type: Default
+         Parts: 1 | Granules: 1221
+         Output: age
+         Prewhere filter
+         Prewhere filter column:  tenant_id = 10 AND snapshot_id = 1 AND entity_id IN subquery1

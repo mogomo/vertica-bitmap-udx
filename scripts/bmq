@@ -1,0 +1,155 @@
+#!/usr/bin/env bash
+# bmq: runs a set expression over the bitmap index, or prints its SQL.
+#
+#   scripts/bmq [options] 'EXPRESSION'
+#
+#   --tenant=N --domain=D  scope (defaults 1, person)
+#   --snapshot=N       pin snapshot N (default: the active snapshot, resolved once)
+#   --raw              read the tables instead of the reader views: any snapshot, published or
+#                      not (needs --snapshot and the privileges of an administrator)
+#   --mode=count       number of members (default)
+#   --mode=ids         member IDs, ascending (--max-ids=N: at most N per chunk)
+#   --mode=facets      members per facet: --facets=PREFIX (e.g. topic_), optional --exclude=PREFIX
+#                      (disjunctive facets: operands with that prefix leave the audience)
+#   --mode=native-ids, --mode=native-count
+#                      the same set computed from the source tables with INTERSECT / UNION /
+#                      EXCEPT over the family definitions, at the snapshot's source snapshot and
+#                      watermark (the oracle; needs read access to the source tables)
+#   --echo_only        print the SQL, do not run it
+#
+# Without --raw, bmq reads the views of schema bitmap_demo (published snapshots of the tenants
+# mapped to the current user) and pins one snapshot for the whole run: if that snapshot is purged
+# while the query runs, bmq fails instead of printing a partial answer. The IN list of the query
+# is derived from the expression, so the two cannot drift apart. Every name must belong to a
+# family certified in the snapshot: a name of a certified family with no payload is the empty set;
+# a name that matches no family, or a family that the snapshot does not certify, is an error.
+# Expression syntax: src/engine/expr.h. Needs build/bmexpr (make tools).
+set -euo pipefail
+
+cd "$(dirname "$0")/.."
+. scripts/lib_sql.sh
+
+TENANT=1; SNAPSHOT=""; DOMAIN=person; MODE=count; FACETS=""; EXCLUDE=""; MAX_IDS=0; RAW=no; ECHO_ONLY=no; EXPR=""
+for arg in "$@"; do
+    case "$arg" in
+        --tenant=*)       TENANT="${arg#*=}" ;;
+        --snapshot=*)     SNAPSHOT="${arg#*=}" ;;
+        --domain=*)       DOMAIN="${arg#*=}" ;;
+        --mode=*)         MODE="${arg#*=}" ;;
+        --facets=*)       FACETS="${arg#*=}" ;;
+        --exclude=*)      EXCLUDE="${arg#*=}" ;;
+        --max-ids=*)      MAX_IDS="${arg#*=}" ;;
+        --raw)            RAW=yes ;;
+        --echo_only)      ECHO_ONLY=yes ;;
+        -h|--help)        sed -n '2,29p' "$0"; exit 0 ;;
+        -*) echo "bmq: unknown argument: $arg" >&2; exit 2 ;;
+        *)  EXPR="$arg" ;;
+    esac
+done
+[ -n "$EXPR" ] || { sed -n '2,29p' "$0"; exit 2; }
+[[ "$TENANT" =~ ^[0-9]+$ && "$MAX_IDS" =~ ^[0-9]+$ ]] || { echo "bmq: --tenant and --max-ids must be integers" >&2; exit 2; }
+[[ -z "$SNAPSHOT" || "$SNAPSHOT" =~ ^[0-9]+$ ]] || { echo "bmq: --snapshot must be an integer" >&2; exit 2; }
+[[ "$DOMAIN" =~ ^[A-Za-z0-9_]+$ ]] || { echo "bmq: bad --domain" >&2; exit 2; }
+case "$MODE" in count|ids|facets|native-ids|native-count) ;; *) echo "bmq: unknown --mode=$MODE" >&2; exit 2 ;; esac
+[ "$MODE" != facets ] || [ -n "$FACETS" ] || { echo "bmq: --mode=facets needs --facets=PREFIX" >&2; exit 2; }
+[ "$RAW" = no ] || [ -n "$SNAPSHOT" ] || { echo "bmq: --raw needs --snapshot" >&2; exit 2; }
+
+BMEXPR=build/bmexpr
+[ -x "$BMEXPR" ] || { echo "bmq: $BMEXPR not found. Run make tools." >&2; exit 1; }
+NAMES=$("$BMEXPR" names "$EXPR") || exit 1
+VSQL=(vsql -X -A -t -q -v ON_ERROR_STOP=1)
+q() { printf '%s\n' "$1" | "${VSQL[@]}"; }
+
+if [ "$RAW" = yes ]; then
+    T_SNAP=bitmap_demo.bitmap_snapshot; T_INDEX=bitmap_demo.bitmap_index
+    T_PRED=bitmap_demo.bitmap_predicate; T_FAM=bitmap_demo.bitmap_family
+else
+    T_SNAP=bitmap_demo.v_bitmap_snapshot; T_INDEX=bitmap_demo.v_bitmap_index
+    T_PRED=bitmap_demo.v_bitmap_predicate; T_FAM=bitmap_demo.v_bitmap_family
+fi
+dom_lit=$(sql_literal "$DOMAIN")
+
+# ---- resolve and pin the snapshot ------------------------------------------------------------
+if [ -n "$SNAPSHOT" ]; then which="snapshot_id = $SNAPSHOT"; else which="state = 'active'"; fi
+snap=$(q "SELECT snapshot_id || '|' || state || '|' || families FROM $T_SNAP
+          WHERE tenant_id = $TENANT AND domain = $dom_lit AND $which")
+if [ -z "$snap" ]; then
+    if [ "$RAW" = yes ]; then echo "bmq: no snapshot $SNAPSHOT for tenant $TENANT domain $DOMAIN" >&2
+    else echo "bmq: no ${SNAPSHOT:+published snapshot $SNAPSHOT}${SNAPSHOT:-active snapshot} for tenant $TENANT domain $DOMAIN (or the tenant is not readable by this user)" >&2; fi
+    exit 1
+fi
+IFS='|' read -r S STATE FAMILIES <<< "$snap"
+
+# ---- every name: built, or a name of a certified family (then empty) -------------------------
+names_sql=""
+while IFS= read -r n; do names_sql+="${names_sql:+ UNION ALL }SELECT $(sql_literal "$n")::VARCHAR(80) AS name"; done <<< "$NAMES"
+checked=$(q "SELECT n.name, COUNT(DISTINCT p.predicate), COUNT(DISTINCT f.family), COALESCE(MAX(f.family), '')
+             FROM ($names_sql) n
+             LEFT JOIN (SELECT predicate FROM $T_PRED WHERE tenant_id = $TENANT AND snapshot_id = $S AND domain = $dom_lit) p
+               ON p.predicate = n.name
+             LEFT JOIN (SELECT family, name_pattern FROM $T_FAM WHERE tenant_id = $TENANT AND domain = $dom_lit) f
+               ON REGEXP_LIKE(n.name, f.name_pattern)
+             GROUP BY n.name ORDER BY n.name")
+problems=""; FAMS_USED=()
+while IFS='|' read -r n built nfam fam; do
+    [ -z "$n" ] && continue
+    if [ "$nfam" = 0 ]; then problems+=$'\n'"     $n: matches no predicate family of domain $DOMAIN"
+    elif [ "$nfam" != 1 ]; then problems+=$'\n'"     $n: matches $nfam families"
+    elif [[ ",$FAMILIES," != *",$fam,"* ]]; then problems+=$'\n'"     $n: family $fam is not certified in snapshot $S"
+    else FAMS_USED+=("$fam"); fi
+    : "$built"
+done <<< "$checked"
+if [ -n "$problems" ]; then
+    echo "bmq: tenant $TENANT domain $DOMAIN snapshot $S:$problems" >&2
+    exit 1
+fi
+
+in_list=""
+while IFS= read -r n; do in_list+="$(sql_literal "$n"),"; done <<< "$NAMES"
+in_list="${in_list%,}"
+expr_lit=$(sql_literal "$EXPR")
+scope="tenant_id = $TENANT AND snapshot_id = $S AND domain = $dom_lit"
+index="FROM $T_INDEX WHERE $scope AND predicate IN ($in_list)"
+case "$MODE" in
+    count)
+        SQL="SELECT COALESCE(SUM(cnt), 0) AS cnt FROM (
+  SELECT vbitmap.bm_count(chunk_id, predicate, payload USING PARAMETERS expr = $expr_lit) OVER (PARTITION BY chunk_id)
+  $index) t;" ;;
+    ids)
+        params="expr = $expr_lit"
+        [ "$MAX_IDS" -gt 0 ] && params+=", max_ids = $MAX_IDS"
+        SQL="SELECT entity_id FROM (
+  SELECT vbitmap.bm_ids(chunk_id, predicate, payload USING PARAMETERS $params) OVER (PARTITION BY chunk_id)
+  $index) t ORDER BY 1;" ;;
+    facets)
+        params="expr = $expr_lit, facets = $(sql_literal "$FACETS")"
+        [ -n "$EXCLUDE" ] && params+=", exclude = $(sql_literal "$EXCLUDE")"
+        SQL="SELECT predicate, SUM(cnt) AS cnt FROM (
+  SELECT vbitmap.bm_facets(chunk_id, predicate, payload USING PARAMETERS $params) OVER (PARTITION BY chunk_id)
+  FROM $T_INDEX WHERE $scope AND (predicate IN ($in_list) OR predicate LIKE $(like_prefix "$FACETS"))
+) t GROUP BY predicate ORDER BY 2 DESC, 1;" ;;
+    native-ids|native-count)
+        # The source rows of the snapshot: its source snapshot and watermark, the families named.
+        src=$(q "SELECT source_snapshot_id || '|' || source_watermark FROM bitmap_demo.bitmap_snapshot
+                 WHERE tenant_id = $TENANT AND domain = $dom_lit AND snapshot_id = $S")
+        [ -n "$src" ] || { echo "bmq: cannot read the manifest of snapshot $S (native modes need administrator access)" >&2; exit 1; }
+        mapfile -t fams < <(printf '%s\n' "${FAMS_USED[@]}" | sort -u)
+        source=$(family_union_sql "$TENANT" "${src%%|*}" "${src#*|}" "$DOMAIN" "${fams[@]}")
+        native=$("$BMEXPR" sql "$EXPR" "SELECT entity_id FROM ($source) src WHERE predicate = {name}")
+        if [ "$MODE" = native-ids ]; then
+            SQL="SELECT entity_id FROM ($native) q ORDER BY 1;"
+        else
+            SQL="SELECT COUNT(*) AS cnt FROM ($native) q;"
+        fi ;;
+esac
+
+if [ "$ECHO_ONLY" = yes ]; then printf '%s\n' "$SQL"; exit 0; fi
+out=$(printf '%s\n' "$SQL" | "${VSQL[@]}")
+# The pinned snapshot must still exist after the query: purge deletes its manifest row and its
+# rows in one transaction, so if the row is still there the query read the whole snapshot.
+if [ "$RAW" = no ] && [ "$(q "SELECT COUNT(*) FROM $T_SNAP WHERE tenant_id = $TENANT AND domain = $dom_lit AND snapshot_id = $S")" != 1 ]; then
+    echo "bmq: snapshot $S of tenant $TENANT domain $DOMAIN was purged while the query ran; run it again" >&2
+    exit 1
+fi
+[ -n "$out" ] && printf '%s\n' "$out"
+exit 0

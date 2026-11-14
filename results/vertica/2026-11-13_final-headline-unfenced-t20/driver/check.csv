@@ -1,0 +1,9 @@
+query,answer,oracle,rows,hash,oracle_hash,matches,error,ms
+q1.count.Bplus,q1.count,,1,9f29b5c3304ec560,/expect=9f29b5c3304ec560,yes,,60.03
+q1.ids.Bplus,q1.ids,,2515389,00f3b7ce3636bb37,/expect=00f3b7ce3636bb37,yes,,179.92
+q2.daily.B,q2.daily,,2,c53ffa7f6f213926,/expect=c53ffa7f6f213926,yes,,81.81
+q3.Bplus,q3,,500,d80a5e04c545333e,/expect=d80a5e04c545333e,yes,,10987.22
+q4.Bplus,q4,,197436,64bb422302bb5c7c,/expect=64bb422302bb5c7c,yes,,94.96
+q7.Bj,q7,,499,a2963265780c0ee9,/expect=a2963265780c0ee9,yes,,11908.50
+q7.Bplus,q7,,499,a2963265780c0ee9,/expect=a2963265780c0ee9,yes,,10732.60
+q8.Bplus,q8,,5303339,31f7f61ddb774edc,/expect=31f7f61ddb774edc,yes,,710.97

@@ -1,0 +1,5 @@
+command=bash -c python3\ bench/driver.py\ run\ --workload\ bench/workloads/vertica.sql\ --var\ tenant=10\ --out\ \$BENCH_RUN_DIR/driver\ --clients\ 8\,32\ --iterations\ 30\ --min-per-client\ 1\ --warmup\ 1\ --only\ q1.count.A\,q1.ids.A\,q2.A\,q2.daily.A\,q2b.A\,q3.A\,q3d.A\,q4.A\,q5.A\,q6.A\,q6.At\,q7.At\,q8.A\,q8trap.A 
+cwd=~/vertica-bitmap-udx
+start_utc=2026-11-12T10:25:02Z
+end_utc=2026-11-12T10:58:04Z
+exit_status=1

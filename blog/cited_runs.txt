@@ -1,0 +1,35 @@
+# Runs of the complete record cited by BLOG.md (numbers of INDEX.md).
+22 23 28 29        # 10 M: native and first bitmap latency, tuned native projection, 1 / 8 / 32 clients
+31                 # selectivity and operand sweeps
+38-41              # Database Designer: copy, design, latency
+49 53-55           # random and wide 64-bit IDs
+58                 # lifecycle build at 10 M
+68                 # reference answers (tenant 10) used to check ClickHouse
+70-72              # ClickHouse: load, build, answer check
+77 78              # 100 M: generation, build
+81-84              # 100 M: bitmap and native latency, storage
+85-87              # refresh after 1 % changed
+88-90 94 98        # chunk-ordered projection at 10 M: before and after, fenced and unfenced, storage
+99 101             # refresh under load (Vertica snapshots)
+103                # ClickHouse latency
+105 107            # Q2 daily and Q4 with the chunk-ordered projection, fenced and unfenced
+109                # ClickHouse refresh under load (corrected run)
+132-134            # ClickHouse ID lists: first reading (kept for the comparison of readers), used inside the engine, saved
+136-139            # ClickHouse live sets (materialized view): load, queries, append under load, after it
+154 155            # ClickHouse ID lists delivered, read like Vertica's (bitmaps, SQL)
+157-159 161        # final library, fenced: headline queries, ID lists delivered, used, saved
+163 164 166-168    # live index: plain load, projections from stored rows, maintained load, queries fenced
+170-172 174        # final library, unfenced: headline queries, ID lists delivered, used, saved
+175-181 183        # live index unfenced: queries, ID lists, daily sets, append under load, after it, storage; idle append
+185 187            # facets and overlap: one pass and every thread, fenced and unfenced
+190-192            # tuning experiment: the index in 16 containers
+197                # native ID lists read through the socket client (Database Designer copy)
+198-201 203-206    # 100 M with the final library, fenced and unfenced: six questions, 32 clients, every-thread forms, text blocks
+207-211 213 214    # bit-sliced sets: added at 10 M and 100 M, reference answers, totals with and without a join, unfenced and fenced
+215 216            # ClickHouse: the same bit-sliced sets and totals
+217                # native device query at 100 M read through the socket client
+220 222-225        # chain 19: one row per ID as text rows, the audience as a row filter (pinned set), 10 M and 100 M; fenced join
+231                # the aggregate builder at 100 M
+234-237            # ClickHouse again: delivered lists, row filter and join, build, bit slices
+239 240 242 243 246 # chain 19b: aggregate builder (person + daily, device), the new snapshot and the published one, transform builder again
+274 275 277-299    # chain 20: payload encoding (ZSTD_FAST_COMP against the default) on two copies of the index; text rows and row filter again

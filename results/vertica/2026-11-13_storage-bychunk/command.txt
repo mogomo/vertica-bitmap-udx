@@ -1,0 +1,5 @@
+command=bench/storage.sh 
+cwd=~/vertica-bitmap-udx
+start_utc=2026-11-13T01:58:03Z
+end_utc=2026-11-13T01:58:12Z
+exit_status=0

@@ -1,0 +1,3 @@
+block,query,answer,clients,n,errors,mismatches,mean_ms,p50_ms,p95_ms,p99_ms,min_ms,max_ms,engine_p50_ms,throughput_qps,window_s,start_unix,end_unix
+1,q1.count.Bplus,q1.count,32,64,0,0,622.801,612.378,781.021,921.888,423.925,941.187,579.500,41.269,1.599,1794574087.498,1794574089.097
+2,q2.daily.B,q2.daily,32,64,0,0,314.313,312.130,474.227,486.282,84.913,487.773,291.500,62.041,0.935,1794574090.550,1794574091.485

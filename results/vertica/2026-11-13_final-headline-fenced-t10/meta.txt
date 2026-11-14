@@ -1,0 +1,6 @@
+area=vertica run=final-headline-fenced-t10 folder=2026-11-13_final-headline-fenced-t10 milestone=M5c engine=vertica
+duration_s=342.06 exit_status=0 repo_hash=6ba884bd2a71d691
+engine_cpu_s=1158.8 engine_memory_peak_sampled_bytes=3368898560 engine_memory_peak_since_start_bytes=3382173696
+client_cpus=20,21 client_cpu20_busy_pct=40.9 client_cpu21_busy_pct=28.0 client_saturated=no
+limits_ok=yes
+validity=valid

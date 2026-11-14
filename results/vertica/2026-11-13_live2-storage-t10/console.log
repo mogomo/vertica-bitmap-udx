@@ -1,0 +1,5 @@
+live: op=status projection=batch_tag_super containers=1 rows=2000460 bytes=4003064
+live: op=status projection=bitmap_index containers=2 rows=86751 bytes=395232483
+live: op=status projection=daily_bitmap containers=1 rows=18360 bytes=97217338
+live: op=status projection=event_super containers=1 rows=100000000 bytes=757256499
+live: op=status projection=tag_super containers=2 rows=255629001 bytes=1046174686

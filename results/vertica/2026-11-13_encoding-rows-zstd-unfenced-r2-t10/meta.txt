@@ -1,0 +1,6 @@
+area=vertica run=encoding-rows-zstd-unfenced-r2-t10 folder=2026-11-13_encoding-rows-zstd-unfenced-r2-t10 milestone=M5e engine=vertica
+duration_s=265.04 exit_status=0 repo_hash=bf39e22df63d76dc
+engine_cpu_s=24.2 engine_memory_peak_sampled_bytes=21621317632 engine_memory_peak_since_start_bytes=23701831680
+client_cpus=20,21 client_cpu20_busy_pct=48.9 client_cpu21_busy_pct=53.4 client_saturated=no
+limits_ok=yes
+validity=valid

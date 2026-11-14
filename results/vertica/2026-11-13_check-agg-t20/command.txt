@@ -1,0 +1,5 @@
+command=bash -c python3\ bench/driver.py\ check\ --client\ socket\ --workload\ bench/workloads/vertica_ids.sql\ --var\ tenant=20\ --out\ \$BENCH_RUN_DIR/driver\ --statement-cap\ 1800\ --only\ q8.agg.Bplus\,q8.join.Bplus\,q8.sum.Bplus 
+cwd=~/vertica-bitmap-udx
+start_utc=2026-11-13T13:16:52Z
+end_utc=2026-11-13T13:18:11Z
+exit_status=0

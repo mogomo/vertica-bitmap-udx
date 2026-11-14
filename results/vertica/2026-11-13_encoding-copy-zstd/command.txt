@@ -1,0 +1,5 @@
+command=bench/encoding_copy.sh create zstd ZSTD_FAST_COMP 
+cwd=~/vertica-bitmap-udx
+start_utc=2026-11-13T21:04:27Z
+end_utc=2026-11-13T21:05:55Z
+exit_status=0

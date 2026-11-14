@@ -1,0 +1,63 @@
+------------------------------ 
+QUERY PLAN DESCRIPTION: 
+------------------------------
+
+EXPLAIN SELECT COALESCE(SUM(cnt), 0) AS audience
+FROM (
+  SELECT vbitmap.bm_count(chunk_id, predicate, payload USING PARAMETERS expr =
+           'country_IL & age_25_54 & consent_true & suspended_false & (topic_sports | topic_finance)')
+         OVER (PARTITION BY chunk_id)
+  FROM bitmap_demo.bitmap_index
+  WHERE tenant_id = 10 AND snapshot_id = 1 AND domain = 'person'
+    AND predicate IN ('country_IL', 'age_25_54', 'consent_true', 'suspended_false', 'topic_sports', 'topic_finance')
+) t;
+
+Access Path:
++-GROUPBY NOTHING [Cost: 30K, Rows: 1] (PATH ID: 1)
+|  Aggregates: sum(t.cnt)
+| +---> ANALYTICAL [Cost: 30K, Rows: 2K] (PATH ID: 3)
+| |      Analytic Group
+| |       Functions: bm_count()
+| |       Group Local Resegment: bitmap_index.chunk_id
+| |       Group Sort: bitmap_index.chunk_id ASC
+| | +---> STORAGE ACCESS for bitmap_index [Cost: 28K, Rows: 2K] (PATH ID: 4)
+| | |      Projection: bitmap_demo.bitmap_index_super
+| | |      Materialize: bitmap_index.predicate, bitmap_index.chunk_id, bitmap_index.payload
+| | |      Filter: (bitmap_index.tenant_id = 10)
+| | |      Filter: (bitmap_index.snapshot_id = 1)
+| | |      Filter: (bitmap_index.domain = 'person')
+| | |      Filter: (bitmap_index.predicate = ANY (ARRAY['country_IL', 'age_25_54', 'consent_true', 'suspended_false', 'topic_sports', 'topic_finance']))
+
+
+------------------------------
+----------------------------------------------- 
+PLAN: BASE QUERY PLAN (GraphViz Format)
+----------------------------------------------- 
+digraph G {
+graph [rankdir=BT, label = "BASE QUERY PLAN\nQuery: EXPLAIN SELECT COALESCE(SUM(cnt), 0) AS audience\nFROM (\n  SELECT vbitmap.bm_count(chunk_id, predicate, payload USING PARAMETERS expr =\n           \'country_IL & age_25_54 & consent_true & suspended_false & (topic_sports | topic_finance)\')\n         OVER (PARTITION BY chunk_id)\n  FROM bitmap_demo.bitmap_index\n  WHERE tenant_id = 10 AND snapshot_id = 1 AND domain = \'person\'\n    AND predicate IN (\'country_IL\', \'age_25_54\', \'consent_true\', \'suspended_false\', \'topic_sports\', \'topic_finance\')\n) t;\n\nAll Nodes Vector: \n\n  node[0]=v_vdb_node0001 (initiator) Up\n", labelloc=t, labeljust=l ordering=out]
+0[label = "Root \nOutBlk=[UncTuple]", color = "green", shape = "house"];
+1[label = "NewEENode \nOutBlk=[UncTuple]", color = "green", shape = "box"];
+2[label = "ExprEval: \n  coalesce(\<SVAR\>, 0)\nUnc: Integer(8)", color = "green", shape = "box"];
+3[label = "GroupByPipe: 0 keys\nAggs:\n  sum(t.cnt)\nUnc: Integer(8)", color = "green", shape = "box"];
+4[label = "ParallelUnionStep: \nCombine\nUnc: Integer(8)", color = "green", shape = "box"];
+5[label = "GroupByPipe: 0 keys\nAggs:\n  sum(t.cnt)\nUnc: Integer(8)", color = "green", shape = "box"];
+6[label = "ExprEval: \n  t.cnt\nUnc: Integer(8)", color = "green", shape = "box"];
+7[label = "ExprEval: \n  \<SVAR\>\nUnc: Integer(8)", color = "green", shape = "box"];
+8[label = "UserDefined:\nPartitionBy: bitmap_index.chunk_id\nOrderBy:<NONE>\nAnalytical Functions:\n  vbitmap.bm_count(bitmap_index.chunk_id, bitmap_index.predicate, bitmap_index.payload USING PARAMETERS expr=\'country_IL & age_25_54 & consent_true & suspended_false & (topic_sports | topic_finance)\')\nUnc: Integer(8)\nUnc: Integer(8)\nUnc: Integer(8)", color = "green", shape = "box"];
+9[label = "Sort: (keys = A,N,N)\nUnc: Integer(8)\nUnc: Varchar(80)\nUnc: Varbinary(16384)", color = "green", shape = "box"];
+10[label = "ExprEval: \n  bitmap_index.chunk_id\n  bitmap_index.predicate\n  bitmap_index.payload\nUnc: Integer(8)\nUnc: Varchar(80)\nUnc: Varbinary(16384)", color = "green", shape = "box"];
+11[label = "StorageUnionStep: bitmap_index_super\nLocally Resegment\nUnc: Varchar(80)\nUnc: Integer(8)\nUnc: Varbinary(16384)", color = "purple", shape = "box"];
+12[label = "ScanStep: bitmap_index_super\n(bitmap_index.tenant_id = 10)\n(bitmap_index.snapshot_id = 1)\n(bitmap_index.domain = \'person\')\n(bitmap_index.predicate = ANY (ARRAY[\'country_IL\', \'age_25_54\', \'consent_true\', \'suspended_false\', \'topic_sports\', \'topic_finance\']))\ntenant_id (not emitted)\nsnapshot_id (not emitted)\ndomain (not emitted)\npredicate\nchunk_id\npayload\nUnc: Varchar(80)\nUnc: Integer(8)\nUnc: Varbinary(16384)", color = "brown", shape = "box"];
+1->0 [label = "V[0]",color = "black"];
+2->1 [label = "0",color = "blue"];
+3->2 [label = "0",color = "blue"];
+4->3 [label = "0",color = "blue"];
+5->4 [label = "0",color = "blue"];
+6->5 [label = "0",color = "blue"];
+7->6 [label = "0",color = "blue"];
+8->7 [label = "0",color = "blue"];
+9->8 [label = "0",color = "blue"];
+10->9 [label = "0",color = "blue"];
+11->10 [label = "0",color = "blue"];
+12->11 [label = "0",color = "blue"];
+}

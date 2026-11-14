@@ -1,0 +1,6 @@
+area=vertica run=encoding-copy-zstd folder=2026-11-13_encoding-copy-zstd milestone=M5e engine=vertica
+duration_s=88.32 exit_status=0 repo_hash=bf39e22df63d76dc
+engine_cpu_s=155.7 engine_memory_peak_sampled_bytes=23566782464 engine_memory_peak_since_start_bytes=23701831680
+client_cpus=20,21 client_cpu20_busy_pct=1.8 client_cpu21_busy_pct=1.7 client_saturated=no
+limits_ok=yes
+validity=valid

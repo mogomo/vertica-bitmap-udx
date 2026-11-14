@@ -1,0 +1,56 @@
+------------------------------ 
+QUERY PLAN DESCRIPTION: 
+------------------------------
+
+EXPLAIN SELECT predicate, SUM(cnt) AS users
+FROM (
+  SELECT vbitmap.bm_facets(chunk_id, predicate, payload USING PARAMETERS
+           expr = 'country_IL & age_25_54 & consent_true & suspended_false & (topic_sports | topic_finance)',
+           facets = 'topic_')
+         OVER (PARTITION BY chunk_id)
+  FROM bitmap_demo.bitmap_index
+  WHERE tenant_id = 10 AND snapshot_id = 2 AND domain = 'person'
+    AND (predicate IN ('country_IL', 'age_25_54', 'consent_true', 'suspended_false') OR predicate LIKE 'topic\_%')
+) t
+GROUP BY predicate
+
+Access Path:
++-GROUPBY HASH (LOCAL RESEGMENT GROUPS) [Cost: 128K, Rows: 1] (PATH ID: 1)
+|  Aggregates: sum(t.cnt)
+|  Group By: t.predicate
+| +---> ANALYTICAL [Cost: 128K, Rows: 7K] (PATH ID: 3)
+| |      Analytic Group
+| |       Functions: bm_facets()
+| | +---> STORAGE ACCESS for bitmap_index [Cost: 122K, Rows: 7K] (PATH ID: 4)
+| | |      Projection: bitmap_demo.bitmap_index_by_chunk
+| | |      Materialize: bitmap_index.predicate, bitmap_index.chunk_id, bitmap_index.payload
+| | |      Filter: (bitmap_index.tenant_id = 10)
+| | |      Filter: (bitmap_index.snapshot_id = 2)
+| | |      Filter: (bitmap_index.domain = 'person')
+| | |      Filter: ((bitmap_index.predicate = ANY (ARRAY['country_IL', 'age_25_54', 'consent_true', 'suspended_false'])) OR (bitmap_index.predicate ~~ E'topic\\_%'))
+
+
+------------------------------
+----------------------------------------------- 
+PLAN: BASE QUERY PLAN (GraphViz Format)
+----------------------------------------------- 
+digraph G {
+graph [rankdir=BT, label = "BASE QUERY PLAN\nQuery: EXPLAIN SELECT predicate, SUM(cnt) AS users\nFROM (\n  SELECT vbitmap.bm_facets(chunk_id, predicate, payload USING PARAMETERS\n           expr = \'country_IL & age_25_54 & consent_true & suspended_false & (topic_sports | topic_finance)\',\n           facets = \'topic_\')\n         OVER (PARTITION BY chunk_id)\n  FROM bitmap_demo.bitmap_index\n  WHERE tenant_id = 10 AND snapshot_id = 2 AND domain = \'person\'\n    AND (predicate IN (\'country_IL\', \'age_25_54\', \'consent_true\', \'suspended_false\') OR predicate LIKE \'topic\_%\')\n) t\nGROUP BY predicate\n\nAll Nodes Vector: \n\n  node[0]=v_vdb_node0001 (initiator) Up\n", labelloc=t, labeljust=l ordering=out]
+0[label = "Root \nOutBlk=[UncTuple(2)]", color = "green", shape = "house"];
+1[label = "NewEENode \nOutBlk=[UncTuple(2)]", color = "green", shape = "box"];
+2[label = "ParallelUnionStep: \nCombine\nUnc: Varchar(80)\nUnc: Integer(8)", color = "green", shape = "box"];
+3[label = "GroupByHash(Spill): 1 keys\nAggs:\n  sum(t.cnt)\nUnc: Varchar(80)\nUnc: Integer(8)", color = "green", shape = "box"];
+4[label = "ParallelUnionStep: \nLocally Resegment\nUnc: Varchar(80)\nUnc: Integer(8)", color = "green", shape = "box"];
+5[label = "ExprEval: \n  \<SVAR\>\n  \<SVAR\>\nUnc: Varchar(80)\nUnc: Integer(8)", color = "green", shape = "box"];
+6[label = "UserDefined:\nPartitionBy: chunk_id\nOrderBy:<NONE>\nAnalytical Functions:\n  vbitmap.bm_facets(bitmap_index.chunk_id, bitmap_index.predicate, bitmap_index.payload USING PARAMETERS expr=\'country_IL & age_25_54 & consent_true & suspended_false & (topic_sports | topic_finance)\',facets=\'topic_\')\nUnc: Integer(8)\nUnc: Varchar(80)\nUnc: Integer(8)", color = "green", shape = "box"];
+7[label = "StorageMergeStep[ee5]: bitmap_index_by_chunk; 2 sorted\nUnc: Integer(8)\nUnc: Varchar(80)\nUnc: Varbinary(16384)", color = "purple", shape = "box"];
+8[label = "ScanStep: bitmap_index_by_chunk\n(bitmap_index.tenant_id = 10)\n(bitmap_index.snapshot_id = 2)\n(bitmap_index.domain = \'person\')\n((bitmap_index.predicate = ANY (ARRAY[\'country_IL\', \'age_25_54\', \'consent_true\', \'suspended_false\'])) OR (bitmap_index.predicate ~~ E\'topic\\_%\'))\ntenant_id (not emitted)\nsnapshot_id (not emitted)\ndomain (not emitted)\nchunk_id\npredicate\npayload\nUnc: Integer(8)\nUnc: Varchar(80)\nUnc: Varbinary(16384)", color = "brown", shape = "box"];
+1->0 [label = "V[0] C=2",color = "black",style="bold", arrowtail="inv"];
+2->1 [label = "0",color = "blue"];
+3->2 [label = "0",color = "blue"];
+4->3 [label = "0",color = "blue"];
+5->4 [label = "0",color = "blue"];
+6->5 [label = "0",color = "blue"];
+7->6 [label = "0",color = "blue"];
+8->7 [label = "0",color = "blue"];
+}

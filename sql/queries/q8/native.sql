@@ -1,0 +1,10 @@
+-- Q8 exclusion, native SQL: IL users interested in sports and not in finance.
+SELECT p.entity_id
+FROM bitmap_demo.user_profile p
+WHERE p.tenant_id = ${tenant} AND p.snapshot_id = ${snapshot} AND p.country = 'IL'
+  AND EXISTS (SELECT 1 FROM bitmap_demo.user_interest i
+              WHERE i.tenant_id = p.tenant_id AND i.snapshot_id = p.snapshot_id
+                AND i.entity_id = p.entity_id AND i.topic = 'sports')
+  AND NOT EXISTS (SELECT 1 FROM bitmap_demo.user_interest i
+                  WHERE i.tenant_id = p.tenant_id AND i.snapshot_id = p.snapshot_id
+                    AND i.entity_id = p.entity_id AND i.topic = 'finance');

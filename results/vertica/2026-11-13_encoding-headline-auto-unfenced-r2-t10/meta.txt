@@ -1,0 +1,6 @@
+area=vertica run=encoding-headline-auto-unfenced-r2-t10 folder=2026-11-13_encoding-headline-auto-unfenced-r2-t10 milestone=M5e engine=vertica
+duration_s=257.59 exit_status=0 repo_hash=bf39e22df63d76dc
+engine_cpu_s=345.5 engine_memory_peak_sampled_bytes=22007750656 engine_memory_peak_since_start_bytes=23701831680
+client_cpus=20,21 client_cpu20_busy_pct=45.0 client_cpu21_busy_pct=40.2 client_saturated=no
+limits_ok=yes
+validity=valid

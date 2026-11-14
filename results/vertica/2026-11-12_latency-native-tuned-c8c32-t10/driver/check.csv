@@ -1,0 +1,16 @@
+query,answer,oracle,rows,hash,oracle_hash,matches,error,ms
+q1.count.A,q1.count,yes,1,b4498cf506a5f79c,b4498cf506a5f79c,yes,,770.49
+q1.ids.A,q1.ids,yes,251683,8204799bdbdae904,8204799bdbdae904,yes,,817.58
+q2.A,q2,yes,1,152155f2af58e3cb,152155f2af58e3cb,yes,,110.97
+q2.daily.A,q2.daily,yes,2,ce7279e17bf8b689,ce7279e17bf8b689,yes,,164.86
+q2b.A,q2b,yes,1,151826646b43ae4c,151826646b43ae4c,yes,,139.95
+q3.A,q3,yes,500,1a17b1531950cc32,1a17b1531950cc32,yes,,1562.15
+q3d.A,q3d,yes,500,a2f4d014f28b40c9,a2f4d014f28b40c9,yes,,1870.15
+q4.A,q4,yes,19695,418fbbab9d532966,418fbbab9d532966,yes,,49.35
+q5.A,q5,yes,25638,4067ec4e6f056462,4067ec4e6f056462,yes,,97.41
+q6.A,q6,yes,28,de0171ce55b7d0b1,de0171ce55b7d0b1,yes,,2145.58
+q6.At,q6,,28,de0171ce55b7d0b1,de0171ce55b7d0b1,yes,,5610.88
+q7.A,q7,yes,499,8d89f06ae62b8c25,8d89f06ae62b8c25,yes,,51367.04
+q7.At,q7,,499,8d89f06ae62b8c25,8d89f06ae62b8c25,yes,,7882.99
+q8.A,q8,yes,530315,384c2a5fd45796b7,384c2a5fd45796b7,yes,,1178.25
+q8trap.A,q8trap,yes,1,26decc48ea68b221,26decc48ea68b221,yes,,10.39

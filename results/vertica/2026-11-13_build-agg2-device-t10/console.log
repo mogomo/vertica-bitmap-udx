@@ -1,0 +1,11 @@
+snapshot 2 of tenant 10 domain device: building from source snapshot 1 at 2026-11-01 12:00:00
+  built in 0.8 s
+validate snapshot 2 of tenant 10 domain device (source snapshot 1, watermark 2026-11-01 12:00:00, state building)
+  ok    families complete: changes,online,temperature,zone
+  ok    one row per index key
+  ok    every name in exactly one certified family
+  ok    predicate list = index (family, chunks, cardinality, bytes)
+  ok    chunk width 16 in every payload header
+  ok    cardinality of every (predicate, chunk) = native SQL
+snapshot 2 of tenant 10 domain device: verified (24 predicates, 744 index rows, 4836322 bytes)
+snapshot: op=build tenant=10 domain=device snapshot=2 chunk_bits=16 deep=no validate=full build_s=0.78 validate_s=1.03 publish_s=0.01 total_s=1.82 predicates=24 index_rows=744 index_bytes=4836322 daily_rows=0 daily_bytes=0

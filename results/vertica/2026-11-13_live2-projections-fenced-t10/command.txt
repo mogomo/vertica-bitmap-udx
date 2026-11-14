@@ -1,0 +1,5 @@
+command=scripts/live_index.sh projections 
+cwd=~/vertica-bitmap-udx
+start_utc=2026-11-13T10:48:21Z
+end_utc=2026-11-13T10:49:23Z
+exit_status=0

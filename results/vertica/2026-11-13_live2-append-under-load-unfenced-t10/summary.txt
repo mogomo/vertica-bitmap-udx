@@ -1,0 +1,4 @@
+check: query=q1.count.Bplus answer=q1.count rows=1 hash=b4498cf506a5f79c matches=yes ms=15.8
+check: query=q3.Bplus answer=q3 rows=500 hash=1a17b1531950cc32 matches=yes ms=322.0
+background: status=0 start_s=60.000 end_s=63.884 duration_s=3.884
+summary: mode=mixed engine=vertica queries=2 levels=32 check_ok=yes errors=0 mismatches=0 valid=yes

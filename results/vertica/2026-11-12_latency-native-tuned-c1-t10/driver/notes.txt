@@ -1,0 +1,7 @@
+driver run started 2026-11-12T12:11:39+0200 args ['run', '--workload', 'bench/workloads/vertica.sql', '--var', 'tenant=10', '--out', '~/bitmap_record/vertica/2026-11-12_latency-native-tuned-c1-t10/driver', '--clients', '1', '--iterations', '30', '--warmup', '1', '--only', 'q1.count.A,q1.ids.A,q2.A,q2.daily.A,q2b.A,q3.A,q3d.A,q4.A,q5.A,q6.A,q6.At,q7.At,q8.A,q8trap.A']
+check q1.count.A: answer 251683
+check q2.A: answer 2765926
+check q2.daily.A: answer 2026-10-15|1551213 ; 2026-10-16|1553098
+check q2b.A: answer 3839183
+check q8trap.A: answer 9700374|9600381
+driver ended 2026-11-12T12:24:59+0200 status 0

@@ -1,0 +1,53 @@
+------------------------------ 
+QUERY PLAN DESCRIPTION: 
+------------------------------
+
+EXPLAIN SELECT COALESCE(SUM(cnt), 0) AS audience
+FROM (
+  SELECT vbitmap.bm_count(chunk_id, predicate, payload USING PARAMETERS expr =
+           'country_IL & age_25_54 & consent_true & suspended_false & (topic_sports | topic_finance)')
+         OVER (PARTITION BY chunk_id)
+  FROM bitmap_enc.index_zstd
+  WHERE tenant_id = 10 AND snapshot_id = 1 AND domain = 'person'
+    AND predicate IN ('country_IL', 'age_25_54', 'consent_true', 'suspended_false', 'topic_sports', 'topic_finance')
+) t
+
+Access Path:
++-GROUPBY NOTHING [Cost: 13K, Rows: 1 (ROW COUNT ONLY)] (PATH ID: 1)
+|  Aggregates: sum(t.cnt)
+| +---> ANALYTICAL [Cost: 13K, Rows: 2K (ROW COUNT ONLY)] (PATH ID: 3)
+| |      Analytic Group
+| |       Functions: bm_count()
+| | +---> STORAGE ACCESS for index_zstd [Cost: 11K, Rows: 2K (ROW COUNT ONLY)] (PATH ID: 4)
+| | |      Projection: bitmap_enc.index_zstd_by_chunk
+| | |      Materialize: index_zstd.predicate, index_zstd.chunk_id, index_zstd.payload
+| | |      Filter: (index_zstd.tenant_id = 10)
+| | |      Filter: (index_zstd.snapshot_id = 1)
+| | |      Filter: (index_zstd.domain = 'person')
+| | |      Filter: (index_zstd.predicate = ANY (ARRAY['country_IL', 'age_25_54', 'consent_true', 'suspended_false', 'topic_sports', 'topic_finance']))
+
+
+------------------------------
+----------------------------------------------- 
+PLAN: BASE QUERY PLAN (GraphViz Format)
+----------------------------------------------- 
+digraph G {
+graph [rankdir=BT, label = "BASE QUERY PLAN\nQuery: EXPLAIN SELECT COALESCE(SUM(cnt), 0) AS audience\nFROM (\n  SELECT vbitmap.bm_count(chunk_id, predicate, payload USING PARAMETERS expr =\n           \'country_IL & age_25_54 & consent_true & suspended_false & (topic_sports | topic_finance)\')\n         OVER (PARTITION BY chunk_id)\n  FROM bitmap_enc.index_zstd\n  WHERE tenant_id = 10 AND snapshot_id = 1 AND domain = \'person\'\n    AND predicate IN (\'country_IL\', \'age_25_54\', \'consent_true\', \'suspended_false\', \'topic_sports\', \'topic_finance\')\n) t\n\nAll Nodes Vector: \n\n  node[0]=v_vdb_node0001 (initiator) Up\n", labelloc=t, labeljust=l ordering=out]
+0[label = "Root \nOutBlk=[UncTuple]", color = "green", shape = "house"];
+1[label = "NewEENode \nOutBlk=[UncTuple]", color = "green", shape = "box"];
+2[label = "ExprEval: \n  coalesce(\<SVAR\>, 0)\nUnc: Integer(8)", color = "green", shape = "box"];
+3[label = "GroupByPipe: 0 keys\nAggs:\n  sum(t.cnt)\nUnc: Integer(8)", color = "green", shape = "box"];
+4[label = "ExprEval: \n  t.cnt\nUnc: Integer(8)", color = "green", shape = "box"];
+5[label = "ExprEval: \n  \<SVAR\>\nUnc: Integer(8)", color = "green", shape = "box"];
+6[label = "UserDefined:\nPartitionBy: chunk_id\nOrderBy:<NONE>\nAnalytical Functions:\n  vbitmap.bm_count(index_zstd.chunk_id, index_zstd.predicate, index_zstd.payload USING PARAMETERS expr=\'country_IL & age_25_54 & consent_true & suspended_false & (topic_sports | topic_finance)\')\nUnc: Integer(8)\nUnc: Integer(8)\nUnc: Integer(8)", color = "green", shape = "box"];
+7[label = "StorageMergeStep[ee5]: index_zstd_by_chunk; 2 sorted\nUnc: Integer(8)\nUnc: Varchar(80)\nUnc: Varbinary(16384)", color = "purple", shape = "box"];
+8[label = "ScanStep: index_zstd_by_chunk\n(index_zstd.tenant_id = 10)\n(index_zstd.snapshot_id = 1)\n(index_zstd.domain = \'person\')\n(index_zstd.predicate = ANY (ARRAY[\'country_IL\', \'age_25_54\', \'consent_true\', \'suspended_false\', \'topic_sports\', \'topic_finance\']))\ntenant_id (not emitted)\nsnapshot_id (not emitted)\ndomain (not emitted)\nchunk_id\npredicate\npayload\nUnc: Integer(8)\nUnc: Varchar(80)\nUnc: Varbinary(16384)", color = "brown", shape = "box"];
+1->0 [label = "V[0]",color = "black"];
+2->1 [label = "0",color = "blue"];
+3->2 [label = "0",color = "blue"];
+4->3 [label = "0",color = "blue"];
+5->4 [label = "0",color = "blue"];
+6->5 [label = "0",color = "blue"];
+7->6 [label = "0",color = "blue"];
+8->7 [label = "0",color = "blue"];
+}

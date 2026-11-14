@@ -1,0 +1,1 @@
+ch: op=live-append engine=clickhouse tenant=10 rows=2000460 s=1.59 check_set=topic_t100 live=551569 native=551569 equal=yes parts=2

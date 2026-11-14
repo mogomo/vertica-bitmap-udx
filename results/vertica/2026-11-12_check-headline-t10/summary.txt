@@ -1,0 +1,15 @@
+check: query=q1.count.A answer=q1.count rows=1 hash=b4498cf506a5f79c matches=yes ms=809.1
+check: query=q1.count.Bplus answer=q1.count rows=1 hash=b4498cf506a5f79c matches=yes ms=80.5
+check: query=q1.ids.A answer=q1.ids rows=251683 hash=8204799bdbdae904 matches=yes ms=796.4
+check: query=q1.ids.Bplus answer=q1.ids rows=251683 hash=8204799bdbdae904 matches=yes ms=86.4
+check: query=q2.daily.A answer=q2.daily rows=2 hash=ce7279e17bf8b689 matches=yes ms=171.9
+check: query=q2.daily.B answer=q2.daily rows=2 hash=ce7279e17bf8b689 matches=yes ms=27.5
+check: query=q3.A answer=q3 rows=500 hash=1a17b1531950cc32 matches=yes ms=1572.7
+check: query=q3.Bplus answer=q3 rows=500 hash=1a17b1531950cc32 matches=yes ms=1390.2
+check: query=q4.A answer=q4 rows=19695 hash=418fbbab9d532966 matches=yes ms=72.2
+check: query=q4.Bplus answer=q4 rows=19695 hash=418fbbab9d532966 matches=yes ms=40.2
+check: query=q7.A answer=q7 rows=499 hash=8d89f06ae62b8c25 matches=yes ms=49439.9
+check: query=q7.B answer=q7 rows=499 hash=8d89f06ae62b8c25 matches=yes ms=1644.4
+check: query=q8.A answer=q8 rows=530315 hash=384c2a5fd45796b7 matches=yes ms=1118.3
+check: query=q8.Bplus answer=q8 rows=530315 hash=384c2a5fd45796b7 matches=yes ms=147.8
+summary: mode=check engine=vertica queries=14 levels=1,8,32 check_ok=yes errors=0 mismatches=0 valid=yes
