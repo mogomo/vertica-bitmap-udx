@@ -19,8 +19,7 @@ checked.
 This article checks it for one job. Audience analytics, the "how many people match these filters,
 and who are they?" questions behind every marketing screen, is the classic work of a bitmap
 database. The job usually goes to a specialised engine installed next to the warehouse, and
-ClickHouse is the obvious choice: it is fast, it is popular, and its Roaring bitmap functions are
-part of the product.
+ClickHouse is the obvious choice, because its Roaring bitmap functions are part of the product.
 
 The claim we set out to test has two parts, and either one could fail:
 
@@ -35,10 +34,10 @@ different uses; fresh data arriving while users query; and ten times the data. 2
 the record. Every one was kept, including the runs that failed and the tests that Vertica lost.
 <!-- benchmark record, INDEX rows 1-299 -->
 
-The evidence turned against the claim more than once. ClickHouse's plain SQL answered the first
+More than once, the evidence raised new questions. ClickHouse's plain SQL answered the first
 question three times faster than Vertica's plain SQL. The first test of ID lists went to
-ClickHouse by a wide margin. An early breakdown test took fourteen seconds. Each time we looked
-for the cause, and each cause turned out to be worth knowing.
+ClickHouse by a wide margin. An early breakdown test took fourteen seconds. Each time, we
+investigated the cause and uncovered insights worth knowing.
 
 Here is the outcome in one figure. The rest of the article is how we got there.
 
@@ -163,9 +162,10 @@ index they have to be built, stored, refreshed and kept consistent with the data
 ## The specialist next door
 
 This is why companies buy a second system: a bitmap engine next to the warehouse (ClickHouse with
-`groupBitmap`, Apache Druid, Pinot, or a home-grown Redis service). The price is not the licence.
-It is a copy of the data, a pipeline that keeps the copy in step, a second security model and a
-second thing to operate.
+`groupBitmap`, Apache Druid, Pinot, or a home-grown Redis service). The real cost goes far beyond
+the licence. It includes additional infrastructure, a second copy of the data, pipelines to keep
+it synchronized, a separate security model, and another system to maintain and operate around the
+clock.
 
 Before adding anything, we looked at what Vertica 26.3 already offers for the job. Each option was
 examined on the installed server before the design was fixed:
@@ -793,8 +793,8 @@ size in both engines (392 MB and 403 MB).
 
 **One system instead of two.** With Vertica there is one system to load, secure and operate.
 ClickHouse would be a second one, with its own copy of the data (exporting and loading the 312
-million rows took 101 s here), its own pipeline to keep that copy in step and its own security
-model. In Vertica the sets are a projection of the table, or a snapshot that is validated against
+million rows took 101 s here), its own pipelines to keep that copy synchronized and its own
+security model. In Vertica the sets are a projection of the table, or a snapshot that is validated against
 the source and published in one transaction. <!-- run 70 -->
 
 While others say "we can do that too", Vertica was put to the test and delivered: everything on
